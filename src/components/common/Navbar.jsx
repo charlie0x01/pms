@@ -32,8 +32,8 @@ const Navbar = () => {
           </p>
         </a>
       </div>
-      <div>
-        <button className="button">hello</button>
+      <div style={{ gap: "8px" }} className="is-flex is-align-items-center">
+        nav end box
       </div>
     </nav>
   );
