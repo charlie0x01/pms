@@ -1,4 +1,23 @@
 .sidebar {
-  max-width: 240px;
-  
+  /* width: 240px !important; */
+  min-width: 220px !important;
+  resize: horizontal;
+  overflow: auto;
+}
+
+/* sidebar hidden */
+@media screen and (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+.sidebar {
+  min-height: 100vh;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.sidebar-show {
+  display: block;
 }
