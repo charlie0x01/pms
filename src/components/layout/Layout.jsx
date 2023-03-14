@@ -1,17 +1,17 @@
 import React from "react";
-
-// CSS
-import "./Layout.css";
+import FlexCard from "../common/FlexCard";
+import Navbar from "../common/Navbar";
+import Sidebar from "../common/sidebar/Sidebar";
 
 const Layout = () => {
   return (
-    <section class="layout">
-      <div class="sidebar sidebar-close">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ex magni at
-        architecto doloribus quos sint iure iste praesentium nemo adipisci.
+    <>
+      <Navbar />
+      <div className="is-flex">
+        <Sidebar />
+        <FlexCard></FlexCard>
       </div>
-      <div class="content">2</div>
-    </section>
+    </>
   );
 };
 
