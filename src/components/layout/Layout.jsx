@@ -1,8 +1,7 @@
 import React from "react";
 import ProjectsPage from "../../Pages/ProjectsPage";
-import FlexCard from "../common/FlexCard";
 import Navbar from "../common/Navbar";
-import Sidebar from "../common/sidebar/Sidebar";
+import Sidebar from "../sidebar/Sidebar";
 
 const Layout = () => {
   return (
