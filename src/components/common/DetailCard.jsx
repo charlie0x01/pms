@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Avatar, Button } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { FiEdit } from "react-icons/fi";
 import { Link } from "react-router-dom";
 const { Meta } = Card;
 
@@ -12,10 +12,11 @@ const ProjectCard = ({
   team,
   id,
   tags,
-  onEdit
+  onEdit,
+  link
 }) => {
   return (
-    <Link to={`/card${id}`}>
+    <Link to={link}>
       <Card
         id={id}
         hoverable
@@ -33,7 +34,7 @@ const ProjectCard = ({
           <div className="is-flex is-justify-content-space-between is-align-items-center">
             <div>
               <Button type="text" onClick={onEdit}>
-                <EditOutlined style={{ fontSize: "16px"}} />
+                <FiEdit style={{ fontSize: "16px"}} />
               </Button>
             </div>
             <Avatar.Group>
