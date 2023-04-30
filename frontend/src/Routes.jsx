@@ -8,14 +8,14 @@ import ForgetPassword from "./Pages/auth/ForgetPassword";
 import OTP from "./Pages/auth/OTP";
 import NewPassword from "./Pages/auth/NewPassword";
 import UserProfile from "./components/user/UserProfile";
-// import ProjectProfile from "./components/project/ProjectProfile";
+import ProjectProfile from "./components/project/ProjectProfile";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<App />}>
         <Route path="user-profile" element={<UserProfile />} />
-        {/* <Route path="project-profile" element={<ProjectProfile />} /> */}
+        <Route path="project-profile" element={<ProjectProfile />} />
       </Route>
       <Route path="/signin" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
