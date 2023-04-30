@@ -9,6 +9,7 @@ import OTP from "./Pages/auth/OTP";
 import NewPassword from "./Pages/auth/NewPassword";
 import UserProfile from "./components/user/UserProfile";
 import ProjectProfile from "./components/project/ProjectProfile";
+import TeamProfile from "./components/team/TeamProfile";
 
 const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const AppRoutes = () => {
       <Route path="/" element={<App />}>
         <Route path="user-profile" element={<UserProfile />} />
         <Route path="project-profile" element={<ProjectProfile />} />
+        <Route path="team-profile" element={<TeamProfile />} />
       </Route>
       <Route path="/signin" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />

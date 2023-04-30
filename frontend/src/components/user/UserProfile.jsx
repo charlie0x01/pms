@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import NewProjectModal from "../project/NewProjectModal";
-// import NewTeamModal from "../team/NewTeamModal";
+import NewTeamModal from "../team/NewTeamModal";
 // import { useFormik } from "formik";
 // import * as Yup from "yup";
 
 const UserProfile = () => {
   const [addProject, setAddProject] = useState(false);
-  // const [addTeam, setaddTeam] = useState(false);
+  const [addTeam, setaddTeam] = useState(false);
   // const formik = useFormik({
   //   initialValues: {
   //     firstName: "",
@@ -27,7 +27,7 @@ const UserProfile = () => {
   return (
     <>
       <NewProjectModal setIsOpen={setAddProject} isOpen={addProject} />
-      {/* <NewTeamModal setIsOpen={setaddTeam} isOpen={addTeam} /> */}
+      <NewTeamModal setIsOpen={setaddTeam} isOpen={addTeam} />
       <section class="section">
         <div class="container">
           <h1 class="title">User Profile</h1>
@@ -113,7 +113,9 @@ const UserProfile = () => {
         <div className="container mt-5">
           <div className="is-flex is-justify-content-space-between">
             <h1 className="title">Teams</h1>
-            <button className="button">Create New Team</button>
+            <button onClick={() => setaddTeam(true)} className="button">
+              Create New Team
+            </button>
           </div>
         </div>
       </section>
