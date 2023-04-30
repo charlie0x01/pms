@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import NewProjectModal from "../project/NewProjectModal";
 import NewTeamModal from "../team/NewTeamModal";
+import { Link } from "react-router-dom";
 // import { useFormik } from "formik";
 // import * as Yup from "yup";
 
@@ -73,9 +74,9 @@ const UserProfile = () => {
                 />
               </div>
             </div>
-            <div className="is-flex is-gap-3 is-align-items-end">
-              <div class="field">
-                <label class="label">Password</label>
+            <div className="columns is-1 is-desktop">
+              <div class="field column">
+                <label class="label"> old Password</label>
                 <div class="control">
                   <input
                     class="input"
@@ -84,7 +85,31 @@ const UserProfile = () => {
                   />
                 </div>
               </div>
-              <button className="button mb-3">Change Password</button>
+              <div class="field column">
+                <label class="label"> New Password</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="password"
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
+              <div class="field column">
+                <label class="label"> Confirm Password</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="password"
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
+              <div className="column">
+                <Link to="/forget-password" className="button">
+                  Change Password
+                </Link>
+              </div>
             </div>
             <div class="field">
               <label class="label">Bio</label>
