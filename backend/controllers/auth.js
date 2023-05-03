@@ -7,11 +7,11 @@ exports.register = async (req, res, next) => {
 
   try {
     // extract data from request body
-    const { UserID, FirstName, LastName, UserEmail, Password } = req.body;
-    console.log(UserID, FirstName, LastName, UserEmail, Password);
+    const { user_id, first_name, last_name, user_email, user_dob, user_type, password } = req.body;
+    console.log(user_id, first_name, last_name, user_email, user_dob, user_type, password);
     // check username, email and password
     // any of these shouldn't be empty
-    if (!FirstName || !LastName || !UserEmail || !Password) {
+    if (!first_name || !last_name || !user_email || !user_dob || !user_type || !password) {
       return res.status(401).json({
         success: false,
         message: "User information should not be empty.",
@@ -20,12 +20,12 @@ exports.register = async (req, res, next) => {
 
     // check whether email is valid or not
     let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
-    if (!regex.test(UserEmail)) {
+    if (!regex.test(user_email)) {
       return res.status(401).json({ success: false, message: "Invalid Email" });
     }
 
     // check password length
-    if (Password.length > 19 || Password.length < 7) {
+    if (password.length > 19 || password.length < 7) {
       return res.json({
         success: false,
         message: "Password should be 8 to 18 characters long.",
@@ -33,7 +33,7 @@ exports.register = async (req, res, next) => {
     }
 
     // if the email already exist
-    let [found, _] = await User.findByEmailId(UserEmail);
+    let [found, _] = await User.findByEmailId(user_email);
     if (found.length > 0) {
       return res
         .status(403)
@@ -41,13 +41,13 @@ exports.register = async (req, res, next) => {
     }
 
     // register user
-    const user = new User(UserID, FirstName, LastName, UserEmail, Password);
+    const user = new User(user_id, first_name, last_name, user_email, user_dob, user_type, password);
     console.log(user);
     await user.save();
     // if user saved successfully\
     return res.status(201).json({
       success: true,
-      message: `${FirstName}, you registered successfully`,
+      message: `${first_name}, you registered successfully`,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -56,18 +56,17 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   // 1st extract email and password from request body
-  const { UserEmail, Password } = req.body;
-  console.log(UserEmail + " " + Password);
+  const { user_email, password } = req.body;
 
   // check email and password is not empty
-  if (!UserEmail || !Password) {
+  if (!user_email || !password) {
     return res
       .status(404)
       .json({ message: "Please provide email and password" });
   }
 
   try {
-    const [user, _] = await User.findByEmailId();
+    const [user, _] = await User.findByEmailId(user_email);
     // check, if we have any user with this email
     if (!user[0]) {
       return res
@@ -76,9 +75,10 @@ exports.login = async (req, res, next) => {
     }
 
     // check password
-    const isMatched = await User.matchPassword(user[0], Password);
+    const isMatched = await User.matchPassword(user[0], password);
     // if not matched
     if (!isMatched) {
+      console.log("checking password");
       return res
         .status(404)
         .json({ success: false, message: "Invalid Password" });
@@ -95,10 +95,12 @@ const sendToken = (user, statusCode, res) => {
   res.status(statusCode).json({
     success: true,
     token: User.getSignedToken(user),
-    UserID: user.UserID,
-    FirstName: user.FirstName,
-    LastName: user.LastName,
-    UserEmail: user.UserEmail,
-    Password: user.Password,
+    user_id: user.UserID,
+    first_name: user.FirstName,
+    last_name: user.LastName,
+    user_email: user.UserEmail,
+    user_dob: user.UserDOB,
+    user_type: user.UserType, 
+    password: user.Password,
   });
 };

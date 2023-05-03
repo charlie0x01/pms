@@ -4,17 +4,19 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 class User {
-  constructor(UserID, FirstName, LastName, UserEmail, Password) {
+  constructor(UserID, FirstName, LastName, UserEmail, UserDOB, UserType, Password) {
     this.UserID = UserID;
     this.FirstName = FirstName;
     this.LastName = LastName;
     this.UserEmail = UserEmail;
+    this.UserDOB = UserDOB;
+    this.UserType = UserType;
     this.Password = Password;
   }
 
   save() {
     // create a query to register user in database
-    let registerUser = `insert into users(UserID, FirstName, LastName, UserEmail, Password) values(?, ?, ?, ?, ?); `;
+    let registerUser = `insert into users(user_id, first_name, last_name, user_email, user_dob, user_type, password) values(?, ?, ?, ?, ?, ?, ?); `;
     try {
       // encrypt password before saving in database
       bcrypt.genSalt(10, (error, salt) => {
@@ -26,6 +28,8 @@ class User {
               this.FirstName,
               this.LastName,
               this.UserEmail,
+              this.UserDOB,
+              this.UserType,
               hash,
             ]);
           });
@@ -42,13 +46,13 @@ class User {
   }
 
   static findByEmailId(emailID) {
-    let query = `select * from users where UserEmail = ?;`;
+    let query = `select * from users where user_email = ?;`;
     return pool.execute(query, [emailID]);
   }
 
   static matchPassword(user, userPassword) {
     // compare the registered password with login password
-    return bcrypt.compare(userPassword, user.Password);
+    return bcrypt.compare(userPassword, user.password);
   }
 
   static getSignedToken(user) {
