@@ -4,7 +4,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 class User {
-  constructor(UserID, FirstName, LastName, UserEmail, UserDOB, UserType, Password) {
+  constructor(
+    UserID,
+    FirstName,
+    LastName,
+    UserEmail,
+    UserDOB,
+    UserType,
+    Password
+  ) {
     this.UserID = UserID;
     this.FirstName = FirstName;
     this.LastName = LastName;
@@ -40,6 +48,23 @@ class User {
     }
   }
 
+  static updatePassword(email, newPassword) {
+    // update user password in database
+    let updatePass = `update users set password = ? where user_email = ? `;
+    try {
+      // encrypt password before saving in database
+      bcrypt.genSalt(10, (error, salt) => {
+        bcrypt.hash(newPassword, salt, (error, hash) => {
+          transaction(pool, async (connection) => {
+            await connection.execute(updatePass, [hash, email]);
+          });
+        });
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static findAll() {
     let query = `select * from users;`;
     return pool.execute(query);
@@ -56,13 +81,13 @@ class User {
   }
 
   static getSignedToken(user) {
-    return jwt.sign({ email: user.UserEmail }, process.env.JWT_SECRET, {
+    return jwt.sign({ email: user.user_email }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRE,
     });
   }
 
-  static getResetPasswordToken(user) {
-    return jwt.sign({ email: user.UserEmail }, process.env.JWT_SECRET, {
+  static getResetPasswordOTP(user) {
+    return jwt.sign({ email: user.user_email }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRE,
     });
   }
