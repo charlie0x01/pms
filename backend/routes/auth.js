@@ -1,10 +1,10 @@
 const express = require("express");
 
-const { register, login, forgetpassword, validateOTP } = require("../controllers/auth");
+const { signup, login, forgetpassword, validateOTP } = require("../controllers/auth");
 
 const router = express.Router();
 
-router.post("/signup", register);
+router.post("/signup", signup);
 router.get("/login", login);
 router.get("/forgetpassword", forgetpassword);
 router.post("/validateOTP", validateOTP);
