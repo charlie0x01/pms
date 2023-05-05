@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import UserAvatarDropdown from "./AvatarDropdown";
 
 const Navbar = () => {
   // toggle sidebar
@@ -31,30 +32,7 @@ const Navbar = () => {
         </a>
       </div>
       <div style={{ gap: "8px" }} className="is-flex is-align-items-center">
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link">
-            <figure class="image is-32x32">
-              <img
-                class="is-rounded"
-                src="https://gravatar.com/avatar/7c342a08c9d97caf7be169a201457a79?s=200&d=robohash&r=x"
-                alt="User Avatar"
-              />
-            </figure>
-          </a>
-
-          <div class="navbar-dropdown">
-            <Link class="navbar-item" to="/user-profile">
-              Profile
-            </Link>
-            <a class="navbar-item" href="#">
-              Settings
-            </a>
-            <hr class="navbar-divider" />
-            <a class="navbar-item" href="#">
-              Logout
-            </a>
-          </div>
-        </div>
+        <UserAvatarDropdown />
       </div>
     </nav>
   );
