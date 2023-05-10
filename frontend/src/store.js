@@ -1,23 +1,27 @@
 // this is a global store for our app
 import { configureStore } from "@reduxjs/toolkit";
-
-// reducers
-import taskReducer from "./services/kanban/taskSlice";
-import kanbanReducer from "./services/kanban/kanbanSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 // apis
-import authApi from "./services/authSlice";
+import { authApi } from "./apis/authApi";
+import { orgApi } from "./apis/orgApi";
+import { projectApi } from "./apis/projectApi";
 
 // let's configure a store
 const store = configureStore({
   reducer: {
-    task: taskReducer,
-    kanban: kanbanReducer,
-    [authApi.reducerPath]: authApi.reducer
+    [authApi.reducerPath]: authApi.reducer,
+    [orgApi.reducerPath]: orgApi.reducer,
+    [projectApi.reducerPath]: projectApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware().concat([
+      authApi.middleware,
+      orgApi.middleware,
+      projectApi.middleware,
+    ]),
 });
 
+setupListeners(store.dispatch);
 // now export the store
 export default store;
