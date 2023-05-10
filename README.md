@@ -12,7 +12,7 @@ for UI Design
 This project is currently in development. Just Layout Designed, remaining is in progress.
 
 # Installation & Setup Instructions
-Clone down this repository. You will need node and npm installed globally on your machine.
+Clone this repository. You will need node for this to run, so make you have node installed on your machine.
 
 Installation:
 
