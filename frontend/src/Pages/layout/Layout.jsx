@@ -1,7 +1,7 @@
 import React from "react";
-import Navbar from "../../components/common/Navbar";
-import Sidebar from "../../components/sidebar/Sidebar";
-import KanbanBoard from "../Kanban/KanbanBoard";
+import Navbar from "../../components/Navbar/Navbar";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
@@ -12,13 +12,12 @@ const Layout = () => {
         <div
           style={{
             width: "100%",
-            // backgroundColor: "#CFD2CF",
             margin: "20px",
             borderRadius: "8px",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
-          <KanbanBoard />
+          <Outlet />
         </div>
       </div>
     </>
