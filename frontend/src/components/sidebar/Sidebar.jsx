@@ -1,8 +1,7 @@
 // import { Menu } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { GrAdd } from "react-icons/gr";
 
-import "./Sidebar.css";
 import SideBarItem from "./SideBarItem";
 import NewOrganization from "../Organization/NewOrganization";
 import NewProject from "../project/NewProject";
@@ -14,6 +13,7 @@ const Sidebar = () => {
   const [newOrganization, setNewOrganization] = useState(false);
   const [newProject, setNewProject] = useState(false);
 
+  //
   const { data, error, isLoading } = useGetOrganizationsQuery(
     parseInt(localStorage.getItem("user_id"))
   );
@@ -41,7 +41,10 @@ const Sidebar = () => {
                 data.data.map((org, index) => {
                   return (
                     <li key={index}>
-                      <SideBarItem title={org.org_name} />
+                      <SideBarItem
+                        id={org.org_id}
+                        title={org.org_name + " " + org.org_id}
+                      />
                     </li>
                   );
                 })}
