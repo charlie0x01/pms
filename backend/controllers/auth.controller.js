@@ -151,7 +151,7 @@ exports.verifyEmail = async (req, res, next) => {
     );
 
     if (verifiedUser.length <= 0) {
-      return res.json({ success: false, message: "invalid verfication code" });
+      return res.status(400).json({ success: false, message: "invalid verfication code" });
     }
 
     User.setUserVerificationStatus(1, verificationCode);

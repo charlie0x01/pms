@@ -48,21 +48,14 @@ const MemberCard = ({ name, email, memberId, orgId, status }) => {
         </div>
         <div className="media-right">
           <div className="is-flex is-align-items-center is-gap-2">
-            {/* {status && (
-            <>
-              {status === "0" && (
-                <span class="tag is-info is-light">Pending</span>
-                )}
-                {status === "1" && (
-                  <span class="tag is-success is-light">Member</span>
-                  )}
-                  </>
-                )} */}
             {status === 0 && (
               <span class="tag is-danger is-light">Response Pending</span>
             )}
             {status === 1 && (
-              <span class="tag is-success is-light">Member</span>
+              <span class="tag is-success is-light">
+                {memberId == localStorage.getItem("user_id") && "You • "}
+                Member
+              </span>
             )}
             <Popconfirm
               title={`Remove ${name}`}

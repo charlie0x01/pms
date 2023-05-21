@@ -103,7 +103,7 @@ exports.updateOrganization = async (req, res, next) => {
 
     // check if user have access to update the organization
     if (userId !== organizationOwner)
-      return res.json({
+      return res.status(403).json({
         success: false,
         message: "Only organization owner can make changes",
       });
@@ -149,7 +149,7 @@ exports.deleteOrganization = async (req, res, next) => {
     if (orgs[0].org_owner !== ownerId)
       return res.status(403).json({
         success: false,
-        message: "only owner can delete the organization",
+        message: "Only owner can delete the organization",
       });
 
     organization.deleteOrganization(orgId, ownerId);
@@ -186,6 +186,7 @@ exports.addMember = async (req, res, next) => {
         email,
         "Hello Dear,",
         `${sender[0].first_name} ${sender[0].last_name} invited you to join ${org[0].org_name} on Taskify.
+        To join ${org[0].org_name}, use this join code ${org[0].joining_code}
       To register, click on the following link: http://localhost:5173/signup
       `
       );
@@ -269,13 +270,8 @@ exports.joinOrganization = async (req, res, next) => {
       memberId
     );
     if (found.length <= 0) {
-      return res.status(404).json({
-        success: false,
-        message: "member not found",
-      });
-    }
-
-    if (found[0].member_status === 1) {
+      organization.addMember(org[0].org_id, memberId);
+    } else if (found[0].member_status === 1) {
       return res.status(404).json({
         success: false,
         message: "already a member",

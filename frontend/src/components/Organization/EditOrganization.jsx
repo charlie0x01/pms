@@ -11,6 +11,7 @@ import {
   useDeleteOrganizationMutation,
 } from "../../apis/orgApi";
 import TabBarSection from "./TabBarSection";
+import { delay } from "../../../utils";
 
 const EditOrganization = ({ isOpen, setIsOpen, data }) => {
   const navigate = useNavigate();
@@ -51,44 +52,54 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
         orgId: data?.org_id,
         userId: parseInt(localStorage.getItem("user_id")),
       });
-      setIsOpen(false);
-      formik.resetForm();
     },
   });
 
   // delete org when delete operation confirm
   const confirmDelete = (id) => {
     deleteOrganization({ orgId: id, userId: localStorage.getItem("user_id") });
-    setIsOpen(false);
-    formik.resetForm();
-    navigate("/");
   };
 
   // handle update error
   useEffect(() => {
-    if (isError) {
-      if (Array.isArray(error.data.error)) {
-        error.data.error.forEach((el) => messageApi.error(el.message));
-      } else {
-        messageApi.error(error.data.message);
+    async function handleUpdateError() {
+      if (isError) {
+        if (Array.isArray(error.data.error)) {
+          error.data.error.forEach((el) => messageApi.error(el.message));
+        } else {
+          messageApi.error(error.data.message);
+        }
+      }
+      if (isSuccess) {
+        messageApi.success(updateResponse?.message);
+        await delay(1000);
+        setIsOpen(false);
+        formik.resetForm();
       }
     }
-    if (isSuccess) {
-      messageApi.success(updateResponse?.message);
-    }
+
+    handleUpdateError();
   }, [isLoading]);
   // handle delete error
   useEffect(() => {
-    if (is_Error) {
-      if (Array.isArray(_error.data.error)) {
-        _error.data.error.forEach((el) => messageApi.error(el.message));
-      } else {
-        messageApi.error(_error.data.message);
+    async function handleDeleteErrors() {
+      if (is_Error) {
+        if (Array.isArray(_error.data.error)) {
+          _error.data.error.forEach((el) => messageApi.error(el.message));
+        } else {
+          messageApi.error(_error.data.message);
+        }
+      }
+      if (is_Success) {
+        messageApi.success(deleteResponse?.message);
+        await delay(2000);
+        setIsOpen(false);
+        formik.resetForm();
+        navigate("/");
       }
     }
-    if (is_Success) {
-      messageApi.success(deleteResponse?.message);
-    }
+
+    handleDeleteErrors();
   }, [is_Loading]);
   return (
     <>

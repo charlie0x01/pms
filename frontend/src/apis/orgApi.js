@@ -13,8 +13,8 @@ const orgApi = createApi({
         method: "POST",
         body: data,
       }),
-      providesTags: ["org"],
-      invalidatesTags: ["org"],
+      providesTags: ["org", "members"],
+      invalidatesTags: ["org", "members"],
     }),
     getOrganizations: builder.query({
       query: (userId) => ({
@@ -44,8 +44,8 @@ const orgApi = createApi({
         method: "PATCH",
         body: data,
       }),
-      providesTags: ["org"],
-      invalidatesTags: ["org"],
+      providesTags: ["org", "members"],
+      invalidatesTags: ["org", "members"],
     }),
     addMember: builder.mutation({
       query: ({ orgId, data, userId }) => ({
@@ -53,8 +53,8 @@ const orgApi = createApi({
         method: "POST",
         body: data,
       }),
-      providesTags: ["members"],
-      invalidatesTags: ["members"],
+      providesTags: ["members", "org"],
+      invalidatesTags: ["members", "org"],
     }),
     getMembers: builder.query({
       query: (orgId) => ({
@@ -62,15 +62,14 @@ const orgApi = createApi({
         method: "GET",
       }),
       providesTags: ["members"],
-      invalidatesTags: ["members"],
     }),
     removeMember: builder.mutation({
       query: ({ orgId, memberId, userId }) => ({
         url: `/remove-member/${orgId}/${memberId}/${userId}`,
         method: "DELETE",
       }),
-      providesTags: ["members"],
-      invalidatesTags: ["members"],
+      providesTags: ["members", "org"],
+      invalidatesTags: ["members", "org"],
     }),
     joinOrganization: builder.mutation({
       query: ({ joiningCode, memberId }) => ({

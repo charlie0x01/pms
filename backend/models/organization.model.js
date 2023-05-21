@@ -61,10 +61,11 @@ class organization {
   }
 
   static findByUserId(userId) {
-    let getOrganizations = `SELECT distinct o.*, m.member_status as member
-    FROM organizations o
-    LEFT JOIN organization_members m ON o.org_id = m.org_id
-    WHERE o.org_owner = ? OR m.user_id = ? AND m.member_status = 1;`;
+    let getOrganizations = `SELECT * FROM organizations WHERE org_owner = ? 
+    UNION 
+    SELECT o.* FROM organizations o
+    INNER JOIN organization_members m ON o.org_id = m.org_id
+    WHERE m.user_id = ? and m.member_status = 1;`;
 
     return pool.execute(getOrganizations, [userId, userId]);
   }

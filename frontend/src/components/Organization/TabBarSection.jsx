@@ -16,9 +16,6 @@ const TabBarSection = ({ orgId }) => {
 
   // get members
   const { isLoading, error, data: members } = useGetMembersQuery(orgId);
-
-  console.log(members);
-
   // toast message
   const [messageApi, contextHandler] = message.useMessage();
 
