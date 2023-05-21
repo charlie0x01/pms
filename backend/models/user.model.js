@@ -61,6 +61,10 @@ class User {
     let query = `select * from users where email = ?;`;
     return pool.execute(query, [emailID]);
   }
+  static findByUserId(userId) {
+    let query = `select * from users where user_id = ?;`;
+    return pool.execute(query, [userId]);
+  }
 
   static findByVerificationCode(verificationCode) {
     try {

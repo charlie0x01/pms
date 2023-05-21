@@ -7,14 +7,6 @@ exports.signup = async (req, res, next) => {
   try {
     // extract data from request body
     const { firstName, lastName, email, password } = req.body;
-    console.log(firstName, lastName, email, password);
-    console.log(
-      "extracted from body == ",
-      firstName,
-      lastName,
-      email,
-      password
-    );
     // check username, email and password
     // any of these shouldn't be empty
     if (!firstName || !lastName || !email || !password) {
@@ -86,7 +78,6 @@ exports.login = async (req, res, next) => {
     const isMatched = await User.matchPassword(user[0], password);
     // if not matched
     if (!isMatched) {
-      console.log("checking password");
       return res
         .status(404)
         .json({ success: false, message: "Invalid Password" });
@@ -101,7 +92,6 @@ exports.login = async (req, res, next) => {
 exports.forgetpassword = async (req, res, next) => {
   // 1st extract email from request body
   const { email } = req.body;
-  console.log("In Forget Password function");
 
   // check email and password is not empty
   if (!email) {
@@ -113,7 +103,6 @@ exports.forgetpassword = async (req, res, next) => {
 
     // check, if we have any user with this email
     if (!user[0]) {
-      console.log("Checking Email");
       return res
         .status(404)
         .json({ success: false, message: "Email doesn't exist." });
@@ -121,7 +110,6 @@ exports.forgetpassword = async (req, res, next) => {
 
     const otpUser = await OTP.findByEmailId(email);
 
-    console.log(user[0]);
     var t = new Date();
 
     let otpCode = Math.floor(Math.random() * 10000 + 1);
@@ -162,17 +150,16 @@ exports.verifyEmail = async (req, res, next) => {
       verificationCode
     );
 
-    //
-    if (verifiedUser.length > 0) {
-      User.setUserVerificationStatus(1, verificationCode);
+    if (verifiedUser.length <= 0) {
+      return res.json({ success: false, message: "invalid verfication code" });
     }
 
-    res
-      .status(202)
-      .json({
-        success: true,
-        message: `${verifiedUser[0].email} verified successfully`,
-      });
+    User.setUserVerificationStatus(1, verificationCode);
+
+    res.status(202).json({
+      success: true,
+      message: `${verifiedUser[0].email} verified successfully`,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -239,12 +226,13 @@ const sendToken = (user, statusCode, res) => {
   res.status(statusCode).json({
     success: true,
     token: User.getSignedToken(user),
-    user_id: user.UserID,
+    userId: user.user_id,
     firstName: user.first_name,
     lastName: user.last_name,
     email: user.email,
-    user_dob: user.dob,
-    user_type: user.user_type,
+    dob: user.dob,
+    userType: user.user_type,
     password: user.password,
+    verified: user.verified,
   });
 };

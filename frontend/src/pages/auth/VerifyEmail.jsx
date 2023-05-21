@@ -39,7 +39,6 @@ const VerifyEmail = () => {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      console.log(values.verificationCode);
       verifyEmail({ verificationCode: values.verificationCode });
     },
   });

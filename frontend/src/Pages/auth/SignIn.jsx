@@ -42,8 +42,9 @@ const SignIn = () => {
     if (isSuccess) {
       messageApi.success("Successfully");
       console.log(data);
+      localStorage.setItem("user_id", data.userId);
       localStorage.setItem("access_token", data.token);
-      localStorage.setItem("user_name", data.first_name);
+      localStorage.setItem("user_name", data.firstName);
       localStorage.setItem("user_email", data.email);
       // await delay(2000);
       navigate("/");

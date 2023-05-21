@@ -1,25 +1,47 @@
 // import { Menu } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GrAdd } from "react-icons/gr";
+import { useNavigate } from "react-router-dom";
 
 import SideBarItem from "./SideBarItem";
-import NewOrganization from "../Organization/NewOrganization";
-import NewProject from "../project/NewProject";
-import { useGetOrganizationsQuery } from "../../apis/orgApi";
+import AddOrganization from "../Organization/AddOrganization";
+import NewProject from "../Project/NewProject";
 import LoadingSpinner from "../common/LoadingSpinner";
+import { message } from "antd";
+// import UpdateOrganization from "../Organization/EditOrganization";
+// apis
+// import { useGetProjectsQuery } from "../../apis/projectApi";
+import { useGetOrganizationsQuery } from "../../apis/orgApi";
+// global state
+import { useDispatch } from "react-redux";
+import { setOrg, setOrgs } from "../../features/orgSlice";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const [messageApi, contextHandler] = message.useMessage();
+  const dispatch = useDispatch();
+  //
+  const {
+    data: organizations,
+    error: orgError,
+    isLoading: orgLoading,
+  } = useGetOrganizationsQuery(parseInt(localStorage.getItem("user_id")));
+
   // new organization
-  const [newOrganization, setNewOrganization] = useState(false);
+  const [addOrg, setAddOrg] = useState(false);
   const [newProject, setNewProject] = useState(false);
 
   //
-  const { data, error, isLoading } = useGetOrganizationsQuery(
-    parseInt(localStorage.getItem("user_id"))
-  );
+  const [editOrg, setEditOrg] = useState(false);
+
+  if (!orgLoading && organizations) dispatch(setOrgs([...organizations?.data]));
+  useEffect(() => {
+    if (orgError) messageApi.error(orgError?.data.message);
+  }, [orgError]);
 
   return (
     <>
+      {contextHandler}
       <aside
         id="sidebar"
         className="menu sidebar pt-3 px-1 is-flex is-flex-direction-column is-gap-3"
@@ -27,31 +49,38 @@ const Sidebar = () => {
         <aside className="menu">
           <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
             Organizations
-            <div onClick={() => setNewOrganization(true)}>
+            <div onClick={() => setAddOrg(true)}>
               <span className="icon is-medium is-clickable">
                 <GrAdd />
               </span>
             </div>
           </div>
-          {isLoading === true ? (
-            <LoadingSpinner />
-          ) : (
-            <ul className="menu-list">
-              {data.data.length > 0 &&
-                data.data.map((org, index) => {
-                  return (
-                    <li key={index}>
-                      <SideBarItem
-                        id={org.org_id}
-                        title={org.org_name + " " + org.org_id}
-                      />
-                    </li>
-                  );
-                })}
-            </ul>
+          {!orgError && (
+            <div>
+              {orgLoading === true ? (
+                <LoadingSpinner />
+              ) : (
+                <ul className="menu-list">
+                  {organizations?.data.length > 0 &&
+                    organizations?.data.map((org, index) => {
+                      // if (org.member === null) {
+                      return (
+                        <li key={index}>
+                          <SideBarItem
+                            id={org.org_id}
+                            title={org.org_name}
+                            link={`/organization/${org.org_id}`}
+                          />
+                        </li>
+                      );
+                      // }
+                    })}
+                </ul>
+              )}
+            </div>
           )}
         </aside>
-        <aside className="menu">
+        {/* <aside className="menu">
           <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
             Projects
             <div onClick={() => setNewProject(true)}>
@@ -60,16 +89,32 @@ const Sidebar = () => {
               </span>
             </div>
           </div>
-          <ul className="menu-list">
-            <SideBarItem title="change color" />
-            <SideBarItem title="FYP" />
-          </ul>
-        </aside>
+          {!projectError && (
+            <>
+              {projectLoading === true ? (
+                <LoadingSpinner />
+              ) : (
+                <ul className="menu-list">
+                  {projects?.data.length > 0 &&
+                    projects?.data.map((project, index) => {
+                      return (
+                        <li key={index}>
+                          <SideBarItem
+                            id={project.project_id}
+                            title={project.project_title}
+                            link={`/project/${project.project_id}`}
+                          />
+                        </li>
+                      );
+                    })}
+                </ul>
+              )}
+            </>
+          )}
+        </aside> */}
       </aside>
-      <NewOrganization
-        isOpen={newOrganization}
-        setIsOpen={setNewOrganization}
-      />
+      <AddOrganization isOpen={addOrg} setIsOpen={setAddOrg} />
+      {/* <UpdateOrganization isOpen={editOrg} setIsOpen={setEditOrg} /> */}
       <NewProject isOpen={newProject} setIsOpen={setNewProject} />
     </>
   );

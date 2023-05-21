@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
-import Modal from "../common/Modal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAddOrganizationMutation } from "../../apis/orgApi";
 import { message } from "antd";
 
-const NewOrganization = ({ isOpen, setIsOpen }) => {
+const NewOrganization = ({ setIsOpen}) => {
   const [addOrganization, { isLoading, isError, isSuccess, error, data }] =
     useAddOrganizationMutation();
 
@@ -45,38 +44,28 @@ const NewOrganization = ({ isOpen, setIsOpen }) => {
   return (
     <>
       {contextHandler}
-      <Modal show={isOpen}>
-        <button
-          onClick={() => {
-            setIsOpen(false);
-            formik.resetForm();
-          }}
-          class="modal-close is-large"
-          aria-label="close"
-        ></button>
-        <form onSubmit={formik.handleSubmit}>
-          <div class="field">
-            <label class="label">Organization Name</label>
-            <div class="control">
-              <input
-                id="organizationName"
-                class="input"
-                type="text"
-                placeholder="Enter your organization name"
-                {...formik.getFieldProps("organizationName")}
-              />
-            </div>
+      <form onSubmit={formik.handleSubmit}>
+        <div class="field">
+          <label class="label">Organization Name</label>
+          <div class="control">
+            <input
+              id="organizationName"
+              class="input"
+              type="text"
+              placeholder="Enter your organization name"
+              {...formik.getFieldProps("organizationName")}
+            />
           </div>
-          {formik.touched.organizationName && formik.errors.organizationName ? (
-            <div className="has-text-danger">
-              {formik.errors.organizationName}
-            </div>
-          ) : null}
-          <button type="submit" className="button is-primary">
-            Create
-          </button>
-        </form>
-      </Modal>
+        </div>
+        {formik.touched.organizationName && formik.errors.organizationName ? (
+          <div className="has-text-danger">
+            {formik.errors.organizationName}
+          </div>
+        ) : null}
+        <button type="submit" className="button is-primary">
+          Create
+        </button>
+      </form>
     </>
   );
 };

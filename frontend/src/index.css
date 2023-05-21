@@ -52,7 +52,62 @@ html, body {
   to { transform: rotate(360deg); }
 }
 
+.border {
+  border: 1px solid red !important;
+}
 
+.m-0 {
+  margin: 0 !important;
+}
+
+/* sidebar styles */
+
+.sidebar {
+  /* width: 240px !important; */
+  min-width: 250px !important;
+  overflow: auto;
+  min-height: 100dvh;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+/* sidebar hidden */
+@media screen and (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+.sidebar-show {
+  display: none;
+}
+
+/* icons */
+.icon-1 {
+  font-size: 1em !important;
+}
+
+.icon-2 {
+  font-size: 1.33em !important;
+}
+
+.icon-3 {
+  font-size: 2em !important;
+}
+
+.avatar {
+  border: 1px solid white;
+  display: inline-block;
+  position: relative;
+  box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2);
+  -webkit-transition: .2s ease;
+  transition: .2s ease;
+}
+.avatar:nth-child(n+2) { margin-left: -10px; }
+
+.avatars:hover avatar:nth-child(n+2) {
+   margin-left: 2px;
+}
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

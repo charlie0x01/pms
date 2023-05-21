@@ -9,8 +9,10 @@ import OTP from "./pages/auth/OTP";
 import NewPassword from "./pages/auth/NewPassword";
 import UserProfileSettings from "./components/User/UserProfileSettings";
 import UserProfile from "./components/User/UserProfile";
-import ProjectProfile from "./components/project/ProjectProfile";
+import ProjectProfile from "./components/Project/ProjectProfile";
 import VerifyEmail from "./pages/auth/VerifyEmail";
+import ProjectView from "./components/Organization/ProjectView";
+import Board from "./components/Kanban/Board";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +21,8 @@ const AppRoutes = () => {
         <Route path="user-profile" element={<UserProfile />} />
         <Route path="user-profile-settings" element={<UserProfileSettings />} />
         <Route path="project-profile" element={<ProjectProfile />} />
+        <Route path="organization/:orgId" element={<ProjectView />} />
+        <Route path="kanban/:projectId" element={<Board />} />
       </Route>
       <Route path="/signin" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />

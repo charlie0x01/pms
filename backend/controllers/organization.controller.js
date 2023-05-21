@@ -1,5 +1,9 @@
 const User = require("../models/user.model");
 const organization = require("../models/organization.model");
+const {
+  sendInvitaionEmail,
+  sendNotificationEmail,
+} = require("../utils/sendEmail");
 
 exports.addOrganization = async (req, res, next) => {
   try {
@@ -7,13 +11,26 @@ exports.addOrganization = async (req, res, next) => {
 
     // check
     if (organizationName === "" || email === "")
-      res.json({ success: false, message: "required data not provided" });
+      return res.json({
+        success: false,
+        message: "required data not provided",
+      });
+
+    if (organizationName.length <= 2)
+      return res.status(500).json({
+        success: false,
+        message: "organization name must contains 3 characters",
+      });
 
     const [user, _] = await User.findByEmailId(email);
+    if (user.length <= 0)
+      return res
+        .status(500)
+        .json({ success: false, message: "email not found" });
     // create new organization
     const org = new organization(organizationName, user[0].user_id);
     org.save();
-    
+
     return res.status(201).json({
       success: true,
       message: "organization successfully created",
@@ -23,45 +40,86 @@ exports.addOrganization = async (req, res, next) => {
   }
 };
 
-exports.getOrganization = async (req, res, next) => {
+exports.getOrganizations = async (req, res, next) => {
   try {
-    const owner = req.params.owner;
-    const [orgs, _] = await organization.findByOwner(owner);
+    const { userId } = req.params;
+    const [orgs, _] = await organization.findByUserId(userId);
+    if (orgs.length <= 0) {
+      return res.status(404).json({
+        success: true,
+        message: "No organizations for you",
+      });
+    }
     return res.status(200).json({
       success: true,
-      data: [...orgs],
+      data: orgs,
     });
   } catch (error) {
-    throw error;
+    res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getOrganization = async (req, res, next) => {
+  try {
+    const orgId = req.params.orgId;
+    const [orgs, _] = await organization.findByOrganizationID(orgId);
+
+    if (orgs.length <= 0)
+      return res
+        .status(404)
+        .json({ success: false, message: "Organization not found!!" });
+    return res.status(200).json({
+      success: true,
+      data: orgs[0],
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error?.message });
   }
 };
 
 exports.updateOrganization = async (req, res, next) => {
   try {
-    const { orgID } = req.params;
-    const { description } = req.body;
-    const [orgs, _] = await organization.findByOrganizationID(orgID);
+    const { orgId, userId } = req.params;
+    const { organizationName, description } = req.body;
+    const [orgs, _] = await organization.findByOrganizationID(orgId);
 
-    const organizationName = orgs[0].org_name;
+    if (orgs.length <= 0)
+      return res.json({
+        success: false,
+        message: "Organization you're trying to update, doesn't exist!",
+      });
+
     const organizationOwner = orgs[0].org_owner;
 
-    // check
     if (
       organizationName === "" ||
       organizationOwner === "" ||
       description === ""
     )
-      res.json({ success: false, message: "required data not provided" });
+      return res.json({
+        success: false,
+        message: "Required data not provided",
+      });
 
-    await organization.updateOrganization(
-      orgID,
+    // check if user have access to update the organization
+    if (userId !== organizationOwner)
+      return res.json({
+        success: false,
+        message: "Only organization owner can make changes",
+      });
+
+    // check
+
+    organization.updateOrganization(
+      orgId,
       organizationName,
       organizationOwner,
       description
     );
+
     return res.status(201).json({
       success: true,
-      message: "organization updated successfully",
+      message: "Organization updated successfully",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error?.message });
@@ -69,27 +127,243 @@ exports.updateOrganization = async (req, res, next) => {
 };
 
 exports.deleteOrganization = async (req, res, next) => {
-  const { orgID, ownerID } = req.params;
-
   try {
     // check
-    if (orgID === "" || ownerID === "")
-      res.json({ success: false, message: "required data not provided" });
+    const { orgId, ownerId } = req.params;
+    if (orgId === "" || ownerId === "")
+      return res.json({
+        success: false,
+        message: "required data not provided",
+      });
 
-    const [orgs, _] = await organization.findByOrganizationID(orgID);
+    const [orgs, _] = await organization.findByOrganizationID(orgId);
 
     // check, if we have any organization with this id
-    if (!orgs[0]) {
+    if (orgs.length <= 0) {
       return res
         .status(404)
         .json({ success: false, message: "Organization not found!" });
     }
-    await organization.deleteOrganization(orgID, ownerID);
+
+    // check org owner
+    if (orgs[0].org_owner !== ownerId)
+      return res.status(403).json({
+        success: false,
+        message: "only owner can delete the organization",
+      });
+
+    organization.deleteOrganization(orgId, ownerId);
     return res.status(201).json({
       success: true,
       message: "organization deleted successfully",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+// add member
+exports.addMember = async (req, res, next) => {
+  try {
+    // get orgId and UserId
+    const { orgId, userId } = req.params;
+    const { email } = req.body;
+
+    // now check org owner
+    const [org, __] = await organization.findByOrganizationID(orgId);
+    if (org.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Organization doesn't exist" });
+    }
+
+    // check if any user exist with the given email
+    const [user, _] = await User.findByEmailId(email);
+    if (user.length <= 0) {
+      const [sender, _fields] = await User.findByUserId(org[0].org_owner);
+      // send email to given email address
+      sendNotificationEmail(
+        email,
+        "Hello Dear,",
+        `${sender[0].first_name} ${sender[0].last_name} invited you to join ${org[0].org_name} on Taskify.
+      To register, click on the following link: http://localhost:5173/signup
+      `
+      );
+      return res.json({
+        success: true,
+        message: `Invitation email is sent to ${email}`,
+      });
+    }
+
+    // owner can not be added as member
+    if (org[0].org_owner == user[0].user_id) {
+      return res.json({
+        success: false,
+        message: "owner can not be a member",
+      });
+    }
+
+    // check owner
+    if (org[0].org_owner !== userId) {
+      return res.status(404).json({
+        success: false,
+        message: "only owner can add members to the organization",
+      });
+    }
+
+    // check if user already member
+    const [found, ___] = await organization.findByMemberAndOrganizationId(
+      orgId,
+      user[0].user_id
+    );
+    if (found.length > 0) {
+      return res.status(404).json({
+        success: false,
+        message: `${email} is already a member`,
+      });
+    }
+
+    // add member
+    organization.addMember(orgId, user[0].user_id);
+
+    // send invitation email to new member
+    const [invitedby, ____] = await User.findByUserId(userId);
+    if (invitedby.length <= 0) {
+      return res.status(401).json({
+        success: false,
+        message: `unauthorized user`,
+      });
+    }
+
+    sendInvitaionEmail(
+      email,
+      `Hi ${user[0].first_name} ${user[0].last_name}`,
+      `${invitedby[0].first_name} ${invitedby[0].last_name}`,
+      org[0].joining_code,
+      org[0].org_name
+    );
+
+    return res
+      .status(201)
+      .json({ success: true, message: `Join code sent to ${email}` });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.joinOrganization = async (req, res, next) => {
+  try {
+    const { memberId } = req.params;
+    const { joiningCode } = req.body;
+
+    const [org, _] = await organization.findByJoiningCode(joiningCode);
+    if (org.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "invalid join code",
+      });
+    }
+
+    const [found, __] = await organization.findByMemberAndOrganizationId(
+      org[0].org_id,
+      memberId
+    );
+    if (found.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "member not found",
+      });
+    }
+
+    if (found[0].member_status === 1) {
+      return res.status(404).json({
+        success: false,
+        message: "already a member",
+      });
+    }
+
+    organization.joinOrganization(org[0].org_id, memberId);
+
+    // send notification email to organization owner
+    const [owner, ___] = await User.findByUserId(org[0].org_owner);
+    const [member, _fileds] = await User.findByUserId(memberId);
+    sendNotificationEmail(
+      owner[0].email,
+      `${org[0].org_name} Notification`,
+      `Hi ${owner[0].first_name} ${owner[0].last_name}
+    ${member[0].first_name} ${member[0].last_name} joined the ${org[0].org_name}
+    `,
+      res
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Joined ${org[0].org_name}`,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getMembers = async (req, res, next) => {
+  try {
+    // find organization
+    const [org, _] = await organization.findByOrganizationID(req.params.orgId);
+    if (org.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "organization doesn't exist",
+      });
+    }
+
+    // get members
+    const [members, __] = await organization.getMembers(req.params.orgId);
+    return res.status(200).json({ success: true, data: members });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.removeMember = async (req, res, next) => {
+  try {
+    const { orgId, memberId, userId } = req.params;
+
+    // find org by id
+    const [org, _] = await organization.findByOrganizationID(orgId);
+    if (org.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "organization doesn't exist",
+      });
+    }
+
+    // only org owner can add or remove members
+    if (org[0].org_owner !== userId) {
+      return res.status(404).json({
+        success: false,
+        message: "only owner can remove members",
+      });
+    }
+
+    // check member exist or not
+    const [found, __] = await organization.findByMemberAndOrganizationId(
+      orgId,
+      memberId
+    );
+    if (found.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "member not found",
+      });
+    }
+
+    // remove member
+    await organization.removeMember(orgId, memberId);
+
+    return res
+      .status(200)
+      .json({ success: true, message: "member removed successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };

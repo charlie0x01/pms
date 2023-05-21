@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const UserAvatarDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleToggleDropdown = (show) => {
     setIsOpen(show);
@@ -10,7 +11,7 @@ const UserAvatarDropdown = () => {
 
   const handleLogout = () => {
     // Handle logout logic
-    // ...
+    localStorage.clear();
   };
 
   return (
@@ -45,9 +46,9 @@ const UserAvatarDropdown = () => {
             Settings
           </Link>
           <hr className="dropdown-divider" />
-          <a className="dropdown-item" href="#" onClick={handleLogout}>
+          <Link className="dropdown-item" to="/signin" onClick={handleLogout}>
             Logout
-          </a>
+          </Link>
         </div>
       </div>
     </div>
