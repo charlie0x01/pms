@@ -32,19 +32,17 @@ const ProjectView = () => {
   } = useGetOrganizationQuery(useParams().orgId, { skip: skip });
 
   // load projects
-  // const {
-  //   data: projects,
-  //   error: projectError,
-  //   isLoading: projectLoading,
-  // } = useGetProjectsQuery({
-  //   orgId: organization?.data.org_id,
-  //   ownerId: localStorage.getItem("user_id"),
-  // });
+  const {
+    data: projects,
+    error: projectError,
+    isLoading: projectLoading,
+  } = useGetProjectsQuery(useParams().orgId, localStorage.getItem("user_id"));
 
   // handling error for org query
   useEffect(() => {
     if (error) messageApi.error(error?.data.message);
-  }, [isLoading]);
+    if (projectError) messageApi.error(projectError?.data.message);
+  }, [isLoading, projectLoading]);
   return (
     <>
       {contextHandler}
@@ -72,14 +70,14 @@ const ProjectView = () => {
             </div>
           </div>
           <div className="is-flex is-flex-wrap-wrap is-gap-2 border">
-            {projectList &&
-              projectList.map((project, index) => {
+            {!projectLoading &&
+              projects?.data.map((project, index) => {
                 return (
                   <ProjectCard
                     key={index}
-                    title={project.title}
-                    date={project.date}
-                    id={index}
+                    title={project.project_title}
+                    date={project.created_date.slice(0, 10)}
+                    id={project.project_id}
                   />
                 );
               })}

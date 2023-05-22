@@ -13,11 +13,19 @@ import ProjectProfile from "./components/Project/ProjectProfile";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import ProjectView from "./components/Organization/ProjectView";
 import Board from "./components/Kanban/Board";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<App />}>
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <App />
+          </ProtectedRoute>
+        }
+      >
         <Route path="user-profile" element={<UserProfile />} />
         <Route path="user-profile-settings" element={<UserProfileSettings />} />
         <Route path="project-profile" element={<ProjectProfile />} />

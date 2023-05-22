@@ -26,6 +26,14 @@ class Project {
     }
   }
 
+  static findByUserId(orgId, userId) {
+    let getProjects = `select p.* from projects p 
+    join project_members pm 
+    on p.project_id = pm.project_id 
+    where p.org_id = ? and pm.member_status = 1 AND (pm.user_id = ? OR p.project_owner = ?);`;
+    return pool.execute(getProjects, [orgId, userId, userId]);
+  }
+
   static updateProject(
     organizationID,
     projectOwnerID,
@@ -53,7 +61,11 @@ class Project {
     let deletePro = `delete from projects where project_id = ? and org_id = ? and project_owner = ?`;
     try {
       transaction(pool, async (connection) => {
-        const result = await connection.execute(deletePro, [project_id, org_id, owner_id]);
+        const result = await connection.execute(deletePro, [
+          project_id,
+          org_id,
+          owner_id,
+        ]);
       });
     } catch (error) {
       throw error;

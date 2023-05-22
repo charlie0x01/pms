@@ -17,7 +17,7 @@ const projectApi = createApi({
       invalidatesTags: ["project"],
     }),
     getProjects: builder.query({
-      query: ({ orgId, userId }) => ({
+      query: (orgId, userId) => ({
         url: `/get-projects/${orgId}/${userId}`,
         method: "GET",
       }),

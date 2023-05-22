@@ -3,7 +3,6 @@ import Avatar from "react-avatar";
 import { Link } from "react-router-dom";
 
 function ProjectCard({ title, date, id }) {
-  const _date = new Date();
   return (
     <Link to={`/kanban/${id}`}>
       <div className="box p-2" style={{ width: 300, maxHeight: 150 }}>
@@ -13,10 +12,7 @@ function ProjectCard({ title, date, id }) {
           </div>
           <div className="media-content">
             <p className="title is-5">{title}</p>
-            <p className="subtitle is-7">{`Due Date: ${new Intl.DateTimeFormat(
-              "en-GB",
-              { dateStyle: "full" }
-            ).format(date)}`}</p>
+            <p className="subtitle is-7">{`Due Date: ${date}`}</p>
           </div>
         </div>
         <div>

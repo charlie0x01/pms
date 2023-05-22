@@ -1,12 +1,14 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 function authMiddleware(req, res, next) {
   // Get token from header
-  const token = req.header('x-auth-token');
+  const token = req.header("x-auth-token");
 
   // Check if no token
   if (!token) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
+    return res
+      .status(401)
+      .json({ success: false, message: "unauthorized access" });
   }
 
   try {
@@ -17,8 +19,8 @@ function authMiddleware(req, res, next) {
     req.user = decoded.user;
 
     next();
-  } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
+  } catch (error) {
+    res.status(401).json({ success: false, message: error.message });
   }
 }
 
