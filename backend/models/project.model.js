@@ -35,21 +35,21 @@ class Project {
   }
 
   static updateProject(
-    organizationID,
-    projectOwnerID,
+    orgId,
+    ownerId,
     description,
     projectTitle,
-    projectID
+    projectId
   ) {
     let updatePro = `update projects set org_id = ?, project_owner = ?, description = ?, project_title = ? where project_id = ? `;
     try {
       transaction(pool, async (connection) => {
         const result = await connection.execute(updatePro, [
-          organizationID,
-          projectOwnerID,
+          orgId,
+          ownerId,
           description,
           projectTitle,
-          projectID,
+          projectId,
         ]);
       });
     } catch (error) {
