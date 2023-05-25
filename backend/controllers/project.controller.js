@@ -1,5 +1,6 @@
 require("dotenv").config({ path: "../.env" });
 const User = require("../models/user.model");
+const Organization = require("../models/organization.model");
 const Project = require("../models/project.model");
 const jwt = require("jsonwebtoken");
 
@@ -14,9 +15,16 @@ exports.addProject = async (req, res, next) => {
         success: false,
         message: "required data not provided",
       });
+
+    if (projectTitle.length <= 2)
+      return res.status(500).json({
+        success: false,
+        message: "Project name must contains 3 characters",
+      });
+
     const [user, _] = await User.findByEmailId(email);
     // check, if we have any user with this email
-    if (!user[0]) {
+    if (user.length <= 0) {
       return res
         .status(404)
         .json({ success: false, message: "User not found!" });
@@ -61,20 +69,36 @@ exports.getProjects = async (req, res, next) => {
 
 exports.updateProject = async (req, res, next) => {
   try {
-    const { projectID } = req.params;
-    const { organizationID, projectOwnerID, description, projectTitle } =
-      req.body;
+    const { ownerId, orgId, projectId } = req.params;
+    const { description, projectTitle } = req.body;
     // check
-    if (
-      projectID === "" ||
-      organizationID === "" ||
-      projectOwnerID === "" ||
-      description === "" ||
-      projectTitle === ""
-    )
+    if (description === "" || projectTitle === "")
       res.json({ success: false, message: "required data not provided" });
 
-    const [projects, _] = await Project.findByProjectID(projectID);
+    const [user] = await User.findByUserId(ownerId);
+    console.log(user);
+    // check, if we have any user with this email
+    if (user.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found!" });
+    }
+
+    const [orgs] = await Organization.findByOrganizationID(orgId);
+    console.log(orgs);
+    // check, if we have any organization with this id
+    if (orgs.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Organization not found!" });
+    }
+
+    const [projects, _] = await Project.findByProjectID(
+      ownerId,
+      orgId,
+      projectId
+    );
+    console.log(projects);
     // check, if we have any project with this id
     if (!projects[0]) {
       return res
@@ -83,11 +107,11 @@ exports.updateProject = async (req, res, next) => {
     }
 
     await Project.updateProject(
-      organizationID,
-      projectOwnerID,
+      orgId,
+      ownerId,
       description,
       projectTitle,
-      projectID
+      projectId
     );
     return res.status(201).json({
       success: true,
@@ -99,12 +123,28 @@ exports.updateProject = async (req, res, next) => {
 };
 
 exports.deleteProject = async (req, res, next) => {
-  const { ownerID, orgID, projectID } = req.params;
+  const { ownerId, orgId, projectId } = req.params;
   try {
+    const [user] = await User.findByUserId(ownerId);
+    // check, if we have any user with this email
+    if (user.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found!" });
+    }
+
+    const [orgs] = await Organization.findByOrganizationID(orgId);
+    // check, if we have any organization with this id
+    if (orgs.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Organization not found!" });
+    }
+
     const [projects, _] = await Project.findByProjectID(
-      ownerID,
-      orgID,
-      projectID
+      ownerId,
+      orgId,
+      projectId
     );
     // check, if we have any project with this id
     if (!projects[0]) {
@@ -113,7 +153,7 @@ exports.deleteProject = async (req, res, next) => {
         .json({ success: false, message: "Project not found!" });
     }
 
-    await Project.deleteProject(ownerID, orgID, projectID);
+    await Project.deleteProject(ownerId, orgId, projectId);
     return res.status(201).json({
       success: true,
       message: "project deleted successfully",
