@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `pms` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `pms`;
--- MySQL dump 10.13  Distrib 8.0.28, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: pms
+-- Host: localhost    Database: pms
 -- ------------------------------------------------------
--- Server version	8.0.28
+-- Server version	8.0.32
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -74,11 +74,13 @@ DROP TABLE IF EXISTS `organization_members`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `organization_members` (
   `org_id` int NOT NULL,
-  `user_id` varchar(45) DEFAULT NULL,
+  `org_member_id` int DEFAULT NULL,
   `description` varchar(45) DEFAULT NULL,
   `member_status` tinyint DEFAULT NULL,
   KEY `org_id_idx` (`org_id`),
-  CONSTRAINT `fk_org_id` FOREIGN KEY (`org_id`) REFERENCES `organizations` (`org_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  KEY `fk_org_member_id_idx` (`org_member_id`),
+  CONSTRAINT `fk_org_id` FOREIGN KEY (`org_id`) REFERENCES `organizations` (`org_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_org_member_id` FOREIGN KEY (`org_member_id`) REFERENCES `users` (`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -88,7 +90,7 @@ CREATE TABLE `organization_members` (
 
 LOCK TABLES `organization_members` WRITE;
 /*!40000 ALTER TABLE `organization_members` DISABLE KEYS */;
-INSERT INTO `organization_members` VALUES (6,'7','',1),(7,'7','',1);
+INSERT INTO `organization_members` VALUES (11,9,'',1);
 /*!40000 ALTER TABLE `organization_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -102,11 +104,13 @@ DROP TABLE IF EXISTS `organizations`;
 CREATE TABLE `organizations` (
   `org_id` int NOT NULL AUTO_INCREMENT,
   `org_name` varchar(45) NOT NULL,
-  `org_owner` varchar(45) NOT NULL,
+  `org_owner` int NOT NULL,
   `description` varchar(100) DEFAULT NULL,
   `joining_code` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`org_id`),
+  KEY `fk_org_owner_idx` (`org_owner`),
+  CONSTRAINT `fk_org_owner` FOREIGN KEY (`org_owner`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,7 +119,7 @@ CREATE TABLE `organizations` (
 
 LOCK TABLES `organizations` WRITE;
 /*!40000 ALTER TABLE `organizations` DISABLE KEYS */;
-INSERT INTO `organizations` VALUES (6,'Zeeshan Org','5','udpate desc','23047d3e'),(7,'Hamza Tech','6','','5e19b3f6'),(8,'Systems Limited','8','','357edd2b');
+INSERT INTO `organizations` VALUES (11,'Devsinc',10,'check description update','e27c8be2');
 /*!40000 ALTER TABLE `organizations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,8 +133,12 @@ DROP TABLE IF EXISTS `project_members`;
 CREATE TABLE `project_members` (
   `project_id` int DEFAULT NULL,
   `role_id` int DEFAULT NULL,
-  `user_id` int DEFAULT NULL,
-  `member_status` tinyint NOT NULL
+  `project_member_id` int DEFAULT NULL,
+  `member_status` tinyint NOT NULL,
+  KEY `fk_project_id_idx` (`project_id`),
+  KEY `fk_project_member_id_idx` (`project_member_id`),
+  CONSTRAINT `fk_project_id` FOREIGN KEY (`project_id`) REFERENCES `projects` (`project_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_project_member_id` FOREIGN KEY (`project_member_id`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='		';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -140,7 +148,6 @@ CREATE TABLE `project_members` (
 
 LOCK TABLES `project_members` WRITE;
 /*!40000 ALTER TABLE `project_members` DISABLE KEYS */;
-INSERT INTO `project_members` VALUES (20,1,7,1);
 /*!40000 ALTER TABLE `project_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -153,13 +160,18 @@ DROP TABLE IF EXISTS `projects`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `projects` (
   `project_id` int NOT NULL AUTO_INCREMENT,
-  `org_id` int DEFAULT NULL,
-  `project_owner` varchar(45) DEFAULT NULL,
+  `project_org_id` int DEFAULT NULL,
+  `project_owner` int DEFAULT NULL,
   `description` varchar(45) DEFAULT NULL,
   `project_title` varchar(45) DEFAULT NULL,
   `created_date` date DEFAULT NULL,
-  PRIMARY KEY (`project_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `joining_code` varchar(8) NOT NULL,
+  PRIMARY KEY (`project_id`),
+  KEY `fk_project_owner_idx` (`project_owner`),
+  KEY `fk_org_id_idx` (`project_org_id`),
+  CONSTRAINT `fk_project_org_id` FOREIGN KEY (`project_org_id`) REFERENCES `organizations` (`org_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_project_owner` FOREIGN KEY (`project_owner`) REFERENCES `users` (`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -168,7 +180,7 @@ CREATE TABLE `projects` (
 
 LOCK TABLES `projects` WRITE;
 /*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES (19,6,'5','','Zeeshan\'s Project','2023-05-22');
+INSERT INTO `projects` VALUES (35,11,10,'check description update','Project-1','2023-05-28','c1ab878d');
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -266,7 +278,7 @@ CREATE TABLE `users` (
   `verified` tinyint DEFAULT NULL,
   `verificationCode` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -275,7 +287,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (5,'Zeeshan','Usman','abdullahtanveer081@gmail.com',NULL,NULL,'$2b$10$Eeek5/ZI1./oyfTfnhtxGeFRkXaKyLifVhBLIm9KieZNwaZurjdze',1,'T-642420'),(6,'Hamza','Khalid','abdullahtanveer56@outlook.com',NULL,NULL,'$2b$10$RtuB9QrY1QKK0xwc7utAvu/QJJoRpGz0Ag.4985dSXYISkufHsf/O',1,'T-543980'),(7,'Abdul','Wasay','abdulwasaychughtai99@gmail.com',NULL,NULL,'$2b$10$p3ar01xXhRrCNmKIXAfsu.3.voVncKQy1/4mFfdYwwbuXFG0WSbmq',1,'T-024535'),(8,'Aliyan','Hassan','hamzakh827@gmail.com',NULL,NULL,'$2b$10$lRsM1IjtC6Yaitb0AQLNNOjURft/lU7gNsG6JPdqDlbOlZ330NPne',0,'T-139205');
+INSERT INTO `users` VALUES (9,'Abdullah','Tanveer','abdullahtanveer008@gmail.com',NULL,NULL,'$2b$10$vLcp/nFGT7lT8NnU3V3Bw.TBYC4h9O1Ob45SGafHL5KXniEsKHoii',1,'T-782854'),(10,'Zeeshan','Usman','abdullahtanveer56@outlook.com',NULL,NULL,'$2b$10$zF.VZgTytQ3W3dvr3U6UruEf2ECVxSatpGrmcrWWgaI8E8EFNT.wC',1,'T-631628');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -288,4 +300,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-24 17:47:58
+-- Dump completed on 2023-05-28 15:43:54
