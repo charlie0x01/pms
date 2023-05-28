@@ -36,7 +36,7 @@ exports.addOrganization = async (req, res, next) => {
       message: "organization successfully created",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error?.message });
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };
 
@@ -55,7 +55,7 @@ exports.getOrganizations = async (req, res, next) => {
       data: orgs,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error?.message });
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };
 
@@ -73,7 +73,7 @@ exports.getOrganization = async (req, res, next) => {
       data: orgs[0],
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error?.message });
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };
 
@@ -102,7 +102,7 @@ exports.updateOrganization = async (req, res, next) => {
       });
 
     // check if user have access to update the organization
-    if (userId !== organizationOwner)
+    if (userId != organizationOwner)
       return res.status(403).json({
         success: false,
         message: "Only organization owner can make changes",
@@ -122,7 +122,7 @@ exports.updateOrganization = async (req, res, next) => {
       message: "Organization updated successfully",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error?.message });
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };
 
@@ -158,7 +158,7 @@ exports.deleteOrganization = async (req, res, next) => {
       message: "organization deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error?.message });
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };
 
@@ -205,7 +205,7 @@ exports.addMember = async (req, res, next) => {
     }
 
     // check owner
-    if (org[0].org_owner !== userId) {
+    if (org[0].org_owner === userId) {
       return res.status(404).json({
         success: false,
         message: "only owner can add members to the organization",

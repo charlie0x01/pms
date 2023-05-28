@@ -65,7 +65,7 @@ class organization {
     UNION 
     SELECT o.* FROM organizations o
     INNER JOIN organization_members m ON o.org_id = m.org_id
-    WHERE m.user_id = ? and m.member_status = 1;`;
+    WHERE m.org_member_id = ? and m.member_status = 1;`;
 
     return pool.execute(getOrganizations, [userId, userId]);
   }
@@ -82,7 +82,7 @@ class organization {
 
   // add members in organization
   static addMember(orgId, memberId) {
-    let query = `insert into organization_members(org_id, user_id, description, member_status) values(?, ?, "", 0); `;
+    let query = `insert into organization_members(org_id, org_member_id, description, member_status) values(?, ?, "", 0); `;
     try {
       transaction(pool, async (connection) => {
         // check if user exist or not
@@ -94,7 +94,7 @@ class organization {
   }
 
   static joinOrganization(orgId, memberId) {
-    let joinOrganization = `update organization_members set member_status = 1 where org_id = ? and user_id = ?;`;
+    let joinOrganization = `update organization_members set member_status = 1 where org_id = ? and org_member_id = ?;`;
     return pool.execute(joinOrganization, [orgId, memberId]);
   }
 
@@ -108,16 +108,16 @@ class organization {
     return pool.execute(getOrganization, [joiningCode]);
   }
   static getMembers(orgId) {
-    let getMembers = `select user.first_name, user.last_name, user.email, user.user_id, om.member_status from organization_members as om join users as user on user.user_id = om.user_id where om.org_id = ?;`;
+    let getMembers = `select user.first_name, user.last_name, user.email, user.user_id, om.member_status from organization_members as om join users as user on user.user_id = om.org_member_id where om.org_id = ?;`;
     return pool.execute(getMembers, [orgId]);
   }
   static findByMemberAndOrganizationId(orgId, memberId) {
-    let getOrganization = `select * from organization_members where user_id = ? and org_id = ?;`;
+    let getOrganization = `select * from organization_members where org_member_id = ? and org_id = ?;`;
     return pool.execute(getOrganization, [memberId, orgId]);
   }
 
   static removeMember(orgId, memberId) {
-    let removeMember = `delete from organization_members where user_id = ? and org_id = ?`;
+    let removeMember = `delete from organization_members where org_member_id = ? and org_id = ?`;
     return pool.execute(removeMember, [memberId, orgId]);
   }
 }
