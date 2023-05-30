@@ -85,19 +85,18 @@ class Project {
   }
 
   static addMember(projectId, memberId) {
-    let addMember = `insert into project_members(project_id, project_member_id, member_status) values(?, ?, 0)`;
+    let addMember = `insert into project_members(project_id, role_id, project_member_id, member_status) values(?, 0, ?, 0)`;
     return pool.execute(addMember, [projectId, memberId]);
   }
 
   static isAlreadyMember(projectId, memberId) {
-    try {
-      let checkMemer = `select from project_members where project_id = ? and project_member_id = ?`;
-      const [member, _] = pool.execute(checkMemer, [projectId, memberId]);
-      if (member.length <= 0) return false;
-      return true;
-    } catch (error) {
-      throw error;
-    }
+    let checkMember = `select * from project_members where project_id = ? and project_member_id = ?`;
+    return pool.execute(checkMember, [projectId, memberId]);
+  }
+
+  static getMembers(projectId) {
+    let getMembers = `select user.user_id, user.first_name, user.last_name, user.email, om.member_status from project_members as om join users as user on user.user_id = om.project_member_id where om.project_id = ? and member_status = 1;`;
+    return pool.execute(getMembers, [projectId]);
   }
 
   static checkMemberStatus(projectId, memberId) {
@@ -111,16 +110,29 @@ class Project {
 
   static joinProject(joiningCode, memberId) {
     try {
-      let joinProject = `update project_members set member_status = 1 where joining_code = ? and project_owner = ?`;
+      let joinProject = `update project_members PM 
+      inner join pms.projects P 
+      on P.joining_code = ? and PM.project_member_id = ?
+      set member_status = 1`;
       return pool.execute(joinProject, [joiningCode, memberId]);
     } catch (error) {
       throw error;
     }
   }
 
-  static findByJoininCode(joiningCode) {
+  static findByJoiningCode(joiningCode) {
     let selectProject = `select * from projects where joining_code = ?`;
     return pool.execute(selectProject, [joiningCode]);
+  }
+
+  static findByMemberAndProjectId(projectId, memberId) {
+    let getOrganization = `select * from project_members where project_member_id = ? and project_id = ?;`;
+    return pool.execute(getOrganization, [memberId, projectId]);
+  }
+
+  static removeMember(projectId, memberId) {
+    let removeMember = `delete from project_members where project_member_id = ? and project_id = ?`;
+    return pool.execute(removeMember, [memberId, projectId]);
   }
 }
 

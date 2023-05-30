@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `pms` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `pms`;
--- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.28, for Win64 (x86_64)
 --
 -- Host: localhost    Database: pms
 -- ------------------------------------------------------
--- Server version	8.0.32
+-- Server version	8.0.28
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -26,9 +26,11 @@ DROP TABLE IF EXISTS `board_columns`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `board_columns` (
   `column_id` int NOT NULL,
-  `board_id` int NOT NULL,
+  `column_board_id` int NOT NULL,
   `column_title` varchar(45) NOT NULL,
-  PRIMARY KEY (`column_id`)
+  PRIMARY KEY (`column_id`),
+  KEY `fk_column_board_id_idx` (`column_board_id`),
+  CONSTRAINT `fk_column_board_id` FOREIGN KEY (`column_board_id`) REFERENCES `boards` (`board_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -50,9 +52,11 @@ DROP TABLE IF EXISTS `boards`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `boards` (
   `board_id` int NOT NULL,
-  `project_id` int DEFAULT NULL,
+  `board_project_id` int NOT NULL,
   `created_date` date DEFAULT NULL,
-  PRIMARY KEY (`board_id`)
+  PRIMARY KEY (`board_id`),
+  KEY `fk_project_id_idx` (`board_project_id`),
+  CONSTRAINT `fk_board_project_id` FOREIGN KEY (`board_project_id`) REFERENCES `projects` (`project_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -77,8 +81,11 @@ CREATE TABLE `organization_members` (
   `org_member_id` int DEFAULT NULL,
   `description` varchar(45) DEFAULT NULL,
   `member_status` tinyint DEFAULT NULL,
+  `om_role_id` int DEFAULT NULL,
   KEY `org_id_idx` (`org_id`),
   KEY `fk_org_member_id_idx` (`org_member_id`),
+  KEY `fk_om_role_id_idx` (`om_role_id`),
+  CONSTRAINT `fk_om_role_id` FOREIGN KEY (`om_role_id`) REFERENCES `roles` (`role_id`),
   CONSTRAINT `fk_org_id` FOREIGN KEY (`org_id`) REFERENCES `organizations` (`org_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_org_member_id` FOREIGN KEY (`org_member_id`) REFERENCES `users` (`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -90,7 +97,7 @@ CREATE TABLE `organization_members` (
 
 LOCK TABLES `organization_members` WRITE;
 /*!40000 ALTER TABLE `organization_members` DISABLE KEYS */;
-INSERT INTO `organization_members` VALUES (11,9,'',1);
+INSERT INTO `organization_members` VALUES (11,9,'',1,NULL),(11,11,'',1,NULL);
 /*!40000 ALTER TABLE `organization_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,11 +139,13 @@ DROP TABLE IF EXISTS `project_members`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `project_members` (
   `project_id` int DEFAULT NULL,
-  `role_id` int DEFAULT NULL,
+  `pm_role_id` int DEFAULT NULL,
   `project_member_id` int DEFAULT NULL,
   `member_status` tinyint NOT NULL,
   KEY `fk_project_id_idx` (`project_id`),
   KEY `fk_project_member_id_idx` (`project_member_id`),
+  KEY `fk_role_id_idx` (`pm_role_id`),
+  CONSTRAINT `fk_pm_role_id` FOREIGN KEY (`pm_role_id`) REFERENCES `roles` (`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_project_id` FOREIGN KEY (`project_id`) REFERENCES `projects` (`project_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_project_member_id` FOREIGN KEY (`project_member_id`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='		';
@@ -205,6 +214,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'Admin',''),(2,'Team Leader',''),(3,'Member','');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -217,10 +227,14 @@ DROP TABLE IF EXISTS `task_assigned`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_assigned` (
   `assginee_id` int NOT NULL,
-  `task_id` int DEFAULT NULL,
-  `user_id` int DEFAULT NULL,
-  PRIMARY KEY (`assginee_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `assigned_task_id` int NOT NULL,
+  `assigned_user_id` int NOT NULL,
+  PRIMARY KEY (`assginee_id`),
+  KEY `fk_assign_task_id_idx` (`assigned_task_id`),
+  KEY `fk_assign_user_id_idx` (`assigned_user_id`),
+  CONSTRAINT `fk_assign_task_id` FOREIGN KEY (`assigned_task_id`) REFERENCES `tasks` (`task_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_assign_user_id` FOREIGN KEY (`assigned_user_id`) REFERENCES `users` (`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='		';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -246,8 +260,10 @@ CREATE TABLE `tasks` (
   `end_date` varchar(45) DEFAULT NULL,
   `description` varchar(45) DEFAULT NULL,
   `status` varchar(45) DEFAULT NULL,
-  `column_id` int DEFAULT NULL,
-  PRIMARY KEY (`task_id`)
+  `task_column_id` int NOT NULL,
+  PRIMARY KEY (`task_id`),
+  KEY `fk_task_column_id_idx` (`task_column_id`),
+  CONSTRAINT `fk_task_column_id` FOREIGN KEY (`task_column_id`) REFERENCES `board_columns` (`column_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -278,7 +294,7 @@ CREATE TABLE `users` (
   `verified` tinyint DEFAULT NULL,
   `verificationCode` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -287,7 +303,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (9,'Abdullah','Tanveer','abdullahtanveer008@gmail.com',NULL,NULL,'$2b$10$vLcp/nFGT7lT8NnU3V3Bw.TBYC4h9O1Ob45SGafHL5KXniEsKHoii',1,'T-782854'),(10,'Zeeshan','Usman','abdullahtanveer56@outlook.com',NULL,NULL,'$2b$10$zF.VZgTytQ3W3dvr3U6UruEf2ECVxSatpGrmcrWWgaI8E8EFNT.wC',1,'T-631628');
+INSERT INTO `users` VALUES (9,'Abdullah','Tanveer','abdullahtanveer008@gmail.com',NULL,NULL,'$2b$10$vLcp/nFGT7lT8NnU3V3Bw.TBYC4h9O1Ob45SGafHL5KXniEsKHoii',1,'T-782854'),(10,'Zeeshan','Usman','abdullahtanveer56@outlook.com',NULL,NULL,'$2b$10$zF.VZgTytQ3W3dvr3U6UruEf2ECVxSatpGrmcrWWgaI8E8EFNT.wC',1,'T-631628'),(11,'Hamza','Khalid','hamzakh827@gmail.com',NULL,NULL,'$2b$10$sS9fqDXm1gbMMGi8sXcEi.BqLB4L0tLxTBHCo0U//z35hOLKvu/dW',1,'T-956167');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -300,4 +316,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-28 15:43:54
+-- Dump completed on 2023-05-30 15:22:02
