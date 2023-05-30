@@ -25,8 +25,13 @@ DROP TABLE IF EXISTS `board_columns`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `board_columns` (
+<<<<<<< Updated upstream
   `column_id` int NOT NULL,
   `board_id` int NOT NULL,
+=======
+  `column_id` int NOT NULL AUTO_INCREMENT,
+  `column_board_id` int NOT NULL,
+>>>>>>> Stashed changes
   `column_title` varchar(45) NOT NULL,
   PRIMARY KEY (`column_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -49,11 +54,21 @@ DROP TABLE IF EXISTS `boards`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `boards` (
+<<<<<<< Updated upstream
   `board_id` int NOT NULL,
   `project_id` int DEFAULT NULL,
   `created_date` date DEFAULT NULL,
   PRIMARY KEY (`board_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+=======
+  `board_id` int NOT NULL AUTO_INCREMENT,
+  `board_project_id` int NOT NULL,
+  `created_date` date DEFAULT NULL,
+  PRIMARY KEY (`board_id`),
+  KEY `fk_project_id_idx` (`board_project_id`),
+  CONSTRAINT `fk_board_project_id` FOREIGN KEY (`board_project_id`) REFERENCES `projects` (`project_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+>>>>>>> Stashed changes
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,6 +77,7 @@ CREATE TABLE `boards` (
 
 LOCK TABLES `boards` WRITE;
 /*!40000 ALTER TABLE `boards` DISABLE KEYS */;
+INSERT INTO `boards` VALUES (1,35,'2023-05-30');
 /*!40000 ALTER TABLE `boards` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,8 +147,13 @@ DROP TABLE IF EXISTS `project_members`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `project_members` (
+<<<<<<< Updated upstream
   `project_id` int DEFAULT NULL,
   `role_id` int DEFAULT NULL,
+=======
+  `project_id` int NOT NULL,
+  `pm_role_id` int DEFAULT NULL,
+>>>>>>> Stashed changes
   `project_member_id` int DEFAULT NULL,
   `member_status` tinyint NOT NULL,
   KEY `fk_project_id_idx` (`project_id`),
@@ -148,6 +169,7 @@ CREATE TABLE `project_members` (
 
 LOCK TABLES `project_members` WRITE;
 /*!40000 ALTER TABLE `project_members` DISABLE KEYS */;
+INSERT INTO `project_members` VALUES (35,1,11,1),(35,2,9,1);
 /*!40000 ALTER TABLE `project_members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,11 +238,23 @@ DROP TABLE IF EXISTS `task_assigned`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `task_assigned` (
+<<<<<<< Updated upstream
   `assginee_id` int NOT NULL,
   `task_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   PRIMARY KEY (`assginee_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+=======
+  `assginee_id` int NOT NULL AUTO_INCREMENT,
+  `assigned_task_id` int NOT NULL,
+  `assigned_user_id` int NOT NULL,
+  PRIMARY KEY (`assginee_id`),
+  KEY `fk_assign_task_id_idx` (`assigned_task_id`),
+  KEY `fk_assign_user_id_idx` (`assigned_user_id`),
+  CONSTRAINT `fk_assigned_task_id` FOREIGN KEY (`assigned_task_id`) REFERENCES `tasks` (`task_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_assigned_user_id` FOREIGN KEY (`assigned_user_id`) REFERENCES `users` (`user_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='		';
+>>>>>>> Stashed changes
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -240,7 +274,7 @@ DROP TABLE IF EXISTS `tasks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tasks` (
-  `task_id` int NOT NULL,
+  `task_id` int NOT NULL AUTO_INCREMENT,
   `task_title` varchar(45) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` varchar(45) DEFAULT NULL,
@@ -300,4 +334,8 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+<<<<<<< Updated upstream
 -- Dump completed on 2023-05-28 15:43:54
+=======
+-- Dump completed on 2023-05-30 22:23:31
+>>>>>>> Stashed changes
