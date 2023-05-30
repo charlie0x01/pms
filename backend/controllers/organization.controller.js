@@ -205,7 +205,7 @@ exports.addMember = async (req, res, next) => {
     }
 
     // check owner
-    if (org[0].org_owner === userId) {
+    if (org[0].org_owner == userId) {
       return res.status(404).json({
         success: false,
         message: "only owner can add members to the organization",
