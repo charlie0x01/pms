@@ -15,6 +15,7 @@ import { useGetOrganizationsQuery } from "../../apis/orgApi";
 // global state
 import { useDispatch } from "react-redux";
 import { setOrg, setOrgs } from "../../features/orgSlice";
+import AddProject from "../Project/AddProject";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -42,80 +43,78 @@ const Sidebar = () => {
   return (
     <>
       {contextHandler}
-      <aside
-        id="sidebar"
-        className="menu sidebar pt-3 px-1 is-flex is-flex-direction-column is-gap-3"
-      >
-        <aside className="menu">
-          <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
-            Organizations
-            <div onClick={() => setAddOrg(true)}>
-              <span className="icon is-medium is-clickable">
-                <GrAdd />
-              </span>
+      <aside id="sidebar" className="sidebar">
+        <div className="pt-3 px-1 is-flex is-flex-direction-column is-gap-3">
+          <aside className="menu">
+            <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
+              Organizations
+              <div onClick={() => setAddOrg(true)}>
+                <span className="icon is-medium is-clickable">
+                  <GrAdd />
+                </span>
+              </div>
             </div>
-          </div>
-          {!orgError && (
-            <div>
-              {orgLoading === true ? (
-                <LoadingSpinner />
-              ) : (
-                <ul className="menu-list">
-                  {organizations?.data.length > 0 &&
-                    organizations?.data.map((org, index) => {
-                      // if (org.member === null) {
-                      return (
-                        <li key={index}>
-                          <SideBarItem
-                            id={org.org_id}
-                            title={org.org_name}
-                            link={`/organization/${org.org_id}`}
-                          />
-                        </li>
-                      );
-                      // }
-                    })}
-                </ul>
-              )}
+            {!orgError && (
+              <div>
+                {orgLoading === true ? (
+                  <LoadingSpinner />
+                ) : (
+                  <ul className="menu-list">
+                    {organizations?.data.length > 0 &&
+                      organizations?.data.map((org, index) => {
+                        // if (org.member === null) {
+                        return (
+                          <li key={index}>
+                            <SideBarItem
+                              id={org.org_id}
+                              title={org.org_name}
+                              link={`/organization/${org.org_id}`}
+                            />
+                          </li>
+                        );
+                        // }
+                      })}
+                  </ul>
+                )}
+              </div>
+            )}
+          </aside>
+          <aside className="menu">
+            <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
+              Projects
+              <div onClick={() => setNewProject(true)}>
+                <span className="icon is-clickable">
+                  <GrAdd />
+                </span>
+              </div>
             </div>
-          )}
-        </aside>
-        {/* <aside className="menu">
-          <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
-            Projects
-            <div onClick={() => setNewProject(true)}>
-              <span className="icon is-clickable">
-                <GrAdd />
-              </span>
-            </div>
-          </div>
-          {!projectError && (
+            {/* {!projectError && (
             <>
-              {projectLoading === true ? (
+            {projectLoading === true ? (
                 <LoadingSpinner />
-              ) : (
-                <ul className="menu-list">
+                ) : (
+                  <ul className="menu-list">
                   {projects?.data.length > 0 &&
                     projects?.data.map((project, index) => {
                       return (
                         <li key={index}>
-                          <SideBarItem
-                            id={project.project_id}
-                            title={project.project_title}
+                        <SideBarItem
+                        id={project.project_id}
+                        title={project.project_title}
                             link={`/project/${project.project_id}`}
                           />
-                        </li>
-                      );
-                    })}
-                </ul>
-              )}
-            </>
-          )}
-        </aside> */}
+                          </li>
+                          );
+                        })}
+                        </ul>
+                        )}
+                        </>
+                        )} */}
+          </aside>
+        </div>
       </aside>
       <AddOrganization isOpen={addOrg} setIsOpen={setAddOrg} />
-      {/* <UpdateOrganization isOpen={editOrg} setIsOpen={setEditOrg} /> */}
-      <NewProject isOpen={newProject} setIsOpen={setNewProject} />
+      <AddProject isOpen={newProject} setIsOpen={setNewProject} />
     </>
   );
 };

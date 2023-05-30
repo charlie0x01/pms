@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import UserAvatarDropdown from "./AvatarDropdown";
+import JoinButton from "./JoinButton";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,7 @@ const Navbar = () => {
         </div>
         <div style={{ gap: "8px" }} className="is-flex is-align-items-center">
           <UserAvatarDropdown />
+          <JoinButton />
         </div>
       </nav>
     </>

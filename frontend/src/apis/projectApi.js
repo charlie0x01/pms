@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const projectApi = createApi({
   reducerPath: "project",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/project" }),
-  tagTypes: ["project"],
+  tagTypes: ["projects"],
   endpoints: (builder) => ({
     addProject: builder.mutation({
       query: (data) => ({
@@ -13,17 +13,76 @@ const projectApi = createApi({
         method: "POST",
         body: data,
       }),
-      providesTags: ["project"],
-      invalidatesTags: ["project"],
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
     }),
     getProjects: builder.query({
-      query: (orgId, userId) => ({
-        url: `/get-projects/${orgId}/${userId}`,
+      query: (orgId) => ({
+        url: `/get-projects/${orgId}/${localStorage.getItem("user_id")}`,
         method: "GET",
       }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    getProject: builder.query({
+      query: (projectId) => ({
+        url: `/get-project/${projectId}`,
+        method: "GET",
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    updateProject: builder.mutation({
+      query: (data) => ({
+        url: `/update-project/${data.projectId}/${parseInt(
+          localStorage.getItem("user_id")
+        )}`,
+        method: "PATCH",
+        body: data,
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    deleteProject: builder.mutation({
+      query: (projectId) => ({
+        url: `/delete-project/${projectId}/${parseInt(
+          localStorage.getItem("user_id")
+        )}`,
+        method: "DELETE",
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    addMember: builder.mutation({
+      query: (data) => ({
+        url: `/add-member/${data.projectId}/${parseInt(
+          localStorage.getItem("user_id")
+        )}`,
+        method: "POST",
+        body: { email: data.email },
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    joinProject: builder.mutation({
+      query: (data) => ({
+        url: `/join-project/${parseInt(localStorage.getItem("user_id"))}`,
+        method: "POST",
+        body: data,
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
     }),
   }),
 });
 
 export { projectApi };
-export const { useAddProjectMutation, useGetProjectsQuery } = projectApi;
+export const {
+  useAddProjectMutation,
+  useGetProjectsQuery,
+  useGetProjectQuery,
+  useUpdateProjectMutation,
+  useDeleteProjectMutation,
+  useAddMemberMutation,
+  useJoinProjectMutation,
+} = projectApi;

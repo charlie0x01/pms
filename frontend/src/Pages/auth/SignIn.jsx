@@ -33,10 +33,10 @@ const SignIn = () => {
 
   useEffect(() => {
     if (isError) {
-      if (Array.isArray(error.data.error)) {
-        error.data.error.forEach((el) => messageApi.error(el.message));
+      if (Array.isArray(error?.data.error)) {
+        error?.data.error.forEach((el) => messageApi.error(el.message));
       } else {
-        messageApi.error(error.data.message);
+        messageApi.error(error?.data.message);
       }
     }
     if (isSuccess) {
