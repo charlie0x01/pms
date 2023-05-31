@@ -9,7 +9,6 @@ const { sendNotificationEmail } = require("../utils/sendEmail");
 exports.addProject = async (req, res, next) => {
   try {
     const orgId = req.params.orgId;
-    console.log(req.params);
     const { email, projectTitle } = req.body;
 
     // check
@@ -32,8 +31,23 @@ exports.addProject = async (req, res, next) => {
         .status(404)
         .json({ success: false, message: "User not found!" });
     }
+
+    // if user org owner
+    const [org, __] = await Organization.findByOrganizationID(orgId);
+    if (org.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Organization not found" });
+    }
+
+    if (org[0].org_owner != user[0].user_id) {
+      return res.status(404).json({
+        success: false,
+        message: "You're not authorized to add new project",
+      });
+    }
+
     const currentDate = new Date();
-    console.log(orgId);
     // create new project
     const project = new Project(
       orgId,
@@ -68,9 +82,10 @@ exports.getProjects = async (req, res, next) => {
     const { orgId, userId } = req.params;
     const [projects, _] = await Project.findByUserId(orgId, userId);
     if (projects.length <= 0)
-      return res
-        .status(404)
-        .json({ success: false, message: "You don't have any projects yet" });
+      return res.json({
+        success: false,
+        message: "Create new or Join existing projects",
+      });
 
     return res.status(200).json({
       success: true,
@@ -111,7 +126,7 @@ exports.updateProject = async (req, res, next) => {
     if (project[0].project_owner != ownerId) {
       return res.status(401).json({
         success: false,
-        message: "Only project owner or admin can make changes",
+        message: "You're not authorized to update project details",
       });
     }
 
@@ -145,9 +160,10 @@ exports.deleteProject = async (req, res, next) => {
     }
 
     if (project[0].project_owner != user[0].user_id) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Only owner can delete the project" });
+      return res.status(404).json({
+        success: false,
+        message: "You're not authorized to delete the project",
+      });
     }
 
     // if delete operairon is performed by onwer or some other user
@@ -167,7 +183,6 @@ exports.addMember = async (req, res, next) => {
     // get projectId and UserId
     const { projectId, userId } = req.params;
     const { email } = req.body;
-
     const [invitedby, ____] = await User.findByUserId(userId);
     // send invitation email to new member
     if (invitedby.length <= 0) {
@@ -183,25 +198,29 @@ exports.addMember = async (req, res, next) => {
         .status(404)
         .json({ success: false, message: "Project not found" });
     }
-
     // only owner can add member
     if (project[0].project_owner != invitedby[0].user_id) {
       return res.status(404).json({
         success: false,
-        message: "you're not authorized to add members",
+        message: "You're not authorized to add new member",
       });
     }
-
     // check if any user exist with the given email
     const [user, _] = await User.findByEmailId(email);
+    const [projectOrg, _fields] = await Organization.findByOrganizationID(
+      project[0].project_org_id
+    );
+
     if (user.length <= 0) {
       // send email to given email address
       sendNotificationEmail(
         email,
         "Hello,",
         `${invitedby[0].first_name} ${invitedby[0].last_name} invited you to join ${project[0].project_title} on Taskify.
-        To join ${project[0].project_title}, use this join code ${project[0].joining_code}
-        To register, click on the following link: http://localhost:5173/signup
+        follow these steps
+        1. first you need to register on Taskify, click on the following link: http://localhost:5173/signup
+        2. Cnce you register, now join the organization, this project belongs to using this organization join code ${projectOrg[0].joining_code}
+        3. Now you can join ${project[0].project_title} by using this project join code ${project[0].joining_code}
         `
       );
       return res.json({
@@ -214,7 +233,7 @@ exports.addMember = async (req, res, next) => {
     if (project[0].project_owner == user[0].user_id) {
       return res.json({
         success: false,
-        message: "you cannot add project owner as member",
+        message: "Project owner cannot be member",
       });
     }
 
@@ -223,14 +242,13 @@ exports.addMember = async (req, res, next) => {
       projectId,
       user[0].user_id
     );
-    console.log(isMember);
+
     if (isMember.length > 0) {
       return res.status(40).json({
         success: false,
         message: `${user[0].first_name} ${user[0].last_name} is already a member`,
       });
     }
-    console.log(invitedby, project, user);
 
     // add member
     await Project.addMember(projectId, user[0].user_id);
@@ -239,8 +257,8 @@ exports.addMember = async (req, res, next) => {
       email,
       `Hi ${user[0].first_name} ${user[0].last_name}`,
       `${invitedby[0].first_name} ${invitedby[0].last_name} invited you to join ${project[0].project_title} on Taskify.
-        To join ${project[0].project_title}, use this join code ${project[0].joining_code}
-        To sign, click on the following link: http://localhost:5173/signin
+      1. first join the organization, this project belongs to using this organization join code ${projectOrg[0].joining_code}
+      2. Now you can join ${project[0].project_title} by using this project join code ${project[0].joining_code}
       `
     );
 
@@ -256,7 +274,6 @@ exports.joinProject = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const { joiningCode } = req.body;
-    console.log(userId, joiningCode);
 
     // check user exist or not
     const [user, _] = await User.findByUserId(userId);
@@ -275,6 +292,12 @@ exports.joinProject = async (req, res, next) => {
         .json({ success: false, message: "Project not found" });
     }
 
+    if (project[0].project_owner == userId) {
+      return res.status(404).json({
+        success: false,
+        message: "Project owner cannot be the member",
+      });
+    }
     // check which organization this project belongs to
     const [org, ___] = await Organization.findByOrganizationID(
       project[0].project_org_id
@@ -291,17 +314,28 @@ exports.joinProject = async (req, res, next) => {
       userId
     );
     if (orgMember.length <= 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "User is not member of this organization",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "User is not member of this organization",
+      });
     }
-    console.log(orgMember);
+
+    // check if user is added as a member or not
+    const [members, _fields] = await Project.findByMemberAndProjectId(
+      project[0].project_id,
+      userId
+    );
+    if (members.length <= 0) {
+      await Project.addMember(project[0].project_id, userId);
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "You're already a member",
+      });
+    }
 
     // add member
-    await Project.joinProject(joiningCode, userId);
+    await Project.joinProject(userId);
 
     // send notification email to organization owner
     const [owner, _____] = await User.findByUserId(org[0].org_owner);
@@ -315,9 +349,10 @@ exports.joinProject = async (req, res, next) => {
       res
     );
 
-    return res
-      .status(201)
-      .json({ success: true, message: `User joined the project` });
+    return res.status(201).json({
+      success: true,
+      message: `User joined the ${project[0].project_title}`,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }
@@ -350,10 +385,9 @@ exports.removeMember = async (req, res, next) => {
     if (project.length <= 0) {
       return res.status(404).json({
         success: false,
-        message: "organization doesn't exist",
+        message: "project not found",
       });
     }
-    console.log(projectId, memberId, userId, project)
 
     // only org owner can add or remove members
     if (project[0].project_owner != userId) {

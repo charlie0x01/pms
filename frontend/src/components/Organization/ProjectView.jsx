@@ -27,12 +27,13 @@ const ProjectView = () => {
   } = useGetOrganizationQuery(useParams().orgId, { skip: skip });
 
   // load projects
-  console.log(useParams().orgId);
   const {
     data: projects,
     error: projectError,
     isLoading: projectLoading,
   } = useGetProjectsQuery(useParams().orgId);
+
+  console.log(projects);
 
   // handling error for org query
   useEffect(() => {
@@ -68,13 +69,14 @@ const ProjectView = () => {
             </div>
           </div>
           <div className="is-flex is-flex-wrap-wrap p-3 is-gap-2">
-            {!projectError &&
+            {!projectLoading &&
+              projects.data &&
               projects?.data.map((project, index) => {
                 return (
                   <ProjectCard
                     key={index}
                     title={project.project_title}
-                    description="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Explicabo consequatur minima non architecto illo, nostrum ipsum eum nulla iste quibusdam est exercitationem pariatur, ratione cumque corrupti blanditiis facere, enim fugiat."
+                    description={project.description}
                     date={project.created_date.slice(0, 10)}
                     id={project.project_id}
                     link={`/kanban/${project.project_id}`}
@@ -84,9 +86,10 @@ const ProjectView = () => {
           </div>
         </div>
       )}
-      <footer class="footer p-4 has-background-info" style={{ position: "absolute", bottom: 1, width: "100%", }}>
-        
-      </footer>
+      <footer
+        class="footer p-4 has-background-info"
+        style={{ position: "absolute", bottom: 1, width: "100%" }}
+      ></footer>
       <EditOrganization
         data={organization?.data}
         isOpen={addOrganization}

@@ -39,7 +39,9 @@ const Board = () => {
           <div className="pt-5 px-3">
             <div className="is-flex is-justify-content-space-between is-align-items-center">
               <div className="is-flex is-align-items-center">
-                <h1 className="title is-3">{projectError && project?.data.project_title}</h1>
+                <h1 className="title is-3">
+                  {!projectError && project?.data.project_title}
+                </h1>
                 <p className="ml-2">Kanban Board</p>
               </div>
               <div className="is-flex is-gap-1 is-align-items-center">

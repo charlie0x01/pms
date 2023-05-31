@@ -27,11 +27,11 @@ const SignUp = () => {
     validationSchema: Yup.object({
       firstName: Yup.string()
         .max(15, "Must be 4 to 15 characters long")
-        .min(4, "Must be 4 to 15 characters long")
+        .min(3, "Must be 4 to 15 characters long")
         .required("Required"),
       lastName: Yup.string()
         .max(20, "Must be 4 to 20 characters long")
-        .min(4, "Must be 4 to 20 characters long")
+        .min(3, "Must be 4 to 20 characters long")
         .required("Required"),
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()

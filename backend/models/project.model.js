@@ -15,6 +15,7 @@ class Project {
     // generate joining code
     const joiningCode = uuid().slice(0, 8);
     let addProject = `insert into projects(project_org_id, project_owner, description, project_title, created_date, joining_code) values(?, ?, "", ?, ?, ?); `;
+    let addBoard = `insert into boards(board_project_id) values(?);`;
     try {
       transaction(pool, async (connection) => {
         const result = await connection.execute(addProject, [
@@ -24,6 +25,9 @@ class Project {
           this.created_date,
           joiningCode,
         ]);
+
+        // add board for the project
+        const _ = await connection.execute(addBoard, [result[0].insertId]);
       });
     } catch (error) {
       throw error;
@@ -57,8 +61,12 @@ class Project {
 
   static deleteProject(owner_id, project_id) {
     let deletePro = `delete from projects where project_id = ? and project_owner = ?`;
+    let deleteMembers = `delete from project_members where project_id = ?;`;
+    let deleteBoard = `delete from boards where board_project_id = ?;`;
     try {
       transaction(pool, async (connection) => {
+        const _ = await connection.execute(deleteMembers, [project_id]);
+        const __ = await connection.execute(deleteBoard, [project_id]);
         const result = await connection.execute(deletePro, [
           project_id,
           owner_id,
@@ -85,7 +93,7 @@ class Project {
   }
 
   static addMember(projectId, memberId) {
-    let addMember = `insert into project_members(project_id, role_id, project_member_id, member_status) values(?, 0, ?, 0)`;
+    let addMember = `insert into project_members(project_id, pm_role_id, project_member_id, member_status) values(?, 3, ?, 0);`;
     return pool.execute(addMember, [projectId, memberId]);
   }
 
@@ -99,6 +107,11 @@ class Project {
     return pool.execute(getMembers, [projectId]);
   }
 
+  static findByMemberAndProjectId(projectId, memberId) {
+    let getOrganization = `select * from project_members where project_member_id = ? and project_id = ?;`;
+    return pool.execute(getOrganization, [memberId, projectId]);
+  }
+
   static checkMemberStatus(projectId, memberId) {
     try {
       let checkMemberStatus = `select from project_members where project_id = ? and project_member_id = ? and member_status = 1;`;
@@ -108,13 +121,10 @@ class Project {
     }
   }
 
-  static joinProject(joiningCode, memberId) {
+  static joinProject(memberId) {
     try {
-      let joinProject = `update project_members PM 
-      inner join pms.projects P 
-      on P.joining_code = ? and PM.project_member_id = ?
-      set member_status = 1`;
-      return pool.execute(joinProject, [joiningCode, memberId]);
+      let joinProject = `update project_members set member_status = 1 where project_member_id = ?`;
+      return pool.execute(joinProject, [memberId]);
     } catch (error) {
       throw error;
     }

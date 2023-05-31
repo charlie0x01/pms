@@ -30,8 +30,7 @@ class User {
         });
       });
     } catch (error) {
-      // throw error;
-      console.log(error);
+      throw error;
     }
   }
 

@@ -26,7 +26,7 @@ const NewProject = ({ setIsOpen }) => {
     },
     validationSchema: Yup.object({
       projectName: Yup.string()
-        .min(4, "Must be 4 characters or more")
+        .min(3, "Must be 4 characters or more")
         .required("Required"),
       orgId: Yup.string().required("Please select an organization"),
     }),

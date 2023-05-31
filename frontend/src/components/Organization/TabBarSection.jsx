@@ -3,7 +3,7 @@ import TabBar from "../TabBar/Tabbar";
 import ContentPanel from "../TabBar/ContentPanel";
 import { message } from "antd";
 import { AiOutlineUserAdd } from "react-icons/ai";
-import MemberCard from "../common/MemberCard";
+import MemberCard from "./MemberCard";
 
 // apis
 import { useGetMembersQuery } from "../../apis/orgApi";
@@ -30,7 +30,7 @@ const TabBarSection = ({ orgId }) => {
     <div className="mt-5">
       {contextHandler}
       <TabBar
-        tabs={["Members", "Notifications", "Activies"]}
+        tabs={["Members", "Activies"]}
         defaultTab={activeTab}
         onTabChange={handleTabChange}
       />
@@ -62,13 +62,6 @@ const TabBarSection = ({ orgId }) => {
                   })}
               </>
             )}
-          </div>
-        )}
-
-        {activeTab === "Notifications" && (
-          <div>
-            <h2>Content for Notifications</h2>
-            <p>This is the content panel for Notifications.</p>
           </div>
         )}
 

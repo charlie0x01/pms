@@ -83,14 +83,8 @@ class organization {
   // add members in organization
   static addMember(orgId, memberId) {
     let query = `insert into organization_members(org_id, org_member_id, description, member_status) values(?, ?, "", 0); `;
-    try {
-      transaction(pool, async (connection) => {
-        // check if user exist or not
-        const user = await connection.execute(query, [orgId, memberId]);
-      });
-    } catch (error) {
-      throw error;
-    }
+    // check if user exist or not
+    return pool.execute(query, [orgId, memberId]);
   }
 
   static joinOrganization(orgId, memberId) {

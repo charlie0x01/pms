@@ -57,7 +57,7 @@ const projectApi = createApi({
       query: (data) => ({
         url: `/add-member/${data.projectId}/${parseInt(
           localStorage.getItem("user_id")
-        )}`,
+        )}/${data.memberRoleId}`,
         method: "POST",
         body: { email: data.email },
       }),
@@ -69,6 +69,22 @@ const projectApi = createApi({
         url: `/join-project/${parseInt(localStorage.getItem("user_id"))}`,
         method: "POST",
         body: data,
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    getMembers: builder.query({
+      query: (projectId) => ({
+        url: `/get-members/${projectId}`,
+        method: "GET",
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    removeProjectMember: builder.mutation({
+      query: (data) => ({
+        url: `/remove-member/${data.projectId}/${data.memberId}/${data.userId}`,
+        method: "DELETE",
       }),
       providesTags: ["projects"],
       invalidatesTags: ["projects"],
@@ -85,4 +101,6 @@ export const {
   useDeleteProjectMutation,
   useAddMemberMutation,
   useJoinProjectMutation,
+  useGetMembersQuery,
+  useRemoveProjectMemberMutation
 } = projectApi;

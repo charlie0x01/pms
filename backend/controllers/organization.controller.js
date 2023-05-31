@@ -265,20 +265,28 @@ exports.joinOrganization = async (req, res, next) => {
       });
     }
 
+    if (org[0].org_id == memberId) {
+      return res.status(404).json({
+        success: false,
+        message: "Owner cannot be the member",
+      });
+    }
+
     const [found, __] = await organization.findByMemberAndOrganizationId(
       org[0].org_id,
       memberId
     );
+
     if (found.length <= 0) {
-      organization.addMember(org[0].org_id, memberId);
+      await organization.addMember(org[0].org_id, memberId);
     } else if (found[0].member_status === 1) {
       return res.status(404).json({
         success: false,
-        message: "already a member",
+        message: "You're already a member",
       });
     }
 
-    organization.joinOrganization(org[0].org_id, memberId);
+    await organization.joinOrganization(org[0].org_id, memberId);
 
     // send notification email to organization owner
     const [owner, ___] = await User.findByUserId(org[0].org_owner);
@@ -334,7 +342,7 @@ exports.removeMember = async (req, res, next) => {
     }
 
     // only org owner can add or remove members
-    if (org[0].org_owner !== userId) {
+    if (org[0].org_owner != userId) {
       return res.status(404).json({
         success: false,
         message: "only owner can remove members",

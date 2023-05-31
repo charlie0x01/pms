@@ -158,7 +158,7 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
             </button>
           </form>
           <Popconfirm
-            title={`Delete the ${data?.org_name}`}
+            title={`Delete the ${data?.data.project_title}`}
             description="Are you sure to delete this organization?"
             onConfirm={() => confirmDelete(data?.data.project_id)}
             okText="Yes"
@@ -172,7 +172,7 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
             </button>
           </Popconfirm>
         </div>
-        <TabSection />
+        <TabSection projectId={data?.data.project_id} />
       </Modal>
     </>
   );

@@ -27,7 +27,10 @@ const AddMember = ({ isOpen, setIsOpen, projectId }) => {
     }),
     onSubmit: (values) => {
       alert(JSON.stringify(values));
-      addMember({ email: values.email, projectId: projectId });
+      addMember({
+        email: values.email,
+        projectId: projectId,
+      });
     },
   });
 
