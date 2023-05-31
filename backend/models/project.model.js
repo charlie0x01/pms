@@ -92,6 +92,18 @@ class Project {
     return pool.execute(getProjects, [project_id, org_id, owner_id]);
   }
 
+  static findByboardID(boardId) {
+    let getProjects = `select p.* from projects p
+    join boards b on p.project_id = b.board_project_id
+    where b.board_id = ?;`;
+    return pool.execute(getProjects, [boardId]);
+  }
+
+  static findOwnerByID(projectId, ownerId) {
+    let findOwner = `select * from projects where project_id = ? and project_owner = ?;`;
+    return pool.execute(findOwner, [projectId, ownerId]);
+  }
+
   static addMember(projectId, memberId) {
     let addMember = `insert into project_members(project_id, pm_role_id, project_member_id, member_status) values(?, 3, ?, 0);`;
     return pool.execute(addMember, [projectId, memberId]);

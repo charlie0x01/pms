@@ -37,12 +37,8 @@ class Kanban {
 
   static deleteColumn(columnId) {
     let deleteColumn = `delete from board_columns where column_id = ? `;
-    let deleteTasks = `delete from tasks where task_column_id = ?`;
     try {
-      transaction(pool, async (connection) => {
-        const tasks = await connection.execute(deleteTasks, [columnId]);
-        const result = await connection.execute(deleteColumn, [columnId]);
-      });
+      const result = connection.execute(deleteColumn, [columnId]);
     } catch (error) {
       throw error;
     }
@@ -71,8 +67,8 @@ class Kanban {
 
   static checkProjectOnwer = (userId, boardId) => {
     let getBoard = `select * from boards b right join projects p on b.board_project_id = p.project_id where b.board_id = ? && p.project_owner = ?;`;
-    return pool.execute(getBoard, [boardId, userId])
-  }
+    return pool.execute(getBoard, [boardId, userId]);
+  };
 }
 
 module.exports = Kanban;

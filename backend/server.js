@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth.routes");
 const orgRoutes = require("./routes/organization.routes");
 const projectRoutes = require("./routes/project.routes");
 const kanbanRoutes = require("./routes/kanban.routes");
+const taskRoutes = require("./routes/task.routes");
 
 app.use(cors());
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/org", orgRoutes);
 app.use("/api/project", projectRoutes);
 app.use("/api/kanban", kanbanRoutes);
+app.use("/api/task", taskRoutes);
 
 // if route not exit
 app.use(function (req, res, next) {

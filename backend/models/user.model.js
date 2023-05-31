@@ -109,6 +109,12 @@ class User {
       expiresIn: process.env.JWT_EXPIRE,
     });
   }
+
+  // FOR TASKS
+  static findByUserId(userId) {
+    let query = `select * from users where user_id = ?;`;
+    return pool.execute(query, [userId]);
+  }
 }
 
 module.exports = User;
