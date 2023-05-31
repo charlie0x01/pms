@@ -92,7 +92,7 @@ function sendInvitaionEmail(
   });
 }
 
-function sendNotificationEmail(email, subject, body, res) {
+function sendNotificationEmail(email, subject, body) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     port: 465,
@@ -112,12 +112,7 @@ function sendNotificationEmail(email, subject, body, res) {
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {
-      res.json({
-        success: false,
-        message: "could not sent invitation email due to some problems.",
-      });
-    } else {
-      res.json({ success: true, message: info.response });
+      console.log(err);
     }
   });
 }

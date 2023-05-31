@@ -1,5 +1,7 @@
 const express = require("express");
-const authMiddleware = require("../middlewares/authMiddlewares");
+const {
+  projectRoleAuthorization,
+} = require("../middlewares/roleAuthMiddlewares");
 
 const {
   addProject,
@@ -15,7 +17,7 @@ const {
 
 const router = express.Router();
 
-router.post("/add-project/:orgId", addProject);
+router.post("/add-project/:orgId/:userId", addProject);
 router.get("/get-projects/:orgId/:userId", getProjects);
 router.get("/get-project/:projectId", getProject);
 router.patch("/update-project/:projectId/:ownerId", updateProject);

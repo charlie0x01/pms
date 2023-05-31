@@ -74,14 +74,6 @@ exports.updateColumn = async (req, res, next) => {
       });
     }
 
-    const [columns, __] = await Kanban.findByColumnId(columnId);
-    // check, if column exists
-    if (columns.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Column does not exist" });
-    }
-
     Kanban.updateColumn(columnTitle, columnId);
     return res.status(201).json({
       success: true,

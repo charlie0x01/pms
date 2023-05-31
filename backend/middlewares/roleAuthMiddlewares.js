@@ -16,14 +16,47 @@ const roleAuthorization = (Permissions) => {
   };
 };
 
-const organizationRoleAuthorization = (Permissions) => {
-  return (req, res, next) => {
-    // check if user is owner
-    if (Permissions.includes("Owner")) {
+const organizationRoleAuthorization = (Permissions, action) => {
+  return async (req, res, next) => {
+    if (action === "Add" || action === "Get") {
+      const { userId } = req.params;
+      // find user
+      const [user, _] = await User.findByUserId(userId);
+      if (user.length <= 0) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      return next();
     }
-    // check for admin rights
-    if (Permissions.includes("Admin")) {
+
+    // update org
+    if (action === "Update" || action === "Delete") {
+      const { orgId, userId } = req.params;
+      const [org, _] = await Organization.findByOrganizationID(orgId);
+      console.log(org);
+      // now if user is owenr of admin
+      const [member, __] = await Organization.findByMemberAndOrganizationId(
+        orgId,
+        userId
+      );
+      if (org.length > 0 && org[0].org_owner == userId) {
+        return next();
+      } else if (
+        member.length > 0 &&
+        member[0].om_role_id != 3 &&
+        member[0].om_role_id != 4
+      ) {
+        return next();
+      }
     }
+    //
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized Request",
+    });
   };
 };
 
@@ -39,7 +72,7 @@ const projectRoleAuthorization = (Permissions, action) => {
       const { projectTitle } = req.body;
       // check if user is owner
       if (Permissions.includes("Owner") || Permissions.includes("Admin")) {
-        const [org, _] = await Organization.find(orgId);
+        const [org, _] = await Organization.findByOrganizationID(orgId);
         if (org.length <= 0) {
           return res.status(404).json({
             success: false,
@@ -47,15 +80,17 @@ const projectRoleAuthorization = (Permissions, action) => {
           });
         }
 
-        if(org[0].org_user_id != userId) {
-            return res.status(401).json({
-                success: false,
-                message: "unauthorized access",
-              });
-        }
+        console.log(org);
+
+        // if(org[0].org_user_id != userId) {
+        //     return res.status(401).json({
+        //         success: false,
+        //         message: "unauthorized access",
+        //       });
+        // }
       }
     }
   };
 };
 
-module.exports = { projectRoleAuthorization };
+module.exports = { projectRoleAuthorization, organizationRoleAuthorization };
