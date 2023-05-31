@@ -62,15 +62,16 @@ exports.getColumns = async (req, res, next) => {
 
 exports.updateColumn = async (req, res, next) => {
   try {
-    const { userId, columnId } = req.params;
+    const { userId, boardId, columnId } = req.params;
     const { columnTitle } = req.body;
 
+    const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    // check, if we have any user with admin or team lead role
-    if (user.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "You cannot update column" });
+    if (project.length <= 0 && user.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "You're not authorized to make changes",
+      });
     }
 
     Kanban.updateColumn(columnTitle, columnId);
@@ -85,14 +86,15 @@ exports.updateColumn = async (req, res, next) => {
 
 exports.deleteColumn = async (req, res, next) => {
   try {
-    const { userId, columnId } = req.params;
+    const { userId, boardId, columnId } = req.params;
 
+    const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    // check, if we have any user with admin or team lead role
-    if (user.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "You cannot delete column" });
+    if (project.length <= 0 && user.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "You're not authorized to make changes",
+      });
     }
 
     const [columns, __] = await Kanban.findByColumnId(columnId);
