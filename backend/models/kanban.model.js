@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { pool, transaction } = require("../config/database");
 
-class KanbanColumns {
+class Kanban {
   constructor(column_board_id, column_title) {
     this.column_board_id = column_board_id;
     this.column_title = column_title;
@@ -62,12 +62,17 @@ class KanbanColumns {
 
   static checkMemberRole(memberId) {
     try {
-      let checkMemberRole = `select * from project_members where project_member_id = ? and pm_role_id != 3;`;
+      let checkMemberRole = `select * from project_members where project_member_id = ? and pm_role_id != 4;`;
       return pool.execute(checkMemberRole, [memberId]);
     } catch (error) {
       throw error;
     }
   }
+
+  static checkProjectOnwer = (userId, boardId) => {
+    let getBoard = `select * from boards b right join projects p on b.board_project_id = p.project_id where b.board_id = ? && p.project_owner = ?;`;
+    return pool.execute(getBoard, [boardId, userId])
+  }
 }
 
-module.exports = KanbanColumns;
+module.exports = Kanban;

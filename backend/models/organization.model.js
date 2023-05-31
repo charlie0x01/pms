@@ -82,7 +82,7 @@ class organization {
 
   // add members in organization
   static addMember(orgId, memberId) {
-    let query = `insert into organization_members(org_id, org_member_id, description, member_status) values(?, ?, "", 0); `;
+    let query = `insert into organization_members(org_id, org_member_id, description, member_status, om_role_id) values(?, ?, "", 0, 4); `;
     // check if user exist or not
     return pool.execute(query, [orgId, memberId]);
   }

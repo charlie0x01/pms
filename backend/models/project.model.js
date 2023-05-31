@@ -83,7 +83,7 @@ class Project {
   }
 
   static findByProjectId(projectId) {
-    let getProject = `select * from projects where project_id = ?`;
+    let getProject = `select p.*, b.board_id from projects p left join boards b on b.board_project_id = p.project_id where p.project_id = ?`;
     return pool.execute(getProject, [projectId]);
   }
 

@@ -71,6 +71,7 @@ exports.getProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const [project, _] = await Project.findByProjectId(projectId);
+    console.log(project);
     return res.status(200).json({ success: true, data: project[0] });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });

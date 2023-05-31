@@ -2,29 +2,30 @@ require("dotenv").config({ path: "../.env" });
 const User = require("../models/user.model");
 const Organization = require("../models/organization.model");
 const Project = require("../models/project.model");
-const KanbanColumns = require("../models/kanban.model");
+const Kanban = require("../models/kanban.model");
 const jwt = require("jsonwebtoken");
 
 exports.addColumn = async (req, res, next) => {
   try {
     const { userId, boardId } = req.params;
 
-    const [user, _] = await KanbanColumns.checkMemberRole(userId);
-    // check, if we have any user with admin or team lead role
-    if (user.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "You cannot add column" });
+    const [project, __] = await Kanban.checkProjectOnwer(userId, boardId);
+    const [user, _] = await Kanban.checkMemberRole(userId);
+    if (project.length <= 0 && user.length <= 0) {
+      return res.status(404).json({
+        success: false,
+        message: "You're not authorized to make changes",
+      });
     }
 
     // create new column
-    const column = new KanbanColumns(boardId);
+    const column = new Kanban(boardId);
 
     column.save();
 
     return res.status(201).json({
       success: true,
-      message: "Column created successfully!",
+      message: "New Column Added",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error?.message });
@@ -34,7 +35,7 @@ exports.addColumn = async (req, res, next) => {
 exports.getColumn = async (req, res, next) => {
   try {
     const { columnId } = req.params;
-    const [columns, _] = await KanbanColumns.findByColumnId(columnId);
+    const [columns, _] = await Kanban.findByColumnId(columnId);
     return res.status(200).json({ success: true, data: columns[0] });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
@@ -44,7 +45,7 @@ exports.getColumn = async (req, res, next) => {
 exports.getColumns = async (req, res, next) => {
   try {
     const { boardId } = req.params;
-    const [columns, _] = await KanbanColumns.findByBoardId(boardId);
+    const [columns, _] = await Kanban.findByBoardId(boardId);
     if (columns.length <= 0)
       return res
         .status(404)
@@ -64,7 +65,7 @@ exports.updateColumn = async (req, res, next) => {
     const { userId, columnId } = req.params;
     const { columnTitle } = req.body;
 
-    const [user, _] = await KanbanColumns.checkMemberRole(userId);
+    const [user, _] = await Kanban.checkMemberRole(userId);
     // check, if we have any user with admin or team lead role
     if (user.length <= 0) {
       return res
@@ -72,7 +73,7 @@ exports.updateColumn = async (req, res, next) => {
         .json({ success: false, message: "You cannot update column" });
     }
 
-    const [columns, __] = await KanbanColumns.findByColumnId(columnId);
+    const [columns, __] = await Kanban.findByColumnId(columnId);
     // check, if column exists
     if (columns.length <= 0) {
       return res
@@ -80,7 +81,7 @@ exports.updateColumn = async (req, res, next) => {
         .json({ success: false, message: "Column does not exist" });
     }
 
-    KanbanColumns.updateColumn(columnTitle, columnId);
+    Kanban.updateColumn(columnTitle, columnId);
     return res.status(201).json({
       success: true,
       message: "Column title updated successfully",
@@ -94,7 +95,7 @@ exports.deleteColumn = async (req, res, next) => {
   try {
     const { userId, columnId } = req.params;
 
-    const [user, _] = await KanbanColumns.checkMemberRole(userId);
+    const [user, _] = await Kanban.checkMemberRole(userId);
     // check, if we have any user with admin or team lead role
     if (user.length <= 0) {
       return res
@@ -102,7 +103,7 @@ exports.deleteColumn = async (req, res, next) => {
         .json({ success: false, message: "You cannot delete column" });
     }
 
-    const [columns, __] = await KanbanColumns.findByColumnId(columnId);
+    const [columns, __] = await Kanban.findByColumnId(columnId);
     // check, if column exists
     if (columns.length <= 0) {
       return res
@@ -110,7 +111,7 @@ exports.deleteColumn = async (req, res, next) => {
         .json({ success: false, message: "Column does not exist" });
     }
 
-    KanbanColumns.deleteColumn(columnId);
+    Kanban.deleteColumn(columnId);
     return res.status(201).json({
       success: true,
       message: "Column deleted successfully",
