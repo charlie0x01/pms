@@ -59,6 +59,11 @@ class Project {
     }
   }
 
+  static findByName(name) {
+    let findbyname = `select * from projects where project_title = ?;`;
+    return pool.execute(findbyname, [name]);
+  }
+
   static deleteProject(owner_id, project_id) {
     let deletePro = `delete from projects where project_id = ? and project_owner = ?`;
     let deleteMembers = `delete from project_members where project_id = ?;`;

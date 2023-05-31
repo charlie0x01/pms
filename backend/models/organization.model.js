@@ -26,38 +26,14 @@ class organization {
     }
   }
 
-  static updateOrganization(
-    orgID,
-    organizationName,
-    organizationOwner,
-    description
-  ) {
-    let updateOrg = `update organizations set org_name = ?, description = ? where org_id = ? and org_owner = ?;`;
-    try {
-      transaction(pool, async (connection) => {
-        const result = await connection.execute(updateOrg, [
-          organizationName,
-          description,
-          orgID,
-          organizationOwner,
-        ]);
-      });
-    } catch (error) {
-      throw error;
-    }
+  static updateOrganization(orgID, organizationName, description) {
+    let updateOrg = `update organizations set org_name = ?, description = ? where org_id = ?;`;
+    return pool.execute(updateOrg, [organizationName, description, orgID]);
   }
 
   static deleteOrganization(orgId, ownerId) {
     let deleteOrg = `delete from organizations where org_id = ? and org_owner = ? `;
-    let deleteMembers = `delete from organization_members where org_id = ?`;
-    try {
-      transaction(pool, async (connection) => {
-        const members = await connection.execute(deleteMembers, [orgId]);
-        const result = await connection.execute(deleteOrg, [orgId, ownerId]);
-      });
-    } catch (error) {
-      throw error;
-    }
+    return pool.execute(deleteOrg, [orgId, ownerId]);
   }
 
   static findByUserId(userId) {
@@ -68,6 +44,19 @@ class organization {
     WHERE m.org_member_id = ? and m.member_status = 1;`;
 
     return pool.execute(getOrganizations, [userId, userId]);
+  }
+
+  static checkAdminOrOwner(orgId, userId) {
+    let checkAO = `select om.* from organizations o
+    right join organization_members om on o.org_id = om.org_id
+    where o.org_owner = ? and o.org_id = ?
+    or (om.org_member_id = ? and (om.om_role_id = 1 or om.om_role_id = 2) and om.member_status = 1);`;
+
+    return pool.execute(checkAO, [userId, orgId, userId]);
+  }
+  static findByName(name) {
+    let findbyname = `select * from organizations where org_name = ?;`;
+    return pool.execute(findbyname, [name]);
   }
 
   static findByOwner(owner) {

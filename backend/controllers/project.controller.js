@@ -8,11 +8,11 @@ const { sendNotificationEmail } = require("../utils/sendEmail");
 
 exports.addProject = async (req, res, next) => {
   try {
-    const orgId = req.params.orgId;
-    const { email, projectTitle } = req.body;
+    const { orgId, userId } = req.params;
+    const { projectTitle } = req.body;
 
     // check
-    if (orgId === "" || email === "" || projectTitle === "")
+    if (orgId === "" || userId === "" || projectTitle === "")
       return res.json({
         success: false,
         message: "required data not provided",
@@ -24,7 +24,7 @@ exports.addProject = async (req, res, next) => {
         message: "Project name must contains 3 characters",
       });
 
-    const [user, _] = await User.findByEmailId(email);
+    const [user, _] = await User.findByUserId(userId);
     // check, if we have any user with this email
     if (user.length <= 0) {
       return res
@@ -71,7 +71,6 @@ exports.getProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const [project, _] = await Project.findByProjectId(projectId);
-    console.log(project);
     return res.status(200).json({ success: true, data: project[0] });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
@@ -82,6 +81,7 @@ exports.getProjects = async (req, res, next) => {
   try {
     const { orgId, userId } = req.params;
     const [projects, _] = await Project.findByUserId(orgId, userId);
+    console.log(projects);
     if (projects.length <= 0)
       return res.json({
         success: false,
@@ -239,21 +239,19 @@ exports.addMember = async (req, res, next) => {
     }
 
     // check if user already member
-    const [isMember, ___] = await Project.isAlreadyMember(
+    const [member, ___] = await Project.isAlreadyMember(
       projectId,
       user[0].user_id
     );
-
-    if (isMember.length > 0) {
-      return res.status(40).json({
+    if (member.length <= 0) {
+      await Project.addMember(projectId, user[0].user_id);
+    } else if (member[0].member_status == 1) {
+      return res.status(409).json({
         success: false,
         message: `${user[0].first_name} ${user[0].last_name} is already a member`,
       });
     }
-
-    // add member
-    await Project.addMember(projectId, user[0].user_id);
-
+    
     sendNotificationEmail(
       email,
       `Hi ${user[0].first_name} ${user[0].last_name}`,
@@ -265,7 +263,7 @@ exports.addMember = async (req, res, next) => {
 
     return res
       .status(201)
-      .json({ success: true, message: `Join code sent to ${email}` });
+      .json({ success: true, message: `Invitation email is sent to ${email}` });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }

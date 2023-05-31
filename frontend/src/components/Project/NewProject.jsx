@@ -32,9 +32,9 @@ const NewProject = ({ setIsOpen }) => {
     }),
     onSubmit: (values) => {
       addProject({
-        email: localStorage.getItem("user_email"),
         projectTitle: values.projectName,
         orgId: values.orgId,
+        userId: localStorage.getItem("user_id"),
       });
       formik.resetForm();
     },

@@ -9,7 +9,7 @@ const orgApi = createApi({
   endpoints: (builder) => ({
     addOrganization: builder.mutation({
       query: (data) => ({
-        url: "/add-organization",
+        url: `/add-organization/${localStorage.getItem("user_id")}`,
         method: "POST",
         body: data,
       }),

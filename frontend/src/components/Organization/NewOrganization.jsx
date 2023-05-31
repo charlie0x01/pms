@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { useAddOrganizationMutation } from "../../apis/orgApi";
 import { message } from "antd";
 
-const NewOrganization = ({ setIsOpen}) => {
+const NewOrganization = ({ setIsOpen }) => {
   const [addOrganization, { isLoading, isError, isSuccess, error, data }] =
     useAddOrganizationMutation();
 
@@ -22,7 +22,6 @@ const NewOrganization = ({ setIsOpen}) => {
     onSubmit: (values) => {
       addOrganization({
         organizationName: values.organizationName,
-        email: localStorage.getItem("user_email"),
       });
       setIsOpen(false);
       formik.resetForm();
