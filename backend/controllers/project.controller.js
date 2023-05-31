@@ -251,7 +251,7 @@ exports.addMember = async (req, res, next) => {
         message: `${user[0].first_name} ${user[0].last_name} is already a member`,
       });
     }
-    
+
     sendNotificationEmail(
       email,
       `Hi ${user[0].first_name} ${user[0].last_name}`,
@@ -327,31 +327,33 @@ exports.joinProject = async (req, res, next) => {
     if (members.length <= 0) {
       await Project.addMember(project[0].project_id, userId);
     } else {
-      return res.status(404).json({
-        success: false,
-        message: "You're already a member",
-      });
+      if (members[0].member_status === 0) {
+        // add member
+        await Project.joinProject(userId);
+
+        // send notification email to organization owner
+        const [owner, _____] = await User.findByUserId(org[0].org_owner);
+        const [member, _fileds] = await User.findByUserId(userId);
+        sendNotificationEmail(
+          owner[0].email,
+          `${org[0].org_name} Notification`,
+          `Hi ${owner[0].first_name} ${owner[0].last_name}
+          ${member[0].first_name} ${member[0].last_name} joined the ${project[0].project_title}
+          `,
+          res
+        );
+
+        return res.status(201).json({
+          success: true,
+          message: `User joined the ${project[0].project_title}`,
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: "You're already a member",
+        });
+      }
     }
-
-    // add member
-    await Project.joinProject(userId);
-
-    // send notification email to organization owner
-    const [owner, _____] = await User.findByUserId(org[0].org_owner);
-    const [member, _fileds] = await User.findByUserId(userId);
-    sendNotificationEmail(
-      owner[0].email,
-      `${org[0].org_name} Notification`,
-      `Hi ${owner[0].first_name} ${owner[0].last_name}
-    ${member[0].first_name} ${member[0].last_name} joined the ${project[0].project_title}
-    `,
-      res
-    );
-
-    return res.status(201).json({
-      success: true,
-      message: `User joined the ${project[0].project_title}`,
-    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }

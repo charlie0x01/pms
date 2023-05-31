@@ -154,7 +154,7 @@ exports.getTasks = async (req, res, next) => {
 
 exports.updateTask = async (req, res, next) => {
   try {
-    const { userId, boardId, columnId, taskId } = req.params;
+    const { userId, boardId, taskId } = req.params;
     const { taskTitle, endDate, description, status, priorityTag } = req.body;
 
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
