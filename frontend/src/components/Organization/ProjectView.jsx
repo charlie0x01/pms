@@ -4,16 +4,17 @@ import ProjectCard from "../Project/ProjectCard";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { message } from "antd";
 import { IoMdSettings } from "react-icons/io";
+import AddProject from "../Project/AddProject";
+import EditOrganization from "./EditOrganization";
+import { useNavigate } from "react-router-dom";
 
 // apis
 import { useGetProjectsQuery } from "../../apis/projectApi";
 import { useGetOrganizationQuery } from "../../apis/orgApi";
-import EditOrganization from "./EditOrganization";
-import NewProject from "../Project/NewProject";
-import AddProject from "../Project/AddProject";
 
 const ProjectView = () => {
   const [skip, setSkip] = useState(useParams.orgId ? true : false);
+  const navigate = useNavigate();
   // edit form
   const [addOrganization, setAddOrganization] = useState(false);
   const [addProject, setAddProject] = useState(false);
@@ -33,11 +34,12 @@ const ProjectView = () => {
     isLoading: projectLoading,
   } = useGetProjectsQuery(useParams().orgId);
 
-  console.log(projects);
-
   // handling error for org query
   useEffect(() => {
-    if (error) messageApi.error(error?.data.message);
+    if (error) {
+      messageApi.error(error?.data.message);
+      navigate("/");
+    }
   }, [isLoading]);
   useEffect(() => {
     if (projectError) messageApi.error(projectError?.data.message);
@@ -70,7 +72,7 @@ const ProjectView = () => {
           </div>
           <div className="is-flex is-flex-wrap-wrap p-3 is-gap-2">
             {!projectLoading &&
-              projects.data &&
+              projects?.data &&
               projects?.data.map((project, index) => {
                 return (
                   <ProjectCard

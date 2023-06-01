@@ -219,7 +219,7 @@ exports.joinOrganization = async (req, res, next) => {
       });
     }
 
-    if (org[0].org_id == memberId) {
+    if (org[0].org_owner == memberId) {
       return res.status(404).json({
         success: false,
         message: "Owner cannot be the member",
@@ -233,31 +233,37 @@ exports.joinOrganization = async (req, res, next) => {
 
     if (found.length <= 0) {
       await organization.addMember(org[0].org_id, memberId);
-    } else if (found[0].member_status === 1) {
+      await organization.joinOrganization(org[0].org_id, memberId);
+
+      return res.status(200).json({
+        success: true,
+        message: `Joined ${org[0].org_name}`,
+      });
+    } else if (found[0].member_status === 0) {
+      await organization.joinOrganization(org[0].org_id, memberId);
+
+      // send notification email to organization owner
+      const [owner, ___] = await User.findByUserId(org[0].org_owner);
+      const [member, _fileds] = await User.findByUserId(memberId);
+      sendNotificationEmail(
+        owner[0].email,
+        `${org[0].org_name} Notification`,
+        `Hi ${owner[0].first_name} ${owner[0].last_name}
+      ${member[0].first_name} ${member[0].last_name} joined the ${org[0].org_name}
+      `,
+        res
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: `Joined ${org[0].org_name}`,
+      });
+    } else {
       return res.status(404).json({
         success: false,
         message: "You're already a member",
       });
     }
-
-    await organization.joinOrganization(org[0].org_id, memberId);
-
-    // send notification email to organization owner
-    const [owner, ___] = await User.findByUserId(org[0].org_owner);
-    const [member, _fileds] = await User.findByUserId(memberId);
-    sendNotificationEmail(
-      owner[0].email,
-      `${org[0].org_name} Notification`,
-      `Hi ${owner[0].first_name} ${owner[0].last_name}
-    ${member[0].first_name} ${member[0].last_name} joined the ${org[0].org_name}
-    `,
-      res
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: `Joined ${org[0].org_name}`,
-    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }

@@ -74,6 +74,11 @@ class User {
     }
   }
 
+  static findByName(projectTitle) {
+    let findByName = `select * from projects where project_title = ? ;`;
+    return pool.execute(findByName, [projectTitle]);
+  }
+
   static matchPassword(user, userPassword) {
     // compare the registered password with login password
     return bcrypt.compare(userPassword, user.password);

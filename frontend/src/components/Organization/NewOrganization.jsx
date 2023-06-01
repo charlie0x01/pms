@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAddOrganizationMutation } from "../../apis/orgApi";
 import { message } from "antd";
+import { delay } from "../../../utils";
 
 const NewOrganization = ({ setIsOpen }) => {
   const [addOrganization, { isLoading, isError, isSuccess, error, data }] =
@@ -23,22 +24,27 @@ const NewOrganization = ({ setIsOpen }) => {
       addOrganization({
         organizationName: values.organizationName,
       });
-      setIsOpen(false);
       formik.resetForm();
     },
   });
 
   useEffect(() => {
-    if (isError) {
-      if (Array.isArray(error.data.error)) {
-        error.data.error.forEach((el) => messageApi.error(el.message));
-      } else {
-        messageApi.error(error.data.message);
+    async function handleError() {
+      if (isError) {
+        if (Array.isArray(error.data.error)) {
+          error.data.error.forEach((el) => messageApi.error(el.message));
+        } else {
+          messageApi.error(error.data.message);
+        }
+      }
+      if (isSuccess) {
+        messageApi.success(data?.message);
+        await delay(2000);
+        setIsOpen(false);
       }
     }
-    if (isSuccess) {
-      messageApi.success(data?.message);
-    }
+
+    handleError();
   }, [isLoading]);
   return (
     <>

@@ -2,7 +2,6 @@ require("dotenv").config({ path: "../.env" });
 const User = require("../models/user.model");
 const Organization = require("../models/organization.model");
 const Project = require("../models/project.model");
-const jwt = require("jsonwebtoken");
 const { delay } = require("../utils/delay");
 const { sendNotificationEmail } = require("../utils/sendEmail");
 
@@ -44,6 +43,15 @@ exports.addProject = async (req, res, next) => {
       return res.status(404).json({
         success: false,
         message: "You're not authorized to add new project",
+      });
+    }
+
+    // check if project exist with same name
+    const [exist, none] = await Project.findByName(projectTitle);
+    if (exist.length > 0) {
+      return res.json({
+        success: false,
+        message: "Project already exist with this name",
       });
     }
 
@@ -102,7 +110,7 @@ exports.updateProject = async (req, res, next) => {
     const { projectId, ownerId } = req.params;
     const { description, projectTitle } = req.body;
     // check
-    if (projectTitle === "")
+    if (projectTitle === "" && description === "")
       return res.json({
         success: false,
         message: "required data not provided",
@@ -131,7 +139,7 @@ exports.updateProject = async (req, res, next) => {
       });
     }
 
-    Project.updateProject(description, projectTitle, projectId);
+    await Project.updateProject(description, projectTitle, projectId);
     return res.status(201).json({
       success: true,
       message: "project updated successfully",
@@ -288,7 +296,7 @@ exports.joinProject = async (req, res, next) => {
     if (project.length <= 0) {
       return res
         .status(404)
-        .json({ success: false, message: "Project not found" });
+        .json({ success: false, message: "Invalid join code" });
     }
 
     if (project[0].project_owner == userId) {
@@ -326,6 +334,12 @@ exports.joinProject = async (req, res, next) => {
     );
     if (members.length <= 0) {
       await Project.addMember(project[0].project_id, userId);
+      await Project.joinProject(userId);
+
+      return res.status(201).json({
+        success: true,
+        message: `joined ${project[0].project_title}`,
+      });
     } else {
       if (members[0].member_status === 0) {
         // add member
@@ -372,6 +386,7 @@ exports.getMembers = async (req, res, next) => {
 
     // get members
     const [members, __] = await Project.getMembers(req.params.projectId);
+    console.log(members);
     return res.status(200).json({ success: true, data: members });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });

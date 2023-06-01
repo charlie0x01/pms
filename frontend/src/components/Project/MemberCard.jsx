@@ -5,7 +5,7 @@ import { message, Popconfirm } from "antd";
 // apis
 import { useRemoveProjectMemberMutation } from "../../apis/projectApi";
 
-const MemberCard = ({ name, email, memberId, status, projectId }) => {
+const MemberCard = ({ name, email, memberId, status, projectId, roleId }) => {
   const [messageApi, contextHandler] = message.useMessage();
 
   // remove project member
@@ -66,24 +66,28 @@ const MemberCard = ({ name, email, memberId, status, projectId }) => {
             {status === 1 && (
               <span class="tag is-success is-light">
                 {memberId == localStorage.getItem("user_id") && "You • "}
-                Member
+                Member {roleId}
               </span>
             )}
-            <Popconfirm
-              title={`Remove ${name}`}
-              description="Are you sure to remove this member?"
-              onConfirm={() =>
-                deleteUser(
-                  memberId,
-                  projectId,
-                  parseInt(localStorage.getItem("user_id"))
-                )
-              }
-              okText="Yes"
-              cancelText="No"
-            >
-              <button className="delete"></button>
-            </Popconfirm>
+            {roleId === 4 ? (
+              <></>
+            ) : (
+              <Popconfirm
+                title={`Remove ${name}`}
+                description="Are you sure to remove this member?"
+                onConfirm={() =>
+                  deleteUser(
+                    memberId,
+                    projectId,
+                    parseInt(localStorage.getItem("user_id"))
+                  )
+                }
+                okText="Yes"
+                cancelText="No"
+              >
+                <button className="delete"></button>
+              </Popconfirm>
+            )}
           </div>
         </div>
       </div>

@@ -35,28 +35,22 @@ class Project {
   }
 
   static findByUserId(orgId, userId) {
-    let getProjects = `SELECT p.*, pm.member_status
-    FROM projects p
-    LEFT JOIN project_members pm ON p.project_id = pm.project_id
-    WHERE p.project_org_id = ?
-      AND (pm.member_status = 1 OR p.project_owner = ?)
-      AND (pm.project_member_id = ? OR p.project_owner = ? OR pm.project_member_id IS NULL);`;
-    return pool.execute(getProjects, [orgId, userId, userId, userId]);
+    // let getProjects = `SELECT p.*, pm.member_status
+    // FROM projects p
+    // LEFT JOIN project_members pm ON p.project_id = pm.project_id
+    // WHERE p.project_org_id = ?
+    //   AND (pm.member_status = 1 OR p.project_owner = ?)
+    //   AND (pm.project_member_id = ? OR p.project_owner = ? OR pm.project_member_id IS NULL);`;
+    let getProjects = `select * from projects 
+    where project_org_id = ? and project_id in 
+    (select project_id from project_members where project_member_id = ? and member_status = 1) 
+    or project_owner = ?;`
+    return pool.execute(getProjects, [orgId, userId, userId]);
   }
 
   static updateProject(description, projectTitle, projectId) {
     let updatePro = `update projects set description = ?, project_title = ? where project_id = ? `;
-    try {
-      transaction(pool, async (connection) => {
-        const result = await connection.execute(updatePro, [
-          description,
-          projectTitle,
-          projectId,
-        ]);
-      });
-    } catch (error) {
-      throw error;
-    }
+    return pool.execute(updatePro, [description, projectTitle, projectId]);
   }
 
   static findByName(name) {
@@ -110,7 +104,7 @@ class Project {
   }
 
   static addMember(projectId, memberId) {
-    let addMember = `insert into project_members(project_id, pm_role_id, project_member_id, member_status) values(?, 3, ?, 0);`;
+    let addMember = `insert into project_members(project_id, pm_role_id, project_member_id, member_status) values(?, 4, ?, 0);`;
     return pool.execute(addMember, [projectId, memberId]);
   }
 
@@ -120,7 +114,8 @@ class Project {
   }
 
   static getMembers(projectId) {
-    let getMembers = `select user.user_id, user.first_name, user.last_name, user.email, om.member_status from project_members as om join users as user on user.user_id = om.project_member_id where om.project_id = ? and member_status = 1;`;
+    let getMembers = `select user.user_id, user.first_name, user.last_name, user.email, om.member_status, om.pm_role_id 
+    from project_members as om join users as user on user.user_id = om.project_member_id where om.project_id = ? and member_status = 1;`;
     return pool.execute(getMembers, [projectId]);
   }
 

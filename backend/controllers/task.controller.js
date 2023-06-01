@@ -3,7 +3,6 @@ const User = require("../models/user.model");
 const Project = require("../models/project.model");
 const Kanban = require("../models/kanban.model");
 const Task = require("../models/task.model");
-const jwt = require("jsonwebtoken");
 
 exports.addTask = async (req, res, next) => {
   try {

@@ -9,9 +9,9 @@ const projectApi = createApi({
   endpoints: (builder) => ({
     addProject: builder.mutation({
       query: (data) => ({
-        url: `/add-project/${data.orgId}`,
+        url: `/add-project/${data.orgId}/${data.userId}`,
         method: "POST",
-        body: data,
+        body: { projectTitle: data.projectTitle },
       }),
       providesTags: ["projects"],
       invalidatesTags: ["projects"],
@@ -102,5 +102,5 @@ export const {
   useAddMemberMutation,
   useJoinProjectMutation,
   useGetMembersQuery,
-  useRemoveProjectMemberMutation
+  useRemoveProjectMemberMutation,
 } = projectApi;

@@ -6,6 +6,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { authApi } from "./apis/authApi";
 import { orgApi } from "./apis/orgApi";
 import { projectApi } from "./apis/projectApi";
+import { kanbanApi } from "./apis/kanbanApi";
 
 // features
 import orgReducer from "./features/orgSlice";
@@ -16,6 +17,7 @@ const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [orgApi.reducerPath]: orgApi.reducer,
     [projectApi.reducerPath]: projectApi.reducer,
+    [kanbanApi.reducerPath]: kanbanApi.reducer,
     org: orgReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -23,6 +25,7 @@ const store = configureStore({
       authApi.middleware,
       orgApi.middleware,
       projectApi.middleware,
+      kanbanApi.middleware,
     ]),
 });
 

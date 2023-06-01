@@ -11,7 +11,7 @@ import LoadingSpinner from "../common/LoadingSpinner";
 import AddMember from "./AddMember";
 
 const TabBarSection = ({ orgId }) => {
-  const [activeTab, setActiveTab] = useState("Tab 1");
+  const [activeTab, setActiveTab] = useState("Members");
   const [addMember, setAddMember] = useState(false);
 
   // get members

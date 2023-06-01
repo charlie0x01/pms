@@ -101,7 +101,15 @@ class organization {
 
   static removeMember(orgId, memberId) {
     let removeMember = `delete from organization_members where org_member_id = ? and org_id = ?`;
-    return pool.execute(removeMember, [memberId, orgId]);
+    let removeOrgMembers = `delete from project_members where project_member_id = ?;`;
+    try {
+      transaction(pool, async (connection) => {
+        await connection.execute(removeOrgMembers, [memberId]);
+        await connection.execute(removeMember, [memberId, orgId]);
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
