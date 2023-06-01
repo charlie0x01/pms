@@ -37,11 +37,7 @@ class Kanban {
 
   static deleteColumn(columnId) {
     let deleteColumn = `delete from board_columns where column_id = ? `;
-    try {
-      const result = connection.execute(deleteColumn, [columnId]);
-    } catch (error) {
-      throw error;
-    }
+    return pool.execute(deleteColumn, [columnId]);
   }
 
   // Get one column
