@@ -55,6 +55,22 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
+exports.getUserRoles = async (req, res) => {
+  try {
+    const [roles, _] = await User.getUserRoles();
+    console.log(roles);
+    return res.status(200).json({
+      success: true,
+      data: roles,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 exports.getUserInfo = async (req, res, next) => {
   try {
     const { userId } = req.params;

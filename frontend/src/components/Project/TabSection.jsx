@@ -60,7 +60,7 @@ const TabSection = ({ projectId }) => {
                         email={member.email}
                         projectId={projectId}
                         status={member.member_status}
-                        roleId={member.pm_role_id}
+                        memberRoleId={member.pm_role_id}
                       />
                     );
                   })}

@@ -156,6 +156,11 @@ class Project {
     let removeMember = `delete from project_members where project_member_id = ? and project_id = ?`;
     return pool.execute(removeMember, [memberId, projectId]);
   }
+
+  static changeMemberRole(projectId, memberId, roleId) {
+    let changeMemberRole = `update project_members set pm_role_id = ? where project_id = ? and project_member_id = ?;`;
+    return pool.execute(changeMemberRole, [roleId, projectId, memberId]);
+  }
 }
 
 module.exports = Project;

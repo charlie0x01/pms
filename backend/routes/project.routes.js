@@ -1,7 +1,4 @@
 const express = require("express");
-const {
-  projectRoleAuthorization,
-} = require("../middlewares/roleAuthMiddlewares");
 
 const {
   addProject,
@@ -13,6 +10,7 @@ const {
   joinProject,
   getMembers,
   removeMember,
+  changeUserRole,
 } = require("../controllers/project.controller");
 
 const router = express.Router();
@@ -27,5 +25,9 @@ router.post("/add-member/:projectId/:userId/:memberRoleId", addMember);
 router.post("/join-project/:userId", joinProject);
 router.get("/get-members/:projectId", getMembers);
 router.delete("/remove-member/:projectId/:memberId/:userId", removeMember);
+router.patch(
+  "/change-member-role/:projectId/:memberId/:roleId",
+  changeUserRole
+);
 
 module.exports = router;

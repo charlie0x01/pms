@@ -13,6 +13,7 @@ const {
   getMembers,
   removeMember,
   joinOrganization,
+  changeUserRole,
 } = require("../controllers/organization.controller");
 
 const router = express.Router();
@@ -44,5 +45,6 @@ router.post("/add-member/:orgId/:userId", addMember);
 router.get("/get-members/:orgId", getMembers);
 router.delete("/remove-member/:orgId/:memberId/:userId", removeMember);
 router.patch("/join-organization/:memberId", joinOrganization);
+router.patch("/change-member-role/:ordId/:memberId/:roleId", changeUserRole);
 
 module.exports = router;

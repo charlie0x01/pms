@@ -89,6 +89,12 @@ const projectApi = createApi({
       providesTags: ["projects"],
       invalidatesTags: ["projects"],
     }),
+    changeMemberRole: builder.mutation({
+      query: ({ projectId, memberId, roleId }) => ({
+        url: `/change-member-role/${projectId}/${memberId}/${roleId}`,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -101,6 +107,7 @@ export const {
   useDeleteProjectMutation,
   useAddMemberMutation,
   useJoinProjectMutation,
+  useChangeMemberRoleMutation,
   useGetMembersQuery,
   useRemoveProjectMemberMutation,
 } = projectApi;

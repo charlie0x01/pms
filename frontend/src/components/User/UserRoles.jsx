@@ -1,54 +1,39 @@
 import React from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 
 // apis
+import { useGetUserRolesQuery } from "../../apis/authApi";
 
+const UserRoles = ({ callback, selected, memberId }) => {
+  console.log("from user role dropdown \n", selected, memberId);
+  // get user roles
+  const { data: userRoles } = useGetUserRolesQuery();
 
-const UserRoles = () => {
-  useEffect(() => {
-    async function handleError() {
-      if (isError) {
-        if (Array.isArray(error.data.error)) {
-          error.data.error.forEach((el) => messageApi.error(el.message));
-        } else {
-          messageApi.error(error.data.message);
-        }
-      }
-      if (isSuccess) {
-        messageApi.success(response?.message);
-        await delay(1000);
-        setIsOpen(false);
-      }
-    }
-
-    handleError();
-  }, [isLoading]);
   return (
-    <form>
-      <div class="field">
-        <label class="label">Select Menu</label>
-        <div class="control">
-          <div class="select is-primary">
-            <select {...formik.getFieldProps("orgId")}>
-              <option>Select an option</option>
+    <div class="field" style={{ margin: 0 }}>
+      <div class="select is-small">
+        <select
+          disabled={
+            selected != 2 && localStorage.getItem("user_id") == memberId
+          }
+          onChange={({ target: { value } }) => callback(value)}
+        >
+          <option>Select User Role</option>
 
-              {organizations?.length > 0 &&
-                organizations?.map((org, index) => {
-                  return (
-                    <option value={org.org_id} key={index}>
-                      {org.org_name}
-                    </option>
-                  );
-                })}
-            </select>
-          </div>
-        </div>
+          {userRoles &&
+            userRoles?.data.map((role, index) => {
+              return (
+                <option
+                  selected={selected === role.role_id}
+                  value={role.role_id}
+                  key={index}
+                >
+                  {role.role_title}
+                </option>
+              );
+            })}
+        </select>
       </div>
-      {formik.touched.orgId && formik.errors.orgId ? (
-        <div className="has-text-danger">{formik.errors.orgId}</div>
-      ) : null}
-    </form>
+    </div>
   );
 };
 

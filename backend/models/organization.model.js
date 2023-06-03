@@ -91,7 +91,7 @@ class organization {
     return pool.execute(getOrganization, [joiningCode]);
   }
   static getMembers(orgId) {
-    let getMembers = `select user.first_name, user.last_name, user.email, user.user_id, om.member_status from organization_members as om join users as user on user.user_id = om.org_member_id where om.org_id = ?;`;
+    let getMembers = `select user.first_name, user.last_name, user.email, user.user_id, om.member_status, om.om_role_id from organization_members as om join users as user on user.user_id = om.org_member_id where om.org_id = ?;`;
     return pool.execute(getMembers, [orgId]);
   }
   static findByMemberAndOrganizationId(orgId, memberId) {
@@ -110,6 +110,11 @@ class organization {
     } catch (error) {
       throw error;
     }
+  }
+
+  static changeUserRole(ordId, memberId, roleId) {
+    let changeUserRole = `update organization_members set om_role_id = ? where org_id = ? and org_member_id = ?; `;
+    return pool.execute(changeUserRole, [roleId, ordId, memberId]);
   }
 }
 

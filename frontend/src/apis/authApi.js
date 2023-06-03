@@ -61,9 +61,10 @@ const authApi = createApi({
       query: (id) => `/user/get-user/${id}`,
       method: "GET",
     }),
-    // getUsers: builder.query({
-    //   query: () => "/users",
-    // }),
+    getUserRoles: builder.query({
+      query: () => "/user/get-user-roles",
+      method: "GET",
+    }),
     updateUser: builder.mutation({
       query: ({ id, user }) => ({
         url: `/user/update-user-profile/${id}`,
@@ -91,6 +92,7 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   // useGetUsersQuery,
+  useGetUserRolesQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useGetNewVerificationCodeMutation,

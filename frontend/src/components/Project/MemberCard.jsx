@@ -1,12 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "react-avatar";
 import { message, Popconfirm } from "antd";
+import UserRoles from "../User/UserRoles";
 
 // apis
-import { useRemoveProjectMemberMutation } from "../../apis/projectApi";
+import {
+  useRemoveProjectMemberMutation,
+  useChangeMemberRoleMutation,
+} from "../../apis/projectApi";
 
-const MemberCard = ({ name, email, memberId, status, projectId, roleId }) => {
+const MemberCard = ({
+  name,
+  email,
+  memberId,
+  status,
+  projectId,
+  memberRoleId,
+}) => {
   const [messageApi, contextHandler] = message.useMessage();
+  const [promotedTo, setPromotedTo] = useState("");
 
   // remove project member
   const [
@@ -19,6 +31,23 @@ const MemberCard = ({ name, email, memberId, status, projectId, roleId }) => {
       data: memberDeleteResponse,
     },
   ] = useRemoveProjectMemberMutation();
+
+  // change role
+  const [
+    changeMemberRole,
+    { isLoading, isError, isSuccess, error, data: roleChangeResponse },
+  ] = useChangeMemberRoleMutation();
+
+  const handleChangeMemberRole = (roleId) => {
+    if (roleId == 4) setPromotedTo(`${name} is Member now`);
+    if (roleId == 3) setPromotedTo(`${name} is Team Lead now`);
+    if (roleId == 2) setPromotedTo(`${name} is Promoted to Admin`);
+    changeMemberRole({
+      projectId: projectId,
+      memberId: memberId,
+      roleId: roleId,
+    });
+  };
 
   const deleteUser = (member_id, project_id, user_id) => {
     removeProjectMember({
@@ -41,6 +70,19 @@ const MemberCard = ({ name, email, memberId, status, projectId, roleId }) => {
     }
   }, [memberLoading]);
 
+  useEffect(() => {
+    if (isError) {
+      // if (Array.isArray(_error?.data.error)) {
+      //   _error?.data.error.forEach((el) => messageApi.error(el.message));
+      // } else {
+      messageApi.error(error?.data.message);
+      // }
+    }
+    if (isSuccess) {
+      messageApi.success(promotedTo);
+    }
+  }, [isLoading]);
+
   return (
     <>
       {contextHandler}
@@ -60,18 +102,17 @@ const MemberCard = ({ name, email, memberId, status, projectId, roleId }) => {
         </div>
         <div className="media-right">
           <div className="is-flex is-align-items-center is-gap-2">
-            {status === 0 && (
+            {status === 0 ? (
               <span class="tag is-danger is-light">Response Pending</span>
-            )}
-            {status === 1 && (
-              <span class="tag is-success is-light">
-                {memberId == localStorage.getItem("user_id") && "You • "}
-                Member {roleId}
-              </span>
-            )}
-            {roleId === 4 ? (
-              <></>
             ) : (
+              <UserRoles
+                callback={handleChangeMemberRole}
+                selected={memberRoleId}
+                memberId={memberId}
+              />
+            )}
+            {memberRoleId == 2 ||
+            localStorage.getItem("user_id") != memberId ? (
               <Popconfirm
                 title={`Remove ${name}`}
                 description="Are you sure to remove this member?"
@@ -87,6 +128,8 @@ const MemberCard = ({ name, email, memberId, status, projectId, roleId }) => {
               >
                 <button className="delete"></button>
               </Popconfirm>
+            ) : (
+              <></>
             )}
           </div>
         </div>

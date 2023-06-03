@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import TabBar from "../TabBar/Tabbar";
 import ContentPanel from "../TabBar/ContentPanel";
 import { message } from "antd";
-import { AiOutlineUserAdd } from "react-icons/ai";
 import MemberCard from "./MemberCard";
 
 // apis
@@ -57,6 +56,7 @@ const TabBarSection = ({ orgId }) => {
                         email={member.email}
                         orgId={orgId}
                         status={member.member_status}
+                        memberRoleId={member.om_role_id}
                       />
                     );
                   })}

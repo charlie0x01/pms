@@ -438,3 +438,17 @@ exports.removeMember = async (req, res, next) => {
     return res.status(500).json({ success: false, message: error?.message });
   }
 };
+
+exports.changeUserRole = async (req, res) => {
+  try {
+    const { projectId, memberId, roleId } = req.params;
+
+    // change role
+    await Project.changeMemberRole(projectId, memberId, roleId);
+    return res
+      .status(200)
+      .json({ success: true, message: "Member role changed" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};

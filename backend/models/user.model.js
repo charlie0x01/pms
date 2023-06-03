@@ -137,6 +137,11 @@ class User {
     let query = `select * from users where user_id = ?;`;
     return pool.execute(query, [userId]);
   }
+
+  static getUserRoles() {
+    let getURs = `SELECT * FROM roles;`;
+    return pool.execute(getURs);
+  }
 }
 
 module.exports = User;

@@ -71,6 +71,14 @@ const orgApi = createApi({
       providesTags: ["members", "org"],
       invalidatesTags: ["members", "org"],
     }),
+    changeMemberRole: builder.mutation({
+      query: ({ orgId, memberId, roleId }) => ({
+        url: `/change-member-role/${orgId}/${memberId}/${roleId}`,
+        method: "PATCH",
+      }),
+      providesTags: ["members", "org"],
+      invalidatesTags: ["members", "org"],
+    }),
     joinOrganization: builder.mutation({
       query: ({ joiningCode, memberId }) => ({
         url: `/join-organization/${memberId}`,
@@ -86,6 +94,7 @@ const orgApi = createApi({
 export { orgApi };
 export const {
   useAddOrganizationMutation,
+  useChangeMemberRoleMutation,
   useGetOrganizationsQuery,
   useDeleteOrganizationMutation,
   useUpdateOrganizationMutation,

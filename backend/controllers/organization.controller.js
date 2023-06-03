@@ -322,11 +322,23 @@ exports.removeMember = async (req, res, next) => {
     }
 
     // remove member
-    await organization.removeMember(orgId, memberId);
+    organization.removeMember(orgId, memberId);
 
     return res
       .status(200)
       .json({ success: true, message: "member removed successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.changeUserRole = async (req, res) => {
+  try {
+    const { ordId, memberId, roleId } = req.params;
+    await organization.changeUserRole(ordId, memberId, roleId);
+    return res
+      .status(200)
+      .json({ success: true, message: "Member role changed" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }
