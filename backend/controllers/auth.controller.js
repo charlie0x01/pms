@@ -179,7 +179,9 @@ exports.forgetPassword = async (req, res, next) => {
 
   // check email is not empty
   if (email === "") {
-    return res.status(404).json({ message: "Please provide email address" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Please provide email address" });
   }
 
   try {
@@ -187,16 +189,17 @@ exports.forgetPassword = async (req, res, next) => {
 
     // check, if we have any user with this email
     if (!user[0]) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "This email is not registered on taskify",
+      });
     }
 
     const otp = generateForgotPasswordOTP();
     await User.forgetPasswordOTP(otp, email);
     sendEmail(email, user[0].first_name, otp, "Taskify Forget Password OTP");
 
-    return res.status(202).json({
+    return res.status(200).json({
       success: true,
       message: `OTP sent to ${email}`,
     });
@@ -210,15 +213,18 @@ exports.verifyOTP = async (req, res, next) => {
     const { email, otp } = req.body;
 
     if (otp === "") {
-      return res.status(404).json({ message: "Please provide OTP" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Please provide OTP" });
     }
-
+    console.log(email, otp);
     const [user, _] = await User.findByEmailId(email);
     // check, if we have any user with this email
     if (!user[0]) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Account not exist, you requesting reset password for.",
+      });
     }
 
     // Compare the entered OTP with the stored OTP
@@ -228,7 +234,7 @@ exports.verifyOTP = async (req, res, next) => {
 
     res.status(202).json({
       success: true,
-      message: `Valid OTP`,
+      message: `Verified`,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -238,7 +244,6 @@ exports.verifyOTP = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     const { email, newPassword, confirmPassword } = req.body;
-    console.log("In Reset Password Function");
 
     // check passwords are not empty
     if (!email || !newPassword || !confirmPassword) {
@@ -253,13 +258,16 @@ exports.resetPassword = async (req, res, next) => {
     const [user, _] = await User.findByEmailId(email);
     // check, if we have any user with this email
     if (!user[0]) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Account not exist, you requesting reset password for.",
+      });
     }
 
-    await User.updatePassword(email, confirmPassword);
-    res.status(200).json({ success: true, message: "password updated" });
+    User.updatePassword(email, confirmPassword);
+    return res
+      .status(200)
+      .json({ success: true, message: "Password reset successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

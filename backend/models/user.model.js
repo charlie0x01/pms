@@ -36,13 +36,15 @@ class User {
 
   static updatePassword(email, newPassword) {
     // update user password in database
-    let updatePass = `update users set password = ? where email = ? `;
+    let updatePass = `update users set password = ? where email = ?;`;
+    let setOTPEmtpy = `update users set forget_pass_otp = "" where email = ?;`;
     try {
       // encrypt password before saving in database
       bcrypt.genSalt(10, (error, salt) => {
         bcrypt.hash(newPassword, salt, (error, hash) => {
           transaction(pool, async (connection) => {
             await connection.execute(updatePass, [hash, email]);
+            await connection.execute(setOTPEmtpy, [email]);
           });
         });
       });
@@ -104,12 +106,8 @@ class User {
   }
 
   static async forgetPasswordOTP(otp, email) {
-    try {
-      let query = `update users set forget_pass_otp = ? where email = ?;`;
-      return await pool.execute(query, [otp, email]);
-    } catch (error) {
-      throw error;
-    }
+    let query = `update users set forget_pass_otp = ? where email = ?;`;
+    return await pool.execute(query, [otp, email]);
   }
 
   static getSignedToken(email) {

@@ -12,6 +12,7 @@ import { taskApi } from "./apis/taskApi";
 // features
 import orgReducer from "./features/orgSlice";
 import kanbanBoardReducer from "./features/kanbanboardSlice";
+import globaStateReducer from "./features/globalSlice";
 
 // let's configure a store
 const store = configureStore({
@@ -23,6 +24,7 @@ const store = configureStore({
     [taskApi.reducerPath]: taskApi.reducer,
     org: orgReducer,
     kanbanBoard: kanbanBoardReducer,
+    globalState: globaStateReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat([

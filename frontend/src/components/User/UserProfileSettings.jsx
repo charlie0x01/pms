@@ -64,7 +64,7 @@ const UserProfileSettings = () => {
                   }}
                   class="input"
                   type="file"
-                  ccept="image/png, image/gif, image/jpeg"
+                  accept="image/png, image/gif, image/jpeg"
                 />
               </div>
             </div>

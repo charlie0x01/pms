@@ -1,4 +1,3 @@
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const authApi = createApi({
@@ -35,9 +34,16 @@ const authApi = createApi({
     }),
     forgotPassword: builder.mutation({
       query: (email) => ({
-        url: "/forgot-password",
+        url: "/forget-password",
         method: "POST",
-        body: { email },
+        body: { email: email },
+      }),
+    }),
+    verifyForgetPasswordOTP: builder.mutation({
+      query: (data) => ({
+        url: "/verify-otp",
+        method: "POST",
+        body: data,
       }),
     }),
     resetPassword: builder.mutation({
@@ -93,4 +99,5 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useGetNewVerificationCodeMutation,
+  useVerifyForgetPasswordOTPMutation,
 } = authApi;
