@@ -1,7 +1,11 @@
 require("dotenv").config({ path: "./.env" });
 const User = require("../models/user.model");
 const OTP = require("../models/otp");
-const { sendEmail, generateOTP } = require("../utils/sendEmail");
+const {
+  sendEmail,
+  generateOTP,
+  generateForgotPasswordOTP,
+} = require("../utils/sendEmail");
 
 exports.signup = async (req, res, next) => {
   try {
@@ -74,6 +78,31 @@ exports.login = async (req, res, next) => {
         .json({ success: false, message: "Invalid Credentials" });
     }
 
+    // check if user is verified by email or not
+    if (user[0].verified === 0) {
+      const otp = generateOTP();
+      const updated = await User.newVerificationCode(otp, email);
+
+      if (updated[0].affectedRows === 1) {
+        // const [user, _] = await User.findByEmailId(email);
+        sendEmail(
+          email,
+          user.first_name,
+          otp,
+          "Taskify Email Verification Code"
+        );
+        return res.status(400).json({
+          success: true,
+          message: `verify_yourself`,
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: "something went wrong! try again",
+        });
+      }
+    }
+
     // check password
     const isMatched = await User.matchPassword(user[0], password);
     // if not matched
@@ -84,55 +113,6 @@ exports.login = async (req, res, next) => {
     }
     // send token
     sendToken(user[0], 200, res);
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-exports.forgetpassword = async (req, res, next) => {
-  // 1st extract email from request body
-  const { email } = req.body;
-
-  // check email and password is not empty
-  if (!email) {
-    return res.status(404).json({ message: "Please provide email" });
-  }
-
-  try {
-    const [user, _] = await User.findByEmailId(email);
-
-    // check, if we have any user with this email
-    if (!user[0]) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Email doesn't exist." });
-    }
-
-    const otpUser = await OTP.findByEmailId(email);
-
-    var t = new Date();
-
-    let otpCode = Math.floor(Math.random() * 10000 + 1);
-    const otpData = new OTP(email, otpCode);
-    const response = await sendEmail(user[0].email, user[0].firstName, otpCode);
-
-    if (otpUser) {
-      await OTP.updateOTP(user[0].email, otpCode);
-    } else {
-      await otpData.save();
-    }
-
-    if (!response) {
-      // don't show full email
-      let emailAddress = user[0].email.split("@")[0];
-      emailAddress = emailAddress.slice(0, 5);
-      emailAddress += ".....@" + user[0].email.split("@")[1];
-
-      return res.status(201).json({
-        success: true,
-        message: `${user[0].firstName}, please check email at ${emailAddress}`,
-      });
-    }
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -192,37 +172,98 @@ exports.newVerificationCode = async (req, res, next) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-// exports.resetpassword = async (req, res, next) => {
-//   const {} = req.body;
-//   console.log("In Reset Password Function");
 
-//   // check passwords are not empty
-//   if (!newPassword || !confirmPassword) {
-//     return res.status(404).json({ message: "Password should not be empty." });
-//   }
+exports.forgetPassword = async (req, res, next) => {
+  // 1st extract email from request body
+  const { email } = req.body;
 
-//   // check passwords are matching or not
-//   if (newPassword != confirmPassword) {
-//     return res.status(404).json({ message: "Passwords are not same." });
-//   }
+  // check email is not empty
+  if (email === "") {
+    return res.status(404).json({ message: "Please provide email address" });
+  }
 
-//   try {
-//     console.log(tempEmail);
-//     const [user, _] = await User.findByEmailId("hamzakh827@gmail.com");
+  try {
+    const [user, _] = await User.findByEmailId(email);
 
-//     if (!user[0]) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User doesn't exist." });
-//     }
-//     console.log(user[0]);
+    // check, if we have any user with this email
+    if (!user[0]) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
 
-//     await User.updatePassword(user[0].email, confirmPassword);
-//     res.status(200).json({ success: true, message: "password updated" });
-//   } catch (error) {
-//     return res.status(500).json({ success: false, message: error.message });
-//   }
-// };
+    const otp = generateForgotPasswordOTP();
+    await User.forgetPasswordOTP(otp, email);
+    sendEmail(email, user[0].first_name, otp, "Taskify Forget Password OTP");
+
+    return res.status(202).json({
+      success: true,
+      message: `OTP sent to ${email}`,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.verifyOTP = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (otp === "") {
+      return res.status(404).json({ message: "Please provide OTP" });
+    }
+
+    const [user, _] = await User.findByEmailId(email);
+    // check, if we have any user with this email
+    if (!user[0]) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Compare the entered OTP with the stored OTP
+    if (otp !== user[0].forget_pass_otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    res.status(202).json({
+      success: true,
+      message: `Valid OTP`,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+    console.log("In Reset Password Function");
+
+    // check passwords are not empty
+    if (!email || !newPassword || !confirmPassword) {
+      return res.status(404).json({ message: "Password should not be empty." });
+    }
+
+    // check passwords are matching or not
+    if (newPassword !== confirmPassword) {
+      return res.status(404).json({ message: "Passwords are not same." });
+    }
+
+    const [user, _] = await User.findByEmailId(email);
+    // check, if we have any user with this email
+    if (!user[0]) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    await User.updatePassword(email, confirmPassword);
+    res.status(200).json({ success: true, message: "password updated" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 const sendToken = (user, statusCode, res) => {
   res.status(statusCode).json({
@@ -236,5 +277,6 @@ const sendToken = (user, statusCode, res) => {
     userType: user.user_type,
     password: user.password,
     verified: user.verified,
+    forgetPassOTP: user.forget_pass_otp,
   });
 };

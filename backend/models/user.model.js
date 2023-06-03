@@ -103,6 +103,15 @@ class User {
     }
   }
 
+  static async forgetPasswordOTP(otp, email) {
+    try {
+      let query = `update users set forget_pass_otp = ? where email = ?;`;
+      return await pool.execute(query, [otp, email]);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static getSignedToken(email) {
     return jwt.sign({ email: email }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRE,

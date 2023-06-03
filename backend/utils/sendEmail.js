@@ -11,6 +11,17 @@ function generateOTP() {
   return OTP;
 }
 
+function generateForgotPasswordOTP() {
+  // Declare a digits variable
+  // which stores all digits
+  var digits = "0123456789";
+  let OTP = "";
+  for (let i = 0; i < 4; i++) {
+    OTP += digits[Math.floor(Math.random() * 10)];
+  }
+  return OTP;
+}
+
 function sendEmail(email, name, otp, message) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -119,6 +130,7 @@ function sendNotificationEmail(email, subject, body) {
 module.exports = {
   sendEmail,
   generateOTP,
+  generateForgotPasswordOTP,
   sendInvitaionEmail,
   sendNotificationEmail,
 };
