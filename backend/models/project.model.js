@@ -14,7 +14,7 @@ class Project {
   save() {
     // generate joining code
     const joiningCode = uuid().slice(0, 8);
-    let addProject = `insert into projects(project_org_id, project_owner, description, project_title, created_date, joining_code) values(?, ?, "", ?, ?, ?); `;
+    let addProject = `insert into projects(project_org_id, project_owner, description, project_title, created_date, joining_code) values(?, ?, "", ?, STR_TO_DATE(?, "%m/%d/%Y"), ?); `;
     let addBoard = `insert into boards(board_project_id) values(?);`;
     try {
       transaction(pool, async (connection) => {
@@ -42,9 +42,9 @@ class Project {
     //   AND (pm.member_status = 1 OR p.project_owner = ?)
     //   AND (pm.project_member_id = ? OR p.project_owner = ? OR pm.project_member_id IS NULL);`;
     let getProjects = `select * from projects 
-    where project_org_id = ? and project_id in 
-    (select project_id from project_members where project_member_id = ? and member_status = 1) 
-    or project_owner = ?;`
+    where project_org_id = ? and (project_id in 
+    (select project_id from project_members where project_member_id = ? and member_status = 1)
+    or project_owner = ?);`;
     return pool.execute(getProjects, [orgId, userId, userId]);
   }
 

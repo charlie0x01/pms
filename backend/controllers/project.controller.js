@@ -55,7 +55,10 @@ exports.addProject = async (req, res, next) => {
       });
     }
 
-    const currentDate = new Date();
+    const date = new Date();
+    const currentDate = `${
+      date.getMonth() + 1
+    }/${date.getDate()}/${date.getFullYear()}`;
     // create new project
     const project = new Project(
       orgId,

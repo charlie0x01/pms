@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 import { useGetMembersQuery } from "../../apis/projectApi";
 
 function ProjectCard({ title, description, date, id, link }) {
-  const checkDueDate = (date) => {};
-
   // get members
   const { isLoading, error, data: members } = useGetMembersQuery(id);
   return (
@@ -49,10 +47,10 @@ function ProjectCard({ title, description, date, id, link }) {
             </div>
           </div>
           <p className="mt-2 mb-1 subtitle is-size-6 ellipsis">{description}</p>
-          <hr className="m-1" />
+          {/* <hr className="m-1" />
           <p className="is-size-7 has-text-weight-semibold">
             Created Date: May 29, 2023
-          </p>
+          </p> */}
           <div className="is-flex is-flex-direction-row">
             <div></div>
             <div></div>

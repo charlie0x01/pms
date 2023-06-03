@@ -6,22 +6,23 @@ import { message } from "antd";
 import moment from "moment";
 
 // apis
-import { useAddTaskMutation } from "../../apis/taskApi";
+import { useUpdateTaskMutation } from "../../apis/taskApi";
 
-const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
+const EditTask = ({ isOpen, setIsOpen, task }) => {
   const [messageApi, contextHandler] = message.useMessage();
-  // add task
+  // update task
   const [
-    addTask,
-    { isLoading, isError, isSuccess, error, data: addTaskReponse },
-  ] = useAddTaskMutation();
+    updateTask,
+    { isLoading, isError, isSuccess, error, data: updateTaskResponse },
+  ] = useUpdateTaskMutation();
+
   // formik hook
   const formik = useFormik({
     initialValues: {
-      taskTitle: "",
-      priority: "",
-      dueDate: "",
-      description: "",
+      taskTitle: task?.taskTitle || "",
+      priority: task?.priority || "",
+      dueDate: task?.dueDate.slice(0, 10) || "",
+      description: task?.description || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -50,8 +51,10 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
         ),
     }),
     onSubmit: (values) => {
-      addTask({
-        columnId: columnId,
+      alert(JSON.stringify(values));
+      updateTask({
+        boardId: task?.boardId,
+        taskId: task?.taskId,
         ...values,
       });
     },
@@ -68,7 +71,7 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
         }
       }
       if (isSuccess) {
-        messageApi.success(addTaskReponse?.message);
+        messageApi.success(updateTaskResponse?.message);
         formik.resetForm();
         setIsOpen(false);
       }
@@ -85,24 +88,24 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
           onClick={() => {
             setIsOpen(false);
           }}
-          class="modal-close is-large"
+          className="modal-close is-large"
           aria-label="close"
         ></button>
         {/* body!!! */}
         <div className="p-3">
           <h1 className="title is-size-5 has-text-centered has-text-grey">
-            Add a new task
+            Edit Task
           </h1>
           <form onSubmit={formik.handleSubmit}>
-            <div class="field is-horizontal">
-              <div class="field-label is-normal">
-                <label class="label">Task Title</label>
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Task Title</label>
               </div>
-              <div class="field-body">
-                <div class="field">
-                  <div class="control">
+              <div className="field-body">
+                <div className="field">
+                  <div className="control">
                     <input
-                      class="input"
+                      className="input"
                       id="taskTitle"
                       type="text"
                       placeholder="Enter Task Title"
@@ -112,21 +115,21 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
                   {formik.touched.taskTitle && formik.errors.taskTitle ? (
                     <p className="help is-danger">{formik.errors.taskTitle}</p>
                   ) : null}
-                  {/* <p class="help is-danger">This field is required</p> */}
+                  {/* <p className="help is-danger">This field is required</p> */}
                 </div>
               </div>
             </div>
             {/* {formik.touched.projectName && formik.errors.projectName ? (
             <div className="has-text-danger">{formik.errors.projectName}</div>
           ) : null} */}
-            <div class="field is-horizontal">
-              <div class="field-label is-normal">
-                <label class="label">Priority</label>
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Priority</label>
               </div>
-              <div class="field-body">
-                <div class="field is-narrow">
-                  <div class="control">
-                    <div class="select is-fullwidth">
+              <div className="field-body">
+                <div className="field is-narrow">
+                  <div className="control">
+                    <div className="select is-fullwidth">
                       <select {...formik.getFieldProps("priority")}>
                         <option>--Select Priority--</option>
                         <option value="Critical">Critical</option>
@@ -143,15 +146,15 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
               </div>
             </div>
 
-            <div class="field is-horizontal">
-              <div class="field-label is-normal">
-                <label class="label">Due Date</label>
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Due Date</label>
               </div>
-              <div class="field-body">
-                <div class="field is-narrow">
-                  <div class="control">
+              <div className="field-body">
+                <div className="field is-narrow">
+                  <div className="control">
                     <input
-                      class="input"
+                      className="input"
                       type="date"
                       placeholder="Enter Task Title"
                       {...formik.getFieldProps("dueDate")}
@@ -163,30 +166,30 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
                 </div>
               </div>
             </div>
-            {/* <div class="field is-horizontal">
-            <div class="field-label is-normal">
-            <label class="label">Description</label>
+            {/* <div className="field is-horizontal">
+            <div className="field-label is-normal">
+            <label className="label">Description</label>
             </div>
-            <div class="field-body">
-            <div class="field">
-            <div class="control">
+            <div className="field-body">
+            <div className="field">
+            <div className="control">
             <textarea
-            class="input"
+            className="input"
             type="date"
             placeholder="Enter Task Title"
             rows={5}
             />
             </div>
-            {/* <p class="help is-danger">This field is required</p> }
+            {/* <p className="help is-danger">This field is required</p> }
             </div>
             </div>
           </div> */}
-            <div class="field">
-              <label class="label">Description</label>
-              <div class="control">
+            <div className="field">
+              <label className="label">Description</label>
+              <div className="control">
                 <textarea
                   id="description"
-                  class="input"
+                  className="input"
                   rows={5}
                   cols={5}
                   placeholder="Enter Description"
@@ -203,4 +206,4 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
   );
 };
 
-export default TaskForm;
+export default EditTask;

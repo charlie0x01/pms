@@ -37,8 +37,8 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
 
   const formik = useFormik({
     initialValues: {
-      organizationName: data?.org_name,
-      description: data?.description,
+      organizationName: data?.org_name || "",
+      description: data?.description || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -114,7 +114,9 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
             class="modal-close is-large"
             aria-label="close"
           ></button>
-          <h1 className="title is-4">Organization Settings</h1>
+          <h1 className="title is-4">
+            {data?.org_name || "Organization Settings"}
+          </h1>
           <form onSubmit={formik.handleSubmit}>
             <div class="field">
               <label class="label">Organization Name</label>

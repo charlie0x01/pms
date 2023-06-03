@@ -1,60 +1,139 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Avatar from "react-avatar";
+import moment from "moment";
+import { message, Popconfirm } from "antd";
+import { useParams } from "react-router-dom";
 
-const TaskCard = ({ createdDate, dueDate, title, }) => {
+// apis
+import { useDeleteTaskMutation } from "../../apis/taskApi";
+
+const TaskCard = ({
+  createdDate,
+  dueDate,
+  title,
+  priority,
+  taskId,
+  onTaskClick,
+  boardId,
+  description,
+}) => {
+  const [messageApi, contextHandler] = message.useMessage();
+  // delete api
+  const [
+    deleteTask,
+    { isLoading, isError, isSuccess, error, data: deleteTaskReponse },
+  ] = useDeleteTaskMutation();
+
+  // delete task
+  const handleDeleteTaskk = (id, boardId) => {
+    deleteTask({ boardId: boardId, taskId: id });
+  };
+
+  useEffect(() => {
+    if (isError) {
+      if (Array.isArray(error?.data.error)) {
+        error?.data.error.forEach((el) => messageApi.error(el.message));
+      } else {
+        messageApi.error(error?.data.message);
+      }
+    }
+    if (isSuccess) {
+      messageApi.success(deleteTaskReponse?.message);
+    }
+  }, [isLoading]);
+
   return (
-    <div className="box p-3" style={{ maxWidth: 300 }}>
-      <div className="is-flex is-flex-direction-column is-gap-1">
-        <div className="is-flex is-justify-content-space-between">
-          <div className="is-flex is-flex-wrap-wrap is-gap-1">
-            <span class="tag is-danger is-light">Priority Tags</span>
+    <>
+      {contextHandler}
+      <div
+        onClick={() =>
+          onTaskClick({
+            taskId: taskId,
+            dueDate: dueDate,
+            priority: priority,
+            description: description,
+            taskTitle: title,
+            boardId: boardId,
+          })
+        }
+        draggable
+        className="box p-3 is-clickable"
+        style={{ maxWidth: 300 }}
+      >
+        <div className="is-flex is-flex-direction-column is-gap-1">
+          <div className="is-flex is-justify-content-space-between">
+            <div className="is-flex is-flex-wrap-wrap is-gap-1">
+              {priority === "Critical" && (
+                <span class="tag is-danger is-light">{priority}</span>
+              )}
+              {priority === "High" && (
+                <span class="tag is-warning is-light">{priority}</span>
+              )}
+              {priority === "Neutral" && (
+                <span class="tag is-primary is-light">{priority}</span>
+              )}
+              {priority === "Low" && (
+                <span class="tag is-info is-light">{priority}</span>
+              )}
+            </div>
+            <Popconfirm
+              onConfirm={() => handleDeleteTaskk(taskId, boardId)} // first confirm then delete columns
+              okText="Yes"
+              cancelText="No"
+              title="Delete Task"
+              description="Are you sure to delete this task?"
+            >
+              <button className="delete"></button>
+            </Popconfirm>
           </div>
-          <button className="delete"></button>
-        </div>
-        <div>
-          <h1 className="title is-size-6 mb-0 ellipsis">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.Lorem ipsum
-            dolor sit amet consectetur adipisicing elit.
-          </h1>
-        </div>
-        <div className="is-flex is-flex-wrap-wrap is-gap-1">
+          <div>
+            <h1 className="title is-size-6 mb-0 ellipsis">{title}</h1>
+          </div>
+          {/* <div className="is-flex is-flex-wrap-wrap is-gap-1">
           <span class="tag is-light">tags will go here</span>
-        </div>
-        <div className="is-flex is-justify-content-space-between is-align-items-center">
-          <div class="avatars">
-            <Avatar
-              className="avatar"
-              name="PMS"
-              round
-              size="22"
-              textSizeRatio={1.9}
-            />
-            <Avatar
-              className="avatar"
-              name="PMS"
-              round
-              size="22"
-              textSizeRatio={1.9}
-            />
-            <Avatar
-              className="avatar"
-              name="PMS"
-              round
-              size="22"
-              textSizeRatio={1.9}
-            />
-            <Avatar
-              className="avatar"
-              name="PMS"
-              round
-              size="22"
-              textSizeRatio={1.9}
-            />
+        </div> */}
+          <div className="is-flex is-justify-content-space-between is-align-items-center">
+            <div class="avatars">
+              <Avatar
+                className="avatar"
+                name="PMS"
+                round
+                size="22"
+                textSizeRatio={1.9}
+              />
+              <Avatar
+                className="avatar"
+                name="PMS"
+                round
+                size="22"
+                textSizeRatio={1.9}
+              />
+              <Avatar
+                className="avatar"
+                name="PMS"
+                round
+                size="22"
+                textSizeRatio={1.9}
+              />
+              <Avatar
+                className="avatar"
+                name="PMS"
+                round
+                size="22"
+                textSizeRatio={1.9}
+              />
+            </div>
+            <span
+              className={`is-size-7 tag is-light ${
+                moment(dueDate).isSameOrBefore(moment()._d) && " is-danger"
+              }`}
+            >
+              {moment(dueDate).format("MMM DD, yyyy")}
+            </span>
           </div>
-          <p className="is-size-7 has-text-weight-semibold">May 29 - June 5, 2023</p>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

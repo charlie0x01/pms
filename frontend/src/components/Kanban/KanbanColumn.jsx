@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Popconfirm, message } from "antd";
 import { BiPlus, BiTrash } from "react-icons/bi";
 import TaskCard from "../Task/TaskCard";
@@ -10,10 +10,24 @@ import {
   useUpdateColumnTitleMutation,
 } from "../../apis/kanbanApi";
 
-const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
-  const [messageApi, contextHolder] = message.useMessage();
+import { useGetTasksQuery } from "../../apis/taskApi";
+import EditTask from "../Task/EditTask";
 
-  // delete column
+const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
+  const [editTaskData, setEditTaskData] = useState(null);
+  const [editTask, setEditTask] = useState(false);
+  // open and close state for task from
+  const [isOpen, setIsOpen] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  // get tasks
+  const { data: dtasks } = useGetTasksQuery(columnId);
+
+  // update task
+  const handleOnTaskClick = (task) => {
+    setEditTaskData(task);
+    setEditTask(true);
+  };
+
   const [
     deleteColumn,
     { isLoading, isError, isSuccess, error, data: deleteResponse },
@@ -93,7 +107,10 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
             {columnTitle || "untitled"}
           </p>
           <div>
-            <span className="icon icon-button cursor-hand is-clickable">
+            <span
+              onClick={() => setIsOpen(true)}
+              className="icon icon-button cursor-hand is-clickable"
+            >
               <BiPlus />
             </span>
             <Popconfirm
@@ -101,7 +118,7 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
               okText="Yes"
               cancelText="No"
               title="Are you sure to deletet this column?"
-              description="All the tasks will be delete with column"
+              description="All the tasks will delete with column"
             >
               <span className="icon icon-button cursor-hand is-clickable">
                 <BiTrash />
@@ -110,27 +127,26 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
           </div>
         </div>
         <div className="m-0 p-0">
-          <TaskCard />
-          <TaskCard />
-          <TaskCard />
-          <TaskCard />
-          {/* {allIds.length > 0 &&
-            allIds.map((id, index) => {
-              if (tasks[id].columnId === columnId)
-                return (
-                  <TaskCard
-                    key={index}
-                    taskId={tasks[id].taskId}
-                    title={tasks[id].taskTitle}
-                    description={tasks[id].description}
-                    onDelete={() => handleOnDelete(tasks[id].taskId)}
-                    onEdit={() => onTaskEdit(columnId, tasks[id].taskId)}
-                  />
-                );
-            })} */}
+          {dtasks &&
+            dtasks?.data.map((task, index) => {
+              return (
+                <TaskCard
+                  key={index}
+                  taskId={task.task_id}
+                  createdDate={task.created_date.slice(0, 10)}
+                  dueDate={task.due_date}
+                  title={task.task_title}
+                  priority={task.priority}
+                  description={task.description}
+                  boardId={boardId}
+                  onTaskClick={handleOnTaskClick}
+                />
+              );
+            })}
         </div>
       </div>
-      {/* <TaskForm /> */}
+      <TaskForm isOpen={isOpen} setIsOpen={setIsOpen} columnId={columnId} />
+      <EditTask isOpen={editTask} setIsOpen={setEditTask} task={editTaskData} />
     </div>
   );
 };

@@ -7,57 +7,14 @@ const Task = require("../models/task.model");
 exports.addTask = async (req, res, next) => {
   try {
     const { userId, boardId, columnId } = req.params;
-    const {
-      taskTitle,
-      startDate,
-      endDate,
-      description,
-      status,
-      priorityTag,
-      assignedUserId,
-    } = req.body;
+    const { taskTitle, dueDate, description, priority } = req.body;
 
     // check entries
-    if (
-      taskTitle === "" ||
-      startDate === "" ||
-      endDate === "" ||
-      description === "" ||
-      status === "" ||
-      priorityTag === "" ||
-      assignedUserId === ""
-    )
+    if (taskTitle === "" || dueDate === "" || priority === "")
       return res.json({
         success: false,
         message: "Required data not provided",
       });
-
-    // find project by board ID
-    const [projects, _____] = await Project.findByboardID(boardId);
-    if (projects.length <= 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found",
-      });
-    }
-    console.log(projects);
-
-    // check if assigned user is already a member of project or not
-    const [member, ____] = await Project.isAlreadyMember(
-      projects[0].project_id,
-      assignedUserId
-    );
-    const [owner, ______] = await Project.findOwnerByID(
-      projects[0].project_id,
-      assignedUserId
-    );
-    if (member.length <= 0 && owner.length <= 0) {
-      return res.status(404).json({
-        success: false,
-        message: "User is not a member or owner of this project",
-      });
-    }
-    console.log(member, "Hello", owner);
 
     // check if length of Task Title is less than aur equal to 2
     if (taskTitle.length <= 2)
@@ -67,12 +24,11 @@ exports.addTask = async (req, res, next) => {
       });
 
     // check if user is authorized to do this action or not
-    const [project, __] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    if (project.length <= 0 && user.length <= 0) {
+    if (user.length > 0) {
       return res.status(404).json({
         success: false,
-        message: "You're not authorized to make changes",
+        message: "Unauthorized Request",
       });
     }
 
@@ -85,28 +41,21 @@ exports.addTask = async (req, res, next) => {
       });
     }
 
-    console.log(
-      taskTitle,
-      startDate,
-      endDate,
-      description,
-      status,
-      priorityTag,
-      columnId
-    );
-
+    const date = new Date();
+    const currentDate = `${
+      date.getMonth() + 1
+    }/${date.getDate()}/${date.getFullYear()}`;
     // create new task
     const task = new Task(
       taskTitle,
-      startDate,
-      endDate,
+      currentDate,
+      dueDate,
       description,
-      status,
-      priorityTag,
+      priority,
       columnId
     );
 
-    task.save(assignedUserId);
+    await task.save();
 
     return res.status(201).json({
       success: true,
@@ -122,9 +71,9 @@ exports.getTask = async (req, res, next) => {
     const { taskId } = req.params;
     const [task, _] = await Task.findByTaskId(taskId);
     if (task.length <= 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Task not found",
+      return res.json({
+        success: true,
+        data: [],
       });
     }
     return res.status(200).json({ success: true, data: task[0] });
@@ -137,10 +86,7 @@ exports.getTasks = async (req, res, next) => {
   try {
     const { columnId } = req.params;
     const [tasks, _] = await Task.findByColumnId(columnId);
-    if (tasks.length <= 0)
-      return res
-        .status(404)
-        .json({ success: false, message: "Column not found" });
+    if (tasks.length <= 0) return res.json({ success: true, data: [] });
 
     return res.status(200).json({
       success: true,
@@ -154,36 +100,28 @@ exports.getTasks = async (req, res, next) => {
 exports.updateTask = async (req, res, next) => {
   try {
     const { userId, boardId, taskId } = req.params;
-    const { taskTitle, endDate, description, status, priorityTag } = req.body;
-
+    const { taskTitle, dueDate, description, priority } = req.body;
+    console.log(req.body);
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    if (project.length <= 0 && user.length <= 0) {
-      return res.status(404).json({
-        success: false,
-        message: "You're not authorized to make changes",
+    if (project.length > 0 || user.length <= 0) {
+      const [task, __] = await Task.findByTaskId(taskId);
+      // check, if task exists
+      if (task.length <= 0) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Task does not exist" });
+      }
+
+      await Task.updateTask(taskTitle, dueDate, description, priority, taskId);
+      return res.status(201).json({
+        success: true,
+        message: "Task updated successfully",
       });
     }
-
-    const [task, __] = await Task.findByTaskId(taskId);
-    // check, if task exists
-    if (task.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Task does not exist" });
-    }
-
-    Task.updateTask(
-      taskTitle,
-      endDate,
-      description,
-      status,
-      priorityTag,
-      taskId
-    );
-    return res.status(201).json({
-      success: true,
-      message: "Task updated successfully",
+    return res.status(404).json({
+      success: false,
+      message: "Unauthorized Request",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error?.message });
@@ -193,28 +131,26 @@ exports.updateTask = async (req, res, next) => {
 exports.deleteTask = async (req, res, next) => {
   try {
     const { userId, boardId, taskId } = req.params;
-
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    if (project.length <= 0 && user.length <= 0) {
-      return res.status(404).json({
-        success: false,
-        message: "You're not authorized to make changes",
+    if (project.length > 0 || user.length <= 0) {
+      const [task, __] = await Task.findByTaskId(taskId);
+      // check, if task exists
+      if (task.length <= 0) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Task does not exist" });
+      }
+
+      await Task.deleteTask(taskId);
+      return res.status(201).json({
+        success: true,
+        message: "Task deleted successfully",
       });
     }
-
-    const [task, __] = await Task.findByTaskId(taskId);
-    // check, if task exists
-    if (task.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Task does not exist" });
-    }
-
-    Task.deleteTask(taskId);
-    return res.status(201).json({
-      success: true,
-      message: "Task deleted successfully",
+    return res.status(404).json({
+      success: false,
+      message: "Unauthorized Request",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });

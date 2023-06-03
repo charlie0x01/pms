@@ -9,16 +9,7 @@ class Kanban {
 
   save() {
     let addColumn = `insert into board_columns(column_board_id, column_title) values(?, 'Untitled'); `;
-    try {
-      console.log(this.column_board_id);
-      transaction(pool, async (connection) => {
-        const result = await connection.execute(addColumn, [
-          this.column_board_id,
-        ]);
-      });
-    } catch (error) {
-      throw error;
-    }
+    return pool.execute(addColumn, [this.column_board_id]);
   }
 
   static updateColumn(columnTitle, columnId) {
@@ -53,17 +44,13 @@ class Kanban {
   }
 
   static checkMemberRole(memberId) {
-    try {
-      let checkMemberRole = `select * from project_members where project_member_id = ? and pm_role_id != 4;`;
-      return pool.execute(checkMemberRole, [memberId]);
-    } catch (error) {
-      throw error;
-    }
+    let checkMemberRole = `select * from project_members where project_member_id = ? and pm_role_id = 4;`;
+    return pool.execute(checkMemberRole, [memberId]);
   }
 
   static checkProjectOnwer = (userId, boardId) => {
-    let getBoard = `select * from boards b right join projects p on b.board_project_id = p.project_id where b.board_id = ? && p.project_owner = ?;`;
-    return pool.execute(getBoard, [boardId, userId]);
+    let getBoard = `select * from boards b right join projects p on b.board_project_id = p.project_id where p.project_owner = ? and b.board_id = ?;`;
+    return pool.execute(getBoard, [userId, boardId]);
   };
 }
 

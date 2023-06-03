@@ -13,6 +13,7 @@ import { useAddColumnMutation, useGetColumnsQuery } from "../../apis/kanbanApi";
 
 const Board = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [boardId, setBoardId] = useState(null);
   const [messageApi, contextHandler] = message.useMessage();
   const navigate = useNavigate();
 
@@ -28,25 +29,18 @@ const Board = () => {
   // get project
   const {
     isLoading: projectLoading,
-    error: projectError,
     data: project,
+    isFulfilled: projectFulfilled,
   } = useGetProjectQuery(parseInt(useParams().projectId));
 
+  console.log("is fullfilled ", projectFulfilled);
   // get columns
-  const {
-    isLoading: columnLoading,
-    error: columnError,
-    data: columns,
-  } = useGetColumnsQuery(project?.data.board_id);
-
-  console.log(columns);
-
-  useEffect(() => {
-    if (projectError) {
-      messageApi.error(projectError?.data.message);
-      navigate(-1);
+  const { data: columns } = useGetColumnsQuery(
+    parseInt(project?.data.board_id),
+    {
+      skip: projectFulfilled,
     }
-  }, [projectLoading]);
+  );
 
   useEffect(() => {
     if (isError) {
@@ -72,7 +66,7 @@ const Board = () => {
             <div className="is-flex is-justify-content-space-between is-align-items-center">
               <div className="is-flex is-align-items-center">
                 <h1 className="title is-3">
-                  {!projectError && project?.data.project_title}
+                  {project && project.data.project_title}
                 </h1>
                 <p className="ml-2">Kanban Board</p>
               </div>
@@ -99,20 +93,16 @@ const Board = () => {
               style={{ overflow: "auto" }}
               className="is-flex is-flex-direction-row is-flex-wrap-nowrap is-gap-3"
             >
-              {!columnLoading && (
-                <>
-                  {!columnError &&
-                    columns?.data.map((column, index) => {
-                      return (
-                        <KanbanColumn
-                          columnTitle={column.column_title}
-                          columnId={column.column_id}
-                          boardId={project?.data.board_id}
-                        />
-                      );
-                    })}
-                </>
-              )}
+              {columns &&
+                columns?.data.map((column, index) => {
+                  return (
+                    <KanbanColumn
+                      columnTitle={column.column_title}
+                      columnId={column.column_id}
+                      boardId={project && project.data.board_id}
+                    />
+                  );
+                })}
             </div>
           </div>
           <div></div>

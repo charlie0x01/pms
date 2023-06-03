@@ -8,6 +8,7 @@ import AddOrganization from "../Organization/AddOrganization";
 import NewProject from "../Project/NewProject";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { message } from "antd";
+import AddProject from "../Project/AddProject";
 // import UpdateOrganization from "../Organization/EditOrganization";
 // apis
 // import { useGetProjectsQuery } from "../../apis/projectApi";
@@ -15,7 +16,6 @@ import { useGetOrganizationsQuery } from "../../apis/orgApi";
 // global state
 import { useDispatch } from "react-redux";
 import { setOrg, setOrgs } from "../../features/orgSlice";
-import AddProject from "../Project/AddProject";
 
 const Sidebar = () => {
   const navigate = useNavigate();

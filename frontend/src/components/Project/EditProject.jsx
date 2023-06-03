@@ -120,7 +120,9 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
             class="modal-close is-large"
             aria-label="close"
           ></button>
-          <h1 className="title is-4">Project Settings</h1>
+          <h1 className="title is-4">
+            {data?.data.project_title || "Project Settings"}
+          </h1>
           <form onSubmit={formik.handleSubmit}>
             <div class="field">
               <label class="label">Project Name</label>

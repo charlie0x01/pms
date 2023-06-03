@@ -47,8 +47,6 @@ const UserProfileSettings = () => {
 
   return (
     <>
-      <NewProjectModal setIsOpen={setAddProject} isOpen={addProject} />
-      <NewTeamModal setIsOpen={setaddTeam} isOpen={addTeam} />
       <section class="section">
         <div class="container">
           <h1 class="title">User Profile</h1>
@@ -66,6 +64,7 @@ const UserProfileSettings = () => {
                   }}
                   class="input"
                   type="file"
+                  ccept="image/png, image/gif, image/jpeg"
                 />
               </div>
             </div>
@@ -180,22 +179,6 @@ const UserProfileSettings = () => {
               </div>
             </div>
           </form>
-        </div>
-        <div className="container mt-5">
-          <div className="is-flex is-justify-content-space-between">
-            <h1 className="title">Projects</h1>
-            <button onClick={() => setAddProject(true)} className="button">
-              Create New Project
-            </button>
-          </div>
-        </div>
-        <div className="container mt-5">
-          <div className="is-flex is-justify-content-space-between">
-            <h1 className="title">Teams</h1>
-            <button onClick={() => setaddTeam(true)} className="button">
-              Create New Team
-            </button>
-          </div>
         </div>
       </section>
     </>

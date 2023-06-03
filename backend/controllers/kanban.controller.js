@@ -8,9 +8,11 @@ const jwt = require("jsonwebtoken");
 exports.addColumn = async (req, res, next) => {
   try {
     const { userId, boardId } = req.params;
+    console.log(userId, boardId);
 
     const [project, __] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
+    console.log(project, user);
     if (project.length <= 0 && user.length <= 0) {
       return res.status(404).json({
         success: false,
@@ -20,8 +22,7 @@ exports.addColumn = async (req, res, next) => {
 
     // create new column
     const column = new Kanban(boardId);
-
-    column.save();
+    await column.save();
 
     return res.status(201).json({
       success: true,
