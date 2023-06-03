@@ -2,83 +2,79 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const authApi = createApi({
   reducerPath: "auth",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/auth" }), // Replace with your API base URL
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }), // Replace with your API base URL
+  tagTypes: ["user"],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
-        url: "/login",
+        url: "/auth/login",
         method: "POST",
         body: credentials,
       }),
     }),
     signup: builder.mutation({
       query: (user) => ({
-        url: "/signup",
+        url: "/auth/signup",
         method: "POST",
         body: user,
       }),
     }),
     verifyEmail: builder.mutation({
       query: (data) => ({
-        url: "/verifyemail",
+        url: "/auth/verifyemail",
         method: "POST",
         body: data,
       }),
     }),
     getNewVerificationCode: builder.mutation({
       query: (email) => ({
-        url: "/new-verification-code",
+        url: "/auth/new-verification-code",
         method: "POST",
         body: email,
       }),
     }),
     forgotPassword: builder.mutation({
       query: (email) => ({
-        url: "/forget-password",
+        url: "/auth/forget-password",
         method: "POST",
         body: { email: email },
       }),
     }),
     verifyForgetPasswordOTP: builder.mutation({
       query: (data) => ({
-        url: "/verify-otp",
+        url: "/auth/verify-otp",
         method: "POST",
         body: data,
       }),
     }),
     resetPassword: builder.mutation({
       query: (data) => ({
-        url: "/reset-password",
+        url: "/auth/reset-password",
         method: "POST",
         body: data,
       }),
     }),
-    logout: builder.mutation({
-      query: () => "/logout",
-    }),
+    // logout: builder.mutation({
+    //   query: () => "/logout",
+    // }),
     getUser: builder.query({
-      query: () => "/user",
+      query: (id) => `/user/get-user/${id}`,
+      method: "GET",
     }),
-    getUsers: builder.query({
-      query: () => "/users",
-    }),
-    createUser: builder.mutation({
-      query: (user) => ({
-        url: "/users",
-        method: "POST",
-        body: user,
-      }),
-    }),
+    // getUsers: builder.query({
+    //   query: () => "/users",
+    // }),
     updateUser: builder.mutation({
       query: ({ id, user }) => ({
-        url: `/users/${id}`,
-        method: "PUT",
+        url: `/user/update-user-profile/${id}`,
+        method: "PATCH",
         body: user,
       }),
+      providesTags: ["user"],
     }),
     deleteUser: builder.mutation({
       query: (id) => ({
-        url: `/users/${id}`,
+        url: `/user/delete-user/${id}`,
         method: "DELETE",
       }),
     }),
@@ -94,8 +90,7 @@ export const {
   useSignupMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
-  useGetUsersQuery,
-  useCreateUserMutation,
+  // useGetUsersQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useGetNewVerificationCodeMutation,

@@ -2,6 +2,7 @@ require("dotenv").config({ path: "./.env" });
 PORT = process.env.PORT || 5000;
 
 const express = require("express");
+const fileUpload = require('express-fileupload');
 const cors = require("cors");
 const app = express();
 
@@ -11,9 +12,12 @@ const orgRoutes = require("./routes/organization.routes");
 const projectRoutes = require("./routes/project.routes");
 const kanbanRoutes = require("./routes/kanban.routes");
 const taskRoutes = require("./routes/task.routes");
+const userRoutes = require("./routes/user.routes");
 
 app.use(cors());
 app.use(express.json());
+// default options
+app.use(fileUpload());
 
 //
 app.use("/api/auth", authRoutes);
@@ -21,6 +25,7 @@ app.use("/api/org", orgRoutes);
 app.use("/api/project", projectRoutes);
 app.use("/api/kanban", kanbanRoutes);
 app.use("/api/task", taskRoutes);
+app.use("/api/user", userRoutes);
 
 // if route not exit
 app.use(function (req, res, next) {

@@ -23,7 +23,10 @@ const SignIn = () => {
       password: Yup.string()
         .required("No password provided.")
         .min(8, "Password is too short - should be 8 chars minimum.")
-        .matches(/[a-zA-Z0-9]/, "Password can only contain letters and numbers."),
+        .matches(
+          /[a-zA-Z0-9]/,
+          "Password can only contain letters and numbers."
+        ),
     }),
     onSubmit: (values) => {
       console.table(values);
@@ -44,8 +47,11 @@ const SignIn = () => {
       console.log(data);
       localStorage.setItem("user_id", data.userId);
       localStorage.setItem("access_token", data.token);
-      localStorage.setItem("user_name", data.firstName);
+      localStorage.setItem("first_name", data.firstName);
+      localStorage.setItem("last_name", data.lastName);
       localStorage.setItem("user_email", data.email);
+      localStorage.setItem("user_email", data.email);
+      localStorage.setItem("dob", data.dob);
       // await delay(2000);
       navigate("/");
     }
