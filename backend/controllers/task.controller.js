@@ -6,7 +6,7 @@ const Task = require("../models/task.model");
 
 exports.addTask = async (req, res, next) => {
   try {
-    const { userId, boardId, columnId } = req.params;
+    const { userId, columnId } = req.params;
     const { taskTitle, dueDate, description, priority } = req.body;
 
     // check entries
@@ -100,6 +100,7 @@ exports.getTasks = async (req, res, next) => {
 exports.updateTask = async (req, res, next) => {
   try {
     const { userId, boardId, taskId } = req.params;
+    const assigneeId = req.params.assigneeId.split(",");
     const { taskTitle, dueDate, description, priority } = req.body;
     console.log(req.body);
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
@@ -113,7 +114,14 @@ exports.updateTask = async (req, res, next) => {
           .json({ success: false, message: "Task does not exist" });
       }
 
-      await Task.updateTask(taskTitle, dueDate, description, priority, taskId);
+      await Task.updateTask(
+        taskTitle,
+        dueDate,
+        description,
+        priority,
+        taskId,
+        assigneeId
+      );
       return res.status(201).json({
         success: true,
         message: "Task updated successfully",
@@ -151,6 +159,28 @@ exports.deleteTask = async (req, res, next) => {
     return res.status(404).json({
       success: false,
       message: "Unauthorized Request",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getAssignees = async (req, res, next) => {
+  try {
+    const { taskId } = req.params;
+    const [task, _] = await Task.findByTaskId(taskId);
+    if (task.length <= 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task does not exist" });
+    }
+
+    const [assignees, __] = await Task.getAssigneesByTaskId(taskId);
+    if (assignees.length <= 0) return res.json({ success: true, data: [] });
+
+    return res.status(200).json({
+      success: true,
+      data: assignees,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
