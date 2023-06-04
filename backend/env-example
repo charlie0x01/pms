@@ -1,0 +1,10 @@
+PORT=port
+
+# data base configuration
+DB_HOST=host-name
+DB_USER=database-username
+DB_PASSWORD=database-password
+DB_NAME=database-name
+
+JWT_SECRET=place-jwt-seceret-key-here
+JWT_EXPIRE=token-expire-duration
