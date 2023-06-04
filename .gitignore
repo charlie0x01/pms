@@ -12,9 +12,10 @@ dist
 dist-ssr
 *.local
 
-*/assets/
+*.jpg
+*.png
+*.jpeg
 
-*.env
 */.env
 
 # Editor directories and files
