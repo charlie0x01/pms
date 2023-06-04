@@ -16,6 +16,7 @@ const MemberCard = ({
   status,
   projectId,
   memberRoleId,
+  profilePicture,
 }) => {
   const [messageApi, contextHandler] = message.useMessage();
   const [promotedTo, setPromotedTo] = useState("");
@@ -94,6 +95,7 @@ const MemberCard = ({
           <Avatar
             maxInitials={1}
             name={name}
+            src={profilePicture}
             round
             size="30"
             textSizeRatio={1.9}

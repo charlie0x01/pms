@@ -14,6 +14,12 @@ import {
   useUpdateUserMutation,
   useGetUserQuery,
 } from "../../apis/authApi";
+import { copyWithStructuralSharing } from "@reduxjs/toolkit/dist/query";
+
+function Base64ToImage(base64img) {
+  var img = new Image();
+  return (img.src = base64img);
+}
 
 function generateRandomString() {
   const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -36,28 +42,42 @@ const UserProfileSettings = () => {
   const [avatar, setAvatar] = useState(null);
 
   const onBeforeFileLoad = (elem) => {
-    if (elem.target.files[0].size > 71680) {
+    if (elem.target.files[0].size > 4 * 1000 * 1000) {
       alert("File is too big!");
       elem.target.value = "";
     }
   };
 
-  const onFileUpload = () => {
+  const onFileUpload = (Image) => {
     // Create an object of formData
-    // const formData = new FormData();
+    const formData = new FormData();
 
-    console.log(avatar);
-    console.log(avatar.name);
+    console.log(Image);
+
+    // let profile = new Blob([Image], { type: "image/png" });
 
     // // Update the formData object
-    // formData.append("myFile", avatar, avatar.name);
-
-    // // Details of the uploaded file
-    // console.log(formik.values.avatar);
+    formData.append("profileImage", avatar.preview);
+    formData.append("email", `${localStorage.getItem("user_email")}`);
 
     // // Request made to the backend api
     // // Send formData object
-    // axios.post("http://localhost:5000/api/user/profile-change", formData);
+    axios
+      .post("http://localhost:5000/uploadProfilePicture", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((Response) => {
+        localStorage.setItem(
+          "profile_picture",
+          Response.data.user.profile_picture
+        );
+        messageApi.success(Response?.data.message);
+      })
+      .catch((error) =>
+        messageApi.error("something went wrong please try again!")
+      );
   };
 
   const onCrop = (preview) => {
@@ -103,7 +123,7 @@ const UserProfileSettings = () => {
       lastName: user?.data.last_name,
       email: user?.data.email,
       dob: user?.data.dob,
-      avatar: defaultImage,
+      avatar: user?.data.profile_picture,
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -201,8 +221,14 @@ const UserProfileSettings = () => {
                   alt="avatar"
                 />
               </figure>
+              {/* <input
+                type="file"
+                name="profileImage"
+                accept="image/png, image/jpg, image/jpeg"
+                onChange={(e) => onFileUpload(e.target.files[0])}
+              /> */}
               <button className="button" onClick={() => setUploadPP(true)}>
-                Choose Profile Picture
+                Update Profile Picture
               </button>
             </div>
             <div style={{ width: "100%" }}>

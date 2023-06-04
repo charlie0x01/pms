@@ -81,7 +81,8 @@ class Task {
 
   // Get Assignees of a Task
   static getAssigneesByTaskId(taskId) {
-    let getAssignees = `select u.user_id, u.first_name, u.last_name, u.last_name from users u left join task_assigned ta on u.user_id = ta.assigned_user_id where assigned_task_id = ?;`;
+    let getAssignees = `select u.user_id, u.first_name, u.last_name, u.last_name, u.profile_picture from users u 
+    left join task_assigned ta on u.user_id = ta.assigned_user_id where assigned_task_id = ?;`;
     return pool.execute(getAssignees, [taskId]);
   }
 }

@@ -15,6 +15,8 @@ const TabBarSection = ({ orgId }) => {
 
   // get members
   const { isLoading, error, data: members } = useGetMembersQuery(orgId);
+
+  console.log(members);
   // toast message
   const [messageApi, contextHandler] = message.useMessage();
 
@@ -62,6 +64,7 @@ const TabBarSection = ({ orgId }) => {
                         orgId={orgId}
                         status={member.member_status}
                         memberRoleId={member.om_role_id}
+                        profilePicture={member.profile_picture}
                       />
                     );
                   })}

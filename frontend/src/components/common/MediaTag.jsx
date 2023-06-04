@@ -1,16 +1,16 @@
 import React from "react";
 import Avatar from "react-avatar";
 
-const MediaTag = ({ name, email }) => {
+const MediaTag = ({ name, email, profilePicture }) => {
   return (
     <div className="media p-2 box" style={{ margin: 5 }}>
       <div className="media-left">
         <Avatar
           maxInitials={1}
           name={name}
-          googleId={email}
+          src={profilePicture}
           round
-          size="24"
+          size="28"
           textSizeRatio={1.9}
         />
       </div>

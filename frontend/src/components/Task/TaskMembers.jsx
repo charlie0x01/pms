@@ -38,6 +38,10 @@ const TaskMembers = ({ taskId }) => {
 
   const { data: taskAssignees } = useGetAssigneesQuery(taskId);
 
+  const ids = taskAssignees?.data.map((item, index) => {
+    return item.user_id;
+  });
+
   useEffect(() => {
     async function handleAddTaskErrors() {
       if (isError) {
@@ -81,6 +85,7 @@ const TaskMembers = ({ taskId }) => {
                         key={index}
                         name={`${user.first_name} ${user.last_name}`}
                         email={user.email}
+                        profilePicture={user.profile_picture}
                       />
                     );
                   })}
@@ -93,6 +98,7 @@ const TaskMembers = ({ taskId }) => {
         isOpen={select}
         setIsOpen={setSelect}
         callback={handleSelectAssignees}
+        assginees={ids}
       />
     </div>
   );

@@ -61,6 +61,7 @@ const TabSection = ({ projectId }) => {
                         projectId={projectId}
                         status={member.member_status}
                         memberRoleId={member.pm_role_id}
+                        profilePicture={member.profile_picture}
                       />
                     );
                   })}

@@ -26,7 +26,10 @@ const UserAvatarDropdown = () => {
           <figure class="image is-32x32">
             <img
               class="is-rounded"
-              src="https://gravatar.com/avatar/7c342a08c9d97caf7be169a201457a79?s=200&d=robohash&r=x"
+              src={
+                localStorage.getItem("profile_picture") ||
+                "https://bulma.io/images/placeholders/128x128.png"
+              }
             />
           </figure>
         </div>

@@ -34,6 +34,11 @@ class User {
     }
   }
 
+  static updateProfilePicture(email, imagePath) {
+    let setPP = `update users set profile_picture = ? where email = ?;`;
+    return pool.execute(setPP, [imagePath, email]);
+  }
+
   static deleteUser(userId) {
     let deleteUser = `delete from users where user_id = ? ;`;
     return pool.execute(deleteUser, [userId]);
@@ -143,7 +148,7 @@ class User {
     return pool.execute(getURs);
   }
 
-  static 
+  static;
 }
 
 module.exports = User;

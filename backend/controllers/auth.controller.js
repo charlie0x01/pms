@@ -287,6 +287,7 @@ const sendToken = (user, statusCode, res) => {
     userType: user.user_type,
     password: user.password,
     verified: user.verified,
+    profile_picture: user.profile_picture,
     forgetPassOTP: user.forget_pass_otp,
   });
 };

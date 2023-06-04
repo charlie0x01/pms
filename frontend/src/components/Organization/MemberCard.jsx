@@ -9,7 +9,15 @@ import {
   useChangeMemberRoleMutation,
 } from "../../apis/orgApi";
 
-const MemberCard = ({ name, email, memberId, orgId, status, memberRoleId }) => {
+const MemberCard = ({
+  name,
+  email,
+  memberId,
+  orgId,
+  status,
+  memberRoleId,
+  profilePicture,
+}) => {
   const [promotedTo, setPromotedTo] = useState("");
   const [messageApi, contextHandler] = message.useMessage();
 
@@ -77,8 +85,8 @@ const MemberCard = ({ name, email, memberId, orgId, status, memberRoleId }) => {
         <div className="media-left">
           <Avatar
             maxInitials={1}
-            // name={name}
-            googleId={email}
+            name={name}
+            src={profilePicture}
             round
             size="30"
             textSizeRatio={1.9}

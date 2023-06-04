@@ -35,9 +35,10 @@ function ProjectCard({ title, description, date, id, link }) {
                           key={index}
                           maxInitials={2}
                           className="avatar"
+                          src={member.profile_picture}
                           name={`${member.first_name} ${member.last_name}`}
                           round
-                          size="22"
+                          size="30"
                           textSizeRatio={1.9}
                         />
                       );

@@ -52,6 +52,7 @@ const SignIn = () => {
       localStorage.setItem("user_email", data.email);
       localStorage.setItem("user_email", data.email);
       localStorage.setItem("dob", data.dob);
+      localStorage.setItem("profile_picture", data.profile_picture);
       // await delay(2000);
       navigate("/");
     }

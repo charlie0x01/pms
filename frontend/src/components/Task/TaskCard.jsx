@@ -105,8 +105,9 @@ const TaskCard = ({
                     <Avatar
                       className="avatar"
                       name={`${user.first_name} ${user.last_name}`}
+                      src={user.profile_picture}
                       round
-                      size="22"
+                      size="26"
                       textSizeRatio={1.9}
                     />
                   );

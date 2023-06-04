@@ -3,9 +3,11 @@ import { useGetMembersQuery } from "../../apis/projectApi";
 import { useParams } from "react-router-dom";
 import Modal from "../common/Modal";
 
-const SelectMembers = ({ isOpen, setIsOpen, callback }) => {
-  const [selectedRows, setSelectedRows] = useState([]);
-
+const SelectMembers = ({ isOpen, setIsOpen, callback, assginees }) => {
+  const [selectedRows, setSelectedRows] = useState(
+    assginees ? [...assginees] : []
+  );
+  console.log(selectedRows);
   const handleRowSelect = (rowId) => {
     if (selectedRows.includes(rowId)) {
       setSelectedRows(selectedRows.filter((id) => id !== rowId));
@@ -27,15 +29,7 @@ const SelectMembers = ({ isOpen, setIsOpen, callback }) => {
       <table className="table is-fullwidth">
         <thead>
           <tr>
-            <th>
-              {/* <input
-                type="checkbox"
-                // onChange={() =>
-                //   setSelectedRows(selectedRows.length === 0 ? [1, 2, 3] : [])
-                // }
-                // checked={selectedRows.length > 0}
-              /> */}
-            </th>
+            <th></th>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>

@@ -114,7 +114,7 @@ class Project {
   }
 
   static getMembers(projectId) {
-    let getMembers = `select user.user_id, user.first_name, user.last_name, user.email, om.member_status, om.pm_role_id 
+    let getMembers = `select user.user_id, user.first_name, user.last_name, user.email, user.profile_picture, om.member_status, om.pm_role_id 
     from project_members as om join users as user on user.user_id = om.project_member_id where om.project_id = ? and member_status = 1;`;
     return pool.execute(getMembers, [projectId]);
   }
