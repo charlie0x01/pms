@@ -64,12 +64,21 @@ const taskApi = createApi({
       }),
       providesTags: ["assignees"],
     }),
+    changeTaskColumn: builder.mutation({
+      query: ({ taskId, columnId }) => ({
+        url: `/change-task-column/${taskId}/${columnId}`,
+        method: "PATCH",
+      }),
+      providesTags: ["tasks"],
+      invalidatesTags: ["tasks"],
+    }),
   }),
 });
 
 export { taskApi };
 export const {
   useAddTaskMutation,
+  useChangeTaskColumnMutation,
   useSetAssigneesMutation,
   useGetAssigneesQuery,
   useGetTasksQuery,

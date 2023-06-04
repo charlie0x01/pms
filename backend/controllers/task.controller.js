@@ -193,3 +193,15 @@ exports.setAssignees = async (req, res) => {
     return res.status(500).json({ success: false, message: error?.message });
   }
 };
+
+exports.changeTaskColumn = async (req, res) => {
+  try {
+    const { taskId, columnId } = req.params;
+    await Task.changeTaskColumn(taskId, columnId);
+    return res
+      .status(200)
+      .json({ success: true, message: "Task status changed" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};

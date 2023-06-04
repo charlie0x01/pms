@@ -34,6 +34,11 @@ const TaskCard = ({
     deleteTask({ boardId: boardId, taskId: id });
   };
 
+  const handleDrapStart = (e) => {
+    e.dataTransfer.setData("application/taskId", e.target.id);
+    console.log("from task \n", e.dataTransfer.getData("application/taskId"));
+  };
+
   useEffect(() => {
     if (isError) {
       if (Array.isArray(error?.data.error)) {
@@ -61,7 +66,9 @@ const TaskCard = ({
             boardId: boardId,
           })
         }
+        id={taskId}
         draggable
+        onDragStart={(e) => handleDrapStart(e)}
         className="box p-3 is-clickable"
         style={{ maxWidth: 300 }}
       >
