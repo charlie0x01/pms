@@ -95,7 +95,12 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
         <div className="is-flex is-justify-content-space-between is-align-items-center py-3">
           <p
             style={{ display: "inline" }}
-            contentEditable={true || false}
+            contentEditable={
+              !(
+                localStorage.getItem("org_role") == 4 ||
+                localStorage.getItem("org_role") == 3
+              )
+            }
             onBlur={(e) =>
               handleUpdateColumnTitle(columnId, e.target.textContent)
             } // update the column title when changed
@@ -106,25 +111,30 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
           >
             {columnTitle || "untitled"}
           </p>
-          <div>
-            <span
-              onClick={() => setIsOpen(true)}
-              className="icon icon-button cursor-hand is-clickable"
-            >
-              <BiPlus />
-            </span>
-            <Popconfirm
-              onConfirm={() => handleColumnDelete(columnId)} // first confirm then delete columns
-              okText="Yes"
-              cancelText="No"
-              title="Are you sure to deletet this column?"
-              description="All the tasks will delete with column"
-            >
-              <span className="icon icon-button cursor-hand is-clickable">
-                <BiTrash />
+          {localStorage.getItem("org_role") == 4 ||
+          localStorage.getItem("org_role") == 3 ? (
+            <></>
+          ) : (
+            <div>
+              <span
+                onClick={() => setIsOpen(true)}
+                className="icon icon-button cursor-hand is-clickable"
+              >
+                <BiPlus />
               </span>
-            </Popconfirm>
-          </div>
+              <Popconfirm
+                onConfirm={() => handleColumnDelete(columnId)} // first confirm then delete columns
+                okText="Yes"
+                cancelText="No"
+                title="Are you sure to deletet this column?"
+                description="All the tasks will delete with column"
+              >
+                <span className="icon icon-button cursor-hand is-clickable">
+                  <BiTrash />
+                </span>
+              </Popconfirm>
+            </div>
+          )}
         </div>
         <div className="m-0 p-0">
           {dtasks &&

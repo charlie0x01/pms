@@ -5,7 +5,10 @@ import { message, Popconfirm } from "antd";
 import { useParams } from "react-router-dom";
 
 // apis
-import { useDeleteTaskMutation } from "../../apis/taskApi";
+import {
+  useDeleteTaskMutation,
+  useGetAssigneesQuery,
+} from "../../apis/taskApi";
 
 const TaskCard = ({
   createdDate,
@@ -23,6 +26,8 @@ const TaskCard = ({
     deleteTask,
     { isLoading, isError, isSuccess, error, data: deleteTaskReponse },
   ] = useDeleteTaskMutation();
+
+  const { data: taskAssignees } = useGetAssigneesQuery(taskId);
 
   // delete task
   const handleDeleteTaskk = (id, boardId) => {
@@ -94,34 +99,18 @@ const TaskCard = ({
         </div> */}
           <div className="is-flex is-justify-content-space-between is-align-items-center">
             <div class="avatars">
-              <Avatar
-                className="avatar"
-                name="PMS"
-                round
-                size="22"
-                textSizeRatio={1.9}
-              />
-              <Avatar
-                className="avatar"
-                name="PMS"
-                round
-                size="22"
-                textSizeRatio={1.9}
-              />
-              <Avatar
-                className="avatar"
-                name="PMS"
-                round
-                size="22"
-                textSizeRatio={1.9}
-              />
-              <Avatar
-                className="avatar"
-                name="PMS"
-                round
-                size="22"
-                textSizeRatio={1.9}
-              />
+              {taskAssignees &&
+                taskAssignees?.data.map((user, index) => {
+                  return (
+                    <Avatar
+                      className="avatar"
+                      name={`${user.first_name} ${user.last_name}`}
+                      round
+                      size="22"
+                      textSizeRatio={1.9}
+                    />
+                  );
+                })}
             </div>
             <span
               className={`is-size-7 tag is-light ${

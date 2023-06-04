@@ -7,9 +7,11 @@ import moment from "moment";
 
 // apis
 import { useUpdateTaskMutation } from "../../apis/taskApi";
+import TaskMembers from "./TaskMembers";
 
 const EditTask = ({ isOpen, setIsOpen, task }) => {
   const [messageApi, contextHandler] = message.useMessage();
+
   // update task
   const [
     updateTask,
@@ -56,6 +58,7 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
         boardId: task?.boardId,
         taskId: task?.taskId,
         ...values,
+        assignees: [...assignees],
       });
     },
   });
@@ -166,24 +169,6 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
                 </div>
               </div>
             </div>
-            {/* <div className="field is-horizontal">
-            <div className="field-label is-normal">
-            <label className="label">Description</label>
-            </div>
-            <div className="field-body">
-            <div className="field">
-            <div className="control">
-            <textarea
-            className="input"
-            type="date"
-            placeholder="Enter Task Title"
-            rows={5}
-            />
-            </div>
-            {/* <p className="help is-danger">This field is required</p> }
-            </div>
-            </div>
-          </div> */}
             <div className="field">
               <label className="label">Description</label>
               <div className="control">
@@ -197,10 +182,11 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
               </div>
             </div>
             <button type="submit" className="button is-primary">
-              Create
+              Save Changes
             </button>
           </form>
         </div>
+        <TaskMembers taskId={task?.taskId} />
       </Modal>
     </>
   );

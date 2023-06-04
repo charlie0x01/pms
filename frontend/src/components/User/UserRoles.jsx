@@ -4,7 +4,6 @@ import React from "react";
 import { useGetUserRolesQuery } from "../../apis/authApi";
 
 const UserRoles = ({ callback, selected, memberId }) => {
-  console.log("from user role dropdown \n", selected, memberId);
   // get user roles
   const { data: userRoles } = useGetUserRolesQuery();
 
@@ -13,7 +12,8 @@ const UserRoles = ({ callback, selected, memberId }) => {
       <div class="select is-small">
         <select
           disabled={
-            selected != 2 && localStorage.getItem("user_id") == memberId
+            localStorage.getItem("org_role") == 4 ||
+            localStorage.getItem("org_role") == 3
           }
           onChange={({ target: { value } }) => callback(value)}
         >

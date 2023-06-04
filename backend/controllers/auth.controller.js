@@ -70,16 +70,16 @@ exports.login = async (req, res, next) => {
         .json({ message: "Please provide email and password" });
     }
 
-    const [user, _] = await User.findByEmailId(email);
+    const [found, _] = await User.findByEmailId(email);
     // check, if we have any user with this email
-    if (!user[0]) {
+    if (!found[0]) {
       return res
         .status(404)
         .json({ success: false, message: "Invalid Credentials" });
     }
 
     // check if user is verified by email or not
-    if (user[0].verified === 0) {
+    if (found[0].verified === 0) {
       const otp = generateOTP();
       const updated = await User.newVerificationCode(otp, email);
 
@@ -87,7 +87,7 @@ exports.login = async (req, res, next) => {
         // const [user, _] = await User.findByEmailId(email);
         sendEmail(
           email,
-          user.first_name,
+          found.first_name,
           otp,
           "Taskify Email Verification Code"
         );
@@ -104,15 +104,17 @@ exports.login = async (req, res, next) => {
     }
 
     // check password
-    const isMatched = await User.matchPassword(user[0], password);
+    const isMatched = await User.matchPassword(found[0], password);
     // if not matched
     if (!isMatched) {
       return res
         .status(404)
         .json({ success: false, message: "Invalid Password" });
     }
+
+    // const [user, ___] = await User.
     // send token
-    sendToken(user[0], 200, res);
+    sendToken(found[0], 200, res);
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

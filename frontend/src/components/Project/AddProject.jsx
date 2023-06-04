@@ -12,6 +12,8 @@ const AddProject = ({ isOpen, setIsOpen }) => {
     setActiveTab(tab);
   };
 
+  console.log("check user role", localStorage.getItem("org_role"));
+
   return (
     <Modal show={isOpen}>
       <button

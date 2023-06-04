@@ -100,9 +100,8 @@ exports.getTasks = async (req, res, next) => {
 exports.updateTask = async (req, res, next) => {
   try {
     const { userId, boardId, taskId } = req.params;
-    const assigneeId = req.params.assigneeId.split(",");
     const { taskTitle, dueDate, description, priority } = req.body;
-    console.log(req.body);
+
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
     if (project.length > 0 || user.length <= 0) {
@@ -114,14 +113,7 @@ exports.updateTask = async (req, res, next) => {
           .json({ success: false, message: "Task does not exist" });
       }
 
-      await Task.updateTask(
-        taskTitle,
-        dueDate,
-        description,
-        priority,
-        taskId,
-        assigneeId
-      );
+      await Task.updateTask(taskTitle, dueDate, description, priority, taskId);
       return res.status(201).json({
         success: true,
         message: "Task updated successfully",
@@ -181,6 +173,21 @@ exports.getAssignees = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       data: assignees,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.setAssignees = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { assignees } = req.body;
+    await Task.addAssignees(assignees, taskId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Assigned to Select Members",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });

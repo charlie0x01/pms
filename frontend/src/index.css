@@ -81,9 +81,9 @@ hr {
 
 .avatar {
   border: 1px solid white;
-  cursor: help;
   display: inline-block;
   position: relative;
+  cursor: pointer;
   box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2);
   -webkit-transition: .2s ease;
   transition: .2s ease;

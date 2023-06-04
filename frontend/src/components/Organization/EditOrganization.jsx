@@ -122,6 +122,10 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Organization Name</label>
               <div class="control">
                 <input
+                  disabled={
+                    localStorage.getItem("org_role") == 4 ||
+                    localStorage.getItem("org_role") == 3
+                  }
                   id="organizationName"
                   class="input"
                   type="text"
@@ -140,6 +144,10 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Description</label>
               <div class="control">
                 <textarea
+                  disabled={
+                    localStorage.getItem("org_role") == 4 ||
+                    localStorage.getItem("org_role") == 3
+                  }
                   id="description"
                   class="input"
                   rows={5}
@@ -149,24 +157,34 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
                 />
               </div>
             </div>
-            <button type="submit" className="button is-primary">
-              Save Changes
-            </button>
+            {localStorage.getItem("org_role") == 4 ||
+            localStorage.getItem("org_role") == 3 ? (
+              <></>
+            ) : (
+              <button type="submit" className="button is-primary">
+                Save Changes
+              </button>
+            )}
           </form>
-          <Popconfirm
-            title={`Delete the ${data?.org_name}`}
-            description="Are you sure to delete this organization?"
-            onConfirm={() => confirmDelete(data?.org_id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <button
-              style={{ position: "absolute", left: 130, bottom: 1 }}
-              className="button is-danger ml-2"
+          {localStorage.getItem("org_role") == 4 ||
+          localStorage.getItem("org_role") == 3 ? (
+            <></>
+          ) : (
+            <Popconfirm
+              title={`Delete the ${data?.org_name}`}
+              description="Are you sure to delete this organization?"
+              onConfirm={() => confirmDelete(data?.org_id)}
+              okText="Yes"
+              cancelText="No"
             >
-              Delete
-            </button>
-          </Popconfirm>
+              <button
+                style={{ position: "absolute", left: 130, bottom: 1 }}
+                className="button is-danger ml-2"
+              >
+                Delete
+              </button>
+            </Popconfirm>
+          )}
         </div>
         <TabBarSection orgId={data?.org_id} />
       </Modal>

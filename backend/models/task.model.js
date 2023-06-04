@@ -30,33 +30,36 @@ class Task {
     ]);
   }
 
+  static async addAssignees(assignees, taskId) {
+    let deleteAllAssigneesFirst = `delete from task_assigned where assigned_task_id = ?;`;
+    pool.execute(deleteAllAssigneesFirst, [taskId]);
+    for (const assignee of assignees) {
+      console.log(assignee, taskId);
+      await this.saveAssignee(assignee, taskId);
+    }
+  }
+
+  static saveAssignee(assignee, taskId) {
+    let assignTask = `insert into task_assigned(assigned_task_id, assigned_user_id) values(?, ?);`;
+    return pool.execute(assignTask, [taskId, assignee]);
+  }
+
   static updateTask(
     taskTitle,
     dueDate,
     description,
     priority,
     taskId,
-    assigneeId
+    assignees
   ) {
     let updateTask = `update tasks set task_title = ?, due_date = ?, description = ?, priority = ? where task_id = ? `;
-    let assignTask = `insert into task_assigned(asigned_task_id, asigned_user_id) values (?, ?);`;
-    try {
-      transaction(pool, async (connection) => {
-        const _ = await connection.execute(updateTask, [
-          taskTitle,
-          dueDate,
-          description,
-          priority,
-          taskId,
-        ]);
-        assigneeId.forEach((id) => {
-          const __ = connection.execute(assignTask, [taskId, id]);
-        });
-        
-      });
-    } catch (error) {
-      throw error;
-    }
+    return pool.execute(updateTask, [
+      taskTitle,
+      dueDate,
+      description,
+      priority,
+      taskId,
+    ]);
   }
 
   static deleteTask(taskId) {
@@ -78,7 +81,7 @@ class Task {
 
   // Get Assignees of a Task
   static getAssigneesByTaskId(taskId) {
-    let getAssignees = `select * from task_assigned where asigned_task_id = ?`;
+    let getAssignees = `select u.user_id, u.first_name, u.last_name, u.last_name from users u left join task_assigned ta on u.user_id = ta.assigned_user_id where assigned_task_id = ?;`;
     return pool.execute(getAssignees, [taskId]);
   }
 }

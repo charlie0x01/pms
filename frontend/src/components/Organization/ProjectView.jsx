@@ -54,12 +54,17 @@ const ProjectView = () => {
           <div className="is-flex is-justify-content-space-between is-align-items-center">
             <h1 className="title is-3">{organization?.data.org_name}</h1>
             <div className="is-flex is-gap-1 is-align-items-center">
-              <button
-                className="button is-primary"
-                onClick={() => setAddProject(true)}
-              >
-                New Project
-              </button>
+              {localStorage.getItem("org_role") == 4 ||
+              localStorage.getItem("org_role") == 3 ? (
+                <></>
+              ) : (
+                <button
+                  className="button is-primary"
+                  onClick={() => setAddProject(true)}
+                >
+                  New Project
+                </button>
+              )}
               <button
                 className="button is-primary"
                 onClick={() => setAddOrganization(true)}

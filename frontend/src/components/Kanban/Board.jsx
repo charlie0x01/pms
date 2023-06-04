@@ -71,14 +71,20 @@ const Board = () => {
                 <p className="ml-2">Kanban Board</p>
               </div>
               <div className="is-flex is-gap-1 is-align-items-center">
-                <button
-                  onClick={() => handleAddColumn(project?.data.board_id)}
-                  className="button is-primary"
-                >
-                  <span class="icon is-medium is-clickable">
-                    <AiOutlineAppstoreAdd className="icon-2" />
-                  </span>
-                </button>
+                {localStorage.getItem("org_role") == 4 ||
+                localStorage.getItem("org_role") == 3 ? (
+                  <></>
+                ) : (
+                  <button
+                    onClick={() => handleAddColumn(project?.data.board_id)}
+                    className="button is-primary"
+                  >
+                    <span class="icon is-medium is-clickable">
+                      <AiOutlineAppstoreAdd className="icon-2" />
+                    </span>
+                  </button>
+                )}
+
                 <button
                   onClick={() => setIsOpen(true)}
                   className="button is-primary"

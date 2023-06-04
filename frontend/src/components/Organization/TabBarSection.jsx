@@ -38,9 +38,14 @@ const TabBarSection = ({ orgId }) => {
         {activeTab === "Members" && (
           <div>
             <div className="pb-3">
-              <button onClick={() => setAddMember(true)} className="button">
-                Invite Member
-              </button>
+              {localStorage.getItem("org_role") == 4 ||
+              localStorage.getItem("org_role") == 3 ? (
+                <></>
+              ) : (
+                <button onClick={() => setAddMember(true)} className="button">
+                  Invite Member
+                </button>
+              )}
             </div>
             {isLoading === true ? (
               <LoadingSpinner />

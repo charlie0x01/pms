@@ -12,6 +12,10 @@ import {
 const MemberCard = ({ name, email, memberId, orgId, status, memberRoleId }) => {
   const [promotedTo, setPromotedTo] = useState("");
   const [messageApi, contextHandler] = message.useMessage();
+
+  if (memberId == localStorage.getItem("user_id"))
+    localStorage.setItem("org_role", memberRoleId);
+
   // remove member
   const [
     removeMember,
@@ -95,8 +99,11 @@ const MemberCard = ({ name, email, memberId, orgId, status, memberRoleId }) => {
                 memberId={memberId}
               />
             )}
-            {memberRoleId == 2 ||
-            localStorage.getItem("user_id") != memberId ? (
+
+            {localStorage.getItem("org_role") == 4 ||
+            localStorage.getItem("org_role") == 3 ? (
+              <></>
+            ) : (
               <Popconfirm
                 title={`Remove ${name}`}
                 description="Are you sure to remove this member?"
@@ -112,8 +119,6 @@ const MemberCard = ({ name, email, memberId, orgId, status, memberRoleId }) => {
               >
                 <button className="delete"></button>
               </Popconfirm>
-            ) : (
-              <></>
             )}
           </div>
         </div>

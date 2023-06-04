@@ -142,6 +142,8 @@ class User {
     let getURs = `SELECT * FROM roles;`;
     return pool.execute(getURs);
   }
+
+  static 
 }
 
 module.exports = User;
