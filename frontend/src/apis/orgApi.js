@@ -25,7 +25,7 @@ const orgApi = createApi({
     }),
     getOrganization: builder.query({
       query: (orgId) => ({
-        url: `/get-organization/${orgId}`,
+        url: `/get-organization/${orgId}/${localStorage.getItem("user_id")}`,
         method: "GET",
       }),
       providesTags: ["org"],

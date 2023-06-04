@@ -28,7 +28,6 @@ router.get(
   organizationRoleAuthorization([], "Get"),
   getOrganizations
 );
-router.get("/get-organization/:orgId", getOrganization);
 router.patch(
   "/update-organization/:orgId/:userId",
   organizationRoleAuthorization([], "Update"),
@@ -41,6 +40,7 @@ router.delete(
 );
 
 // not tested
+router.get("/get-organization/:orgId/:userId", getOrganization);
 router.post("/add-member/:orgId/:userId", addMember);
 router.get("/get-members/:orgId", getMembers);
 router.delete("/remove-member/:orgId/:memberId/:userId", removeMember);

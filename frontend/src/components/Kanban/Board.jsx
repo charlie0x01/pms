@@ -32,8 +32,6 @@ const Board = () => {
     data: project,
     isFulfilled: projectFulfilled,
   } = useGetProjectQuery(parseInt(useParams().projectId));
-
-  console.log("is fullfilled ", projectFulfilled);
   // get columns
   const { data: columns } = useGetColumnsQuery(
     parseInt(project?.data.board_id),

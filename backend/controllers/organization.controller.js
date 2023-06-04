@@ -64,9 +64,9 @@ exports.getOrganizations = async (req, res, next) => {
 
 exports.getOrganization = async (req, res, next) => {
   try {
-    const orgId = req.params.orgId;
-    const [orgs, _] = await organization.findByOrganizationID(orgId);
-
+    const { orgId, userId } = req.params;
+    const [orgs, _] = await organization.findByOrgIdAndMemberId(orgId, userId);
+    console.log(orgs);
     if (orgs.length <= 0)
       return res
         .status(404)

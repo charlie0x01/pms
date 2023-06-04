@@ -42,20 +42,23 @@ const UserProfileSettings = () => {
     }
   };
 
-  // const onFileUpload = () => {
-  //   // Create an object of formData
-  //   const formData = new FormData();
+  const onFileUpload = () => {
+    // Create an object of formData
+    // const formData = new FormData();
 
-  //   // Update the formData object
-  //   formData.append("myFile", avatar, avatar.name);
+    console.log(avatar);
+    console.log(avatar.name);
 
-  //   // Details of the uploaded file
-  //   console.log(formik.values.avatar);
+    // // Update the formData object
+    // formData.append("myFile", avatar, avatar.name);
 
-  //   // Request made to the backend api
-  //   // Send formData object
-  //   axios.post("http://localhost:5000/api/user/profile-change", formData);
-  // };
+    // // Details of the uploaded file
+    // console.log(formik.values.avatar);
+
+    // // Request made to the backend api
+    // // Send formData object
+    // axios.post("http://localhost:5000/api/user/profile-change", formData);
+  };
 
   const onCrop = (preview) => {
     formik.setFieldValue("avatar", preview);

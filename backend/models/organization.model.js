@@ -69,6 +69,11 @@ class organization {
     return pool.execute(getOrganizations, [org_id]);
   }
 
+  static findByOrgIdAndMemberId(orgId, memberId) {
+    let getOrg = `select distinct o.*, om.om_role_id from organizations o left join organization_members om on o.org_id = om.org_id where o.org_id = ? and (om.org_member_id = ? or o.org_owner = ?);`;
+    return pool.execute(getOrg, [orgId, memberId, memberId]);
+  }
+
   // add members in organization
   static addMember(orgId, memberId) {
     let query = `insert into organization_members(org_id, org_member_id, description, member_status, om_role_id) values(?, ?, "", 0, 4); `;

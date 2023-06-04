@@ -13,8 +13,8 @@ const MemberCard = ({ name, email, memberId, orgId, status, memberRoleId }) => {
   const [promotedTo, setPromotedTo] = useState("");
   const [messageApi, contextHandler] = message.useMessage();
 
-  if (memberId == localStorage.getItem("user_id"))
-    localStorage.setItem("org_role", memberRoleId);
+  // if (memberId == localStorage.getItem("user_id"))
+  //   localStorage.setItem("org_role", memberRoleId);
 
   // remove member
   const [

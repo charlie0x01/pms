@@ -27,6 +27,11 @@ const ProjectView = () => {
     data: organization,
   } = useGetOrganizationQuery(useParams().orgId, { skip: skip });
 
+  // set user role for org
+  if (localStorage.getItem("user_id") != organization?.data.org_owner) {
+    localStorage.setItem("org_role", organization?.data.om_role_id);
+  } else localStorage.removeItem("org_role");
+
   // load projects
   const {
     data: projects,
