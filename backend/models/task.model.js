@@ -85,6 +85,11 @@ class Task {
     left join task_assigned ta on u.user_id = ta.assigned_user_id where assigned_task_id = ?;`;
     return pool.execute(getAssignees, [taskId]);
   }
+
+  static changeTaskColumn(taskId, columnId) {
+    let changeTaskColumn = `update tasks set task_column_id = ? where task_id = ? ;`;
+    return pool.execute(changeTaskColumn, [columnId, taskId]);
+  }
 }
 
 module.exports = Task;

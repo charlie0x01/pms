@@ -8,6 +8,7 @@ const {
   deleteTask,
   getAssignees,
   setAssignees,
+  changeTaskColumn,
 } = require("../controllers/task.controller.js");
 
 const router = express.Router();
@@ -19,5 +20,8 @@ router.patch("/update-task/:userId/:boardId/:taskId", updateTask);
 router.delete("/delete-task/:userId/:boardId/:taskId", deleteTask);
 router.get("/get-assignees/:taskId", getAssignees);
 router.post("/set-assignees/:taskId", setAssignees);
+
+// change task column
+router.patch("/change-task-column/:taskId/:columnId", changeTaskColumn);
 
 module.exports = router;

@@ -10,7 +10,10 @@ import {
   useUpdateColumnTitleMutation,
 } from "../../apis/kanbanApi";
 
-import { useGetTasksQuery } from "../../apis/taskApi";
+import {
+  useGetTasksQuery,
+  useChangeTaskColumnMutation,
+} from "../../apis/taskApi";
 import EditTask from "../Task/EditTask";
 
 const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
@@ -21,6 +24,18 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
   const [messageApi, contextHolder] = message.useMessage();
   // get tasks
   const { data: dtasks } = useGetTasksQuery(columnId);
+
+  // change Task Column
+  const [
+    changeTaskColumn,
+    {
+      isLoading: changeColumnLoading,
+      isError: changeColumnError,
+      isSuccess: changeColumnSuccess,
+      error: changeColumn_Error,
+      data: changeColumnResponse,
+    },
+  ] = useChangeTaskColumnMutation();
 
   // update task
   const handleOnTaskClick = (task) => {
@@ -54,6 +69,25 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
     updateColumnTitle({ boardId: boardId, columnId: id, title: title });
   };
 
+  const handleOnDrop = (e) => {
+    console.log(
+      "from column \n",
+      e.dataTransfer.getData("application/taskId"),
+      columnId,
+      columnTitle
+    );
+
+    changeTaskColumn({
+      taskId: e.dataTransfer.getData("application/taskId"),
+      columnId: columnId,
+    });
+  };
+
+  const handleOnDrapOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
   useEffect(() => {
     if (isError) {
       if (Array.isArray(error.data.error)) {
@@ -79,6 +113,21 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
       messageApi.success(updateResponse?.message);
     }
   }, [updateLoading]);
+
+  useEffect(() => {
+    if (changeColumnError) {
+      if (Array.isArray(changeColumn_Error.data.error)) {
+        changeColumn_Error.data.error.forEach((el) =>
+          messageApi.error(el.message)
+        );
+      } else {
+        messageApi.error(changeColumn_Error.data.message);
+      }
+    }
+    // if (changeColumnSuccess) {
+    //   messageApi.success(changeColumnResponse?.message);
+    // }
+  }, [changeColumnLoading]);
 
   return (
     <div>
@@ -136,7 +185,13 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
             </div>
           )}
         </div>
-        <div className="m-0 p-0">
+        <div
+          id={columnId}
+          onDrop={(e) => handleOnDrop(e)}
+          onDragOver={(e) => handleOnDrapOver(e)}
+          className="m-0 p-0"
+          style={{ minHeight: 100 }}
+        >
           {dtasks &&
             dtasks?.data.map((task, index) => {
               return (

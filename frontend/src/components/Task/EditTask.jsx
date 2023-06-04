@@ -53,12 +53,10 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
         ),
     }),
     onSubmit: (values) => {
-      alert(JSON.stringify(values));
       updateTask({
         boardId: task?.boardId,
         taskId: task?.taskId,
         ...values,
-        assignees: [...assignees],
       });
     },
   });
