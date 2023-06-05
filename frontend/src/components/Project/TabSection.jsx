@@ -33,7 +33,7 @@ const TabSection = ({ projectId }) => {
     <div className="mt-5">
       {contextHandler}
       <TabBar
-        tabs={["Members", "Activies"]}
+        tabs={["Members"]}
         defaultTab={activeTab}
         onTabChange={handleTabChange}
       />
@@ -67,13 +67,6 @@ const TabSection = ({ projectId }) => {
                   })}
               </>
             )}
-          </div>
-        )}
-
-        {activeTab === "Activies" && (
-          <div>
-            <h2>Content for Activies</h2>
-            <p>This is the content panel for Activies.</p>
           </div>
         )}
       </ContentPanel>

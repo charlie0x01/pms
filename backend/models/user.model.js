@@ -44,9 +44,16 @@ class User {
     return pool.execute(deleteUser, [userId]);
   }
 
-  static updateUserInfo(userId, email, firstName, lastName, dob) {
-    let updateUser = `update users set email = ?, first_name = ?, last_name = ?, dob = ? where user_id = ?;`;
-    return pool.execute(updateUser, [email, firstName, lastName, dob, userId]);
+  static updateUserInfo(userId, email, firstName, lastName, dob, bio) {
+    let updateUser = `update users set email = ?, first_name = ?, last_name = ?, dob = ?, bio = ? where user_id = ?;`;
+    return pool.execute(updateUser, [
+      email,
+      firstName,
+      lastName,
+      dob,
+      bio,
+      userId,
+    ]);
   }
 
   static updatePassword(email, newPassword) {

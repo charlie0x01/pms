@@ -151,7 +151,7 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
                   id="description"
                   class="input"
                   rows={5}
-                  cols={5}
+                  style={{ minHeight: 100 }}
                   placeholder="Enter Description"
                   {...formik.getFieldProps("description")}
                 />

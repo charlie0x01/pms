@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import _404Page from "./pages/_404Page";
@@ -16,14 +16,8 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <App />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/" element={<App />}>
+        <Route path="/" element={<Navigate to="/user-profile" replace />} />
         <Route path="user-profile" element={<UserProfile />} />
         <Route path="user-profile-settings" element={<UserProfileSettings />} />
         <Route path="project-profile" element={<ProjectProfile />} />

@@ -6,6 +6,7 @@ import { useLoginMutation } from "../../apis/authApi";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
+import { delay } from "../../../utils";
 
 const SignIn = () => {
   const [login, { isError, error, isSuccess, isLoading, data }] =
@@ -35,27 +36,38 @@ const SignIn = () => {
   });
 
   useEffect(() => {
-    if (isError) {
-      if (Array.isArray(error?.data.error)) {
-        error?.data.error.forEach((el) => messageApi.error(el.message));
-      } else {
-        messageApi.error(error?.data.message);
+    async function handleErrors() {
+      if (isError) {
+        if (Array.isArray(error?.data.error)) {
+          error?.data.error.forEach((el) => messageApi.error(el.message));
+        } else {
+          if (error?.data.message == "verify_yourself") {
+            messageApi.error(" Verify Your Email");
+            await delay(1000);
+            navigate("/verify-email");
+          } else {
+            messageApi.error(error?.data.message);
+          }
+        }
+      }
+      if (isSuccess) {
+        messageApi.success("Successfully");
+        console.log(data);
+        localStorage.setItem("user_id", data.userId);
+        localStorage.setItem("access_token", data.token);
+        localStorage.setItem("first_name", data.firstName);
+        localStorage.setItem("last_name", data.lastName);
+        localStorage.setItem("user_email", data.email);
+        localStorage.setItem("user_email", data.email);
+        localStorage.setItem("dob", data.dob);
+        localStorage.setItem("bio", data.bio);
+        localStorage.setItem("profile_picture", data.profile_picture);
+        // await delay(2000);
+        navigate("/");
       }
     }
-    if (isSuccess) {
-      messageApi.success("Successfully");
-      console.log(data);
-      localStorage.setItem("user_id", data.userId);
-      localStorage.setItem("access_token", data.token);
-      localStorage.setItem("first_name", data.firstName);
-      localStorage.setItem("last_name", data.lastName);
-      localStorage.setItem("user_email", data.email);
-      localStorage.setItem("user_email", data.email);
-      localStorage.setItem("dob", data.dob);
-      localStorage.setItem("profile_picture", data.profile_picture);
-      // await delay(2000);
-      navigate("/");
-    }
+
+    handleErrors();
   }, [isLoading]);
 
   return (

@@ -80,8 +80,8 @@ exports.addProject = async (req, res, next) => {
 
 exports.getProject = async (req, res, next) => {
   try {
-    const { projectId } = req.params;
-    const [project, _] = await Project.findByProjectId(projectId);
+    const { projectId, userId } = req.params;
+    const [project, _] = await Project.findByProjectId(projectId, userId, 0);
     return res.status(200).json({ success: true, data: project[0] });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
@@ -111,9 +111,9 @@ exports.getProjects = async (req, res, next) => {
 exports.updateProject = async (req, res, next) => {
   try {
     const { projectId, ownerId } = req.params;
-    const { description, projectTitle } = req.body;
+    const { description, projectTitle, status } = req.body;
     // check
-    if (projectTitle === "" && description === "")
+    if (projectTitle === "" && status === "")
       return res.json({
         success: false,
         message: "required data not provided",
@@ -127,7 +127,7 @@ exports.updateProject = async (req, res, next) => {
         .json({ success: false, message: "User not found!" });
     }
 
-    const [project, _] = await Project.findByProjectId(projectId);
+    const [project, _] = await Project.findByProjectId(projectId, 0);
     // check, if we have any project with this id
     if (project.length <= 0) {
       return res
@@ -142,7 +142,7 @@ exports.updateProject = async (req, res, next) => {
       });
     }
 
-    await Project.updateProject(description, projectTitle, projectId);
+    await Project.updateProject(description, projectTitle, projectId, status);
     return res.status(201).json({
       success: true,
       message: "project updated successfully",
@@ -163,7 +163,7 @@ exports.deleteProject = async (req, res, next) => {
         .json({ success: false, message: "User not found!" });
     }
 
-    const [project, _] = await Project.findByProjectId(projectId);
+    const [project, _] = await Project.findByProjectId(projectId, 0);
     // check, if we have any project with this id
     if (project.length <= 0) {
       return res
@@ -204,7 +204,7 @@ exports.addMember = async (req, res, next) => {
       });
     }
     // now select project
-    const [project, __] = await Project.findByProjectId(projectId);
+    const [project, __] = await Project.findByProjectId(projectId, 0);
     if (project.length <= 0) {
       return res
         .status(404)
@@ -378,8 +378,9 @@ exports.joinProject = async (req, res, next) => {
 
 exports.getMembers = async (req, res, next) => {
   try {
+    console.log(req.params.projectId);
     // find project
-    const [project, _] = await Project.findByProjectId(req.params.projectId);
+    const [project, _] = await Project.findByProjectId(req.params.projectId, 0);
     if (project.length <= 0) {
       return res.status(404).json({
         success: false,
@@ -400,7 +401,7 @@ exports.removeMember = async (req, res, next) => {
   try {
     const { projectId, memberId, userId } = req.params;
     // find org by id
-    const [project, _] = await Project.findByProjectId(projectId);
+    const [project, _] = await Project.findByProjectId(projectId, 0);
     if (project.length <= 0) {
       return res.status(404).json({
         success: false,

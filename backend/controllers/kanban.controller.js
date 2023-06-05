@@ -8,12 +8,11 @@ const jwt = require("jsonwebtoken");
 exports.addColumn = async (req, res, next) => {
   try {
     const { userId, boardId } = req.params;
-    console.log(userId, boardId);
 
     const [project, __] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
     console.log(project, user);
-    if (project.length <= 0 && user.length <= 0) {
+    if (project.length <= 0 && user.length > 0) {
       return res.status(404).json({
         success: false,
         message: "You're not authorized to make changes",
@@ -68,7 +67,7 @@ exports.updateColumn = async (req, res, next) => {
 
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    if (project.length <= 0 && user.length <= 0) {
+    if (project.length <= 0 && user.length > 0) {
       return res.status(404).json({
         success: false,
         message: "You're not authorized to make changes",
@@ -91,7 +90,7 @@ exports.deleteColumn = async (req, res, next) => {
 
     const [project, ___] = await Kanban.checkProjectOnwer(userId, boardId);
     const [user, _] = await Kanban.checkMemberRole(userId);
-    if (project.length <= 0 && user.length <= 0) {
+    if (project.length <= 0 && user.length > 0) {
       return res.status(404).json({
         success: false,
         message: "You're not authorized to make changes",

@@ -40,6 +40,16 @@ const Board = () => {
     }
   );
 
+  // set user role for org
+  if (
+    localStorage.getItem("user_id") != project?.data.project_owner &&
+    project?.data.pm_role_id != null
+  ) {
+    localStorage.setItem("project_role", project?.data.pm_role_id);
+  } else localStorage.removeItem("project_role");
+
+  console.log("from board ", project);
+
   useEffect(() => {
     if (isError) {
       if (Array.isArray(error?.data.error)) {
@@ -74,10 +84,14 @@ const Board = () => {
                   <></>
                 ) : (
                   <button
+                    disabled={
+                      localStorage.getItem("project_role") == 4 ||
+                      localStorage.getItem("project_role") == 3
+                    }
                     onClick={() => handleAddColumn(project?.data.board_id)}
-                    className="button is-primary"
+                    className="button is-primary is-clickable"
                   >
-                    <span class="icon is-medium is-clickable">
+                    <span class="icon is-medium">
                       <AiOutlineAppstoreAdd className="icon-2" />
                     </span>
                   </button>
@@ -85,9 +99,9 @@ const Board = () => {
 
                 <button
                   onClick={() => setIsOpen(true)}
-                  className="button is-primary"
+                  className="button is-primary is-clickable"
                 >
-                  <span class="icon is-medium is-clickable">
+                  <span class="icon is-medium">
                     <IoMdSettings className="icon-2" />
                   </span>
                 </button>

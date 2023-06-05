@@ -146,8 +146,8 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
             style={{ display: "inline" }}
             contentEditable={
               !(
-                localStorage.getItem("org_role") == 4 ||
-                localStorage.getItem("org_role") == 3
+                localStorage.getItem("project_role") == 4 ||
+                localStorage.getItem("project_role") == 3
               )
             }
             onBlur={(e) =>
@@ -160,8 +160,8 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
           >
             {columnTitle || "untitled"}
           </p>
-          {localStorage.getItem("org_role") == 4 ||
-          localStorage.getItem("org_role") == 3 ? (
+          {localStorage.getItem("project_role") == 4 ||
+          localStorage.getItem("project_role") == 3 ? (
             <></>
           ) : (
             <div>

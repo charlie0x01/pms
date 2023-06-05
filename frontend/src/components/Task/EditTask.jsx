@@ -94,8 +94,8 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
         ></button>
         {/* body!!! */}
         <div className="p-3">
-          <h1 className="title is-size-5 has-text-centered has-text-grey">
-            Edit Task
+          <h1 className="title is-size-5 has-text-centered">
+            {task?.taskTitle || "Edit Task"}
           </h1>
           <form onSubmit={formik.handleSubmit}>
             <div className="field is-horizontal">
@@ -105,7 +105,12 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
               <div className="field-body">
                 <div className="field">
                   <div className="control">
-                    <input
+                    <textarea
+                      style={{ minHeight: 70, maxWidth: 450 }}
+                      disabled={
+                        localStorage.getItem("project_role") == 4 ||
+                        localStorage.getItem("project_role") == 3
+                      }
                       className="input"
                       id="taskTitle"
                       type="text"
@@ -131,7 +136,13 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
                 <div className="field is-narrow">
                   <div className="control">
                     <div className="select is-fullwidth">
-                      <select {...formik.getFieldProps("priority")}>
+                      <select
+                        disabled={
+                          localStorage.getItem("project_role") == 4 ||
+                          localStorage.getItem("project_role") == 3
+                        }
+                        {...formik.getFieldProps("priority")}
+                      >
                         <option>--Select Priority--</option>
                         <option value="Critical">Critical</option>
                         <option value="High">High</option>
@@ -155,6 +166,10 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
                 <div className="field is-narrow">
                   <div className="control">
                     <input
+                      disabled={
+                        localStorage.getItem("project_role") == 4 ||
+                        localStorage.getItem("project_role") == 3
+                      }
                       className="input"
                       type="date"
                       placeholder="Enter Task Title"
@@ -173,13 +188,24 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
                 <textarea
                   id="description"
                   className="input"
+                  readOnly={
+                    localStorage.getItem("project_role") == 4 ||
+                    localStorage.getItem("project_role") == 3
+                  }
                   rows={5}
-                  cols={5}
+                  style={{ minHeight: 70, maxWidth: 580 }}
                   placeholder="Enter Description"
                 />
               </div>
             </div>
-            <button type="submit" className="button is-primary">
+            <button
+              disabled={
+                localStorage.getItem("project_role") == 4 ||
+                localStorage.getItem("project_role") == 3
+              }
+              type="submit"
+              className="button is-primary"
+            >
               Save Changes
             </button>
           </form>

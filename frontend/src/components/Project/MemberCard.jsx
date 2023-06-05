@@ -132,7 +132,13 @@ const MemberCard = ({
                 okText="Yes"
                 cancelText="No"
               >
-                <button className="delete"></button>
+                <button
+                  disabled={
+                    localStorage.getItem("project_role") == 4 ||
+                    localStorage.getItem("project_role") == 3
+                  }
+                  className="delete"
+                ></button>
               </Popconfirm>
             )}
           </div>

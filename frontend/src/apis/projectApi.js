@@ -26,7 +26,7 @@ const projectApi = createApi({
     }),
     getProject: builder.query({
       query: (projectId) => ({
-        url: `/get-project/${projectId}`,
+        url: `/get-project/${projectId}/${localStorage.getItem("user_id")}`,
         method: "GET",
       }),
       providesTags: ["projects"],
@@ -85,6 +85,14 @@ const projectApi = createApi({
       query: (data) => ({
         url: `/remove-member/${data.projectId}/${data.memberId}/${data.userId}`,
         method: "DELETE",
+      }),
+      providesTags: ["projects"],
+      invalidatesTags: ["projects"],
+    }),
+    changeProjectStatus: builder.mutation({
+      query: (projectId) => ({
+        url: `/change-project-status/${projectId}`,
+        method: "PATCH",
       }),
       providesTags: ["projects"],
       invalidatesTags: ["projects"],

@@ -56,16 +56,6 @@ const TaskCard = ({
     <>
       {contextHandler}
       <div
-        onClick={() =>
-          onTaskClick({
-            taskId: taskId,
-            dueDate: dueDate,
-            priority: priority,
-            description: description,
-            taskTitle: title,
-            boardId: boardId,
-          })
-        }
         id={taskId}
         draggable
         onDragStart={(e) => handleDrapStart(e)}
@@ -74,7 +64,7 @@ const TaskCard = ({
       >
         <div className="is-flex is-flex-direction-column is-gap-1">
           <div className="is-flex is-justify-content-space-between">
-            <div className="is-flex is-flex-wrap-wrap is-gap-1">
+            <div className="is-flex is-flex-wrap-wrap is-gap-1 mb-2">
               {priority === "Critical" && (
                 <span class="tag is-danger is-light">{priority}</span>
               )}
@@ -98,13 +88,24 @@ const TaskCard = ({
               <button className="delete"></button>
             </Popconfirm>
           </div>
-          <div>
+          <div
+            onClick={() =>
+              onTaskClick({
+                taskId: taskId,
+                dueDate: dueDate,
+                priority: priority,
+                description: description,
+                taskTitle: title,
+                boardId: boardId,
+              })
+            }
+          >
             <h1 className="title is-size-6 mb-0 ellipsis">{title}</h1>
           </div>
           {/* <div className="is-flex is-flex-wrap-wrap is-gap-1">
           <span class="tag is-light">tags will go here</span>
         </div> */}
-          <div className="is-flex is-justify-content-space-between is-align-items-center">
+          <div className="mt-3 is-flex is-justify-content-space-between is-align-items-center">
             <div class="avatars">
               {taskAssignees &&
                 taskAssignees?.data.map((user, index) => {

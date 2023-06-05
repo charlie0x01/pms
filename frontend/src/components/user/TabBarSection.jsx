@@ -3,7 +3,7 @@ import TabBar from "../TabBar/Tabbar";
 import ContentPanel from "../TabBar/ContentPanel";
 
 const TabBarSection = () => {
-  const [activeTab, setActiveTab] = useState("Tab 1");
+  const [activeTab, setActiveTab] = useState("Active Projects");
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -11,7 +11,7 @@ const TabBarSection = () => {
   return (
     <div className="mt-5">
       <TabBar
-        tabs={["Active Projects", "Notifications", "Activies"]}
+        tabs={["Active Projects", "Active Tasks", "Notifications"]}
         defaultTab={activeTab}
         onTabChange={handleTabChange}
       />
@@ -19,22 +19,20 @@ const TabBarSection = () => {
       <ContentPanel tab={activeTab}>
         {activeTab === "Active Projects" && (
           <div>
-            <h2>Content for Active Projects</h2>
-            <p>This is the content panel for Active Projects.</p>
+            <h2>Content for Notifications</h2>
+            <p>This is the content panel for Notifications.</p>
           </div>
         )}
-
-        {activeTab === "Notifications" && (
+        {activeTab === "Active Tasks" && (
           <div>
             <h2>Content for Notifications</h2>
             <p>This is the content panel for Notifications.</p>
           </div>
         )}
-
-        {activeTab === "Activies" && (
+        {activeTab === "Notifications" && (
           <div>
-            <h2>Content for Activies</h2>
-            <p>This is the content panel for Activies.</p>
+            <h2>Content for Notifications</h2>
+            <p>This is the content panel for Notifications.</p>
           </div>
         )}
       </ContentPanel>

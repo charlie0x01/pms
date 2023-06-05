@@ -13,7 +13,9 @@ const UserRoles = ({ callback, selected, memberId }) => {
         <select
           disabled={
             localStorage.getItem("org_role") == 4 ||
-            localStorage.getItem("org_role") == 3
+            localStorage.getItem("org_role") == 3 ||
+            localStorage.getItem("project_role") == 4 ||
+            localStorage.getItem("project_role") == 3
           }
           onChange={({ target: { value } }) => callback(value)}
         >

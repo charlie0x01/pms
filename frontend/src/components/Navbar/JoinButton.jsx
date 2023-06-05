@@ -6,7 +6,7 @@ const JoinButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <button onClick={() => setIsOpen(true)} className="button is-black">
+      <button onClick={() => setIsOpen(true)} className="button">
         Join
       </button>
       <JoinModal isOpen={isOpen} setIsOpen={setIsOpen} />

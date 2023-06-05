@@ -50,7 +50,7 @@ exports.getOrganizations = async (req, res, next) => {
     if (orgs.length <= 0) {
       return res.status(404).json({
         success: true,
-        message: "Create new organization",
+        message: "no-organizatioins-for-this-user",
       });
     }
     return res.status(200).json({
@@ -147,7 +147,7 @@ exports.addMember = async (req, res, next) => {
       // send email to given email address
       sendNotificationEmail(
         email,
-        "Hello Dear,",
+        "Hello,",
         `${sender[0].first_name} ${sender[0].last_name} invited you to join ${org[0].org_name} on Taskify.
       To join ${org[0].org_name}, use this join code ${org[0].joining_code}
       To register, click on the following link: http://localhost:5173/signup

@@ -48,9 +48,14 @@ class Project {
     return pool.execute(getProjects, [orgId, userId, userId]);
   }
 
-  static updateProject(description, projectTitle, projectId) {
-    let updatePro = `update projects set description = ?, project_title = ? where project_id = ? `;
-    return pool.execute(updatePro, [description, projectTitle, projectId]);
+  static updateProject(description, projectTitle, projectId, status) {
+    let updatePro = `update projects set description = ?, project_title = ?, status = ? where project_id = ? `;
+    return pool.execute(updatePro, [
+      description,
+      projectTitle,
+      status,
+      projectId,
+    ]);
   }
 
   static findByName(name) {
@@ -81,9 +86,12 @@ class Project {
     return pool.execute(getProjects, [org_id]);
   }
 
-  static findByProjectId(projectId) {
-    let getProject = `select p.*, b.board_id from projects p left join boards b on b.board_project_id = p.project_id where p.project_id = ?`;
-    return pool.execute(getProject, [projectId]);
+  static findByProjectId(projectId, memberId) {
+    let getProject = `select p.*, b.board_id, pm.pm_role_id from projects p 
+    left join boards b on b.board_project_id = p.project_id
+    left join project_members pm on p.project_id = pm.project_id and pm.project_member_id = ?
+    where p.project_id = ?;`;
+    return pool.execute(getProject, [memberId, projectId]);
   }
 
   static findByProjectID(owner_id, org_id, project_id) {

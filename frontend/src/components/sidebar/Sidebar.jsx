@@ -35,9 +35,16 @@ const Sidebar = () => {
   //
   const [editOrg, setEditOrg] = useState(false);
 
-  if (!orgLoading && organizations) dispatch(setOrgs([...organizations?.data]));
+  if (!orgLoading && organizations) {
+    dispatch(setOrgs([...organizations?.data]));
+    // navigate(`/organization/${organizations?.data[0].org_id}`);
+  }
   useEffect(() => {
-    if (orgError) messageApi.error(orgError?.data.message);
+    if (orgError) {
+      if (orgError?.data.message == "no-organizatioins-for-this-user")
+        messageApi.info("Create New or Join Existing Organization");
+      else messageApi.error(orgError?.data.message);
+    }
   }, [orgError]);
 
   return (
@@ -78,38 +85,6 @@ const Sidebar = () => {
                 )}
               </div>
             )}
-          </aside>
-          <aside className="menu">
-            <div className="menu-label ml-2 is-flex is-align-items-center is-justify-content-space-between">
-              Projects
-              <div onClick={() => setNewProject(true)}>
-                <span className="icon is-clickable">
-                  <GrAdd />
-                </span>
-              </div>
-            </div>
-            {/* {!projectError && (
-            <>
-            {projectLoading === true ? (
-                <LoadingSpinner />
-                ) : (
-                  <ul className="menu-list">
-                  {projects?.data.length > 0 &&
-                    projects?.data.map((project, index) => {
-                      return (
-                        <li key={index}>
-                        <SideBarItem
-                        id={project.project_id}
-                        title={project.project_title}
-                            link={`/project/${project.project_id}`}
-                          />
-                          </li>
-                          );
-                        })}
-                        </ul>
-                        )}
-                        </>
-                        )} */}
           </aside>
         </div>
       </aside>

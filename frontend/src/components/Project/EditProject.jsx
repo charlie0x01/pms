@@ -46,18 +46,21 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
     initialValues: {
       projectName: data?.data.project_title || "",
       description: data?.data.description || "",
+      status: data?.data.status || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
       projectName: Yup.string()
-        .min(2, "project title can contain minimum 2 characters")
+        .min(3, "project title can contain minimum 3 characters")
         .required("Required"),
+      status: Yup.string().required("Please Select Status"),
     }),
     onSubmit: (values) => {
       updateProject({
         projectTitle: values.projectName,
         description: values.description,
         projectId: data?.data.project_id,
+        status: values.status,
       });
     },
   });
@@ -128,6 +131,10 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Project Name</label>
               <div class="control">
                 <input
+                  disabled={
+                    localStorage.getItem("project_role") == 4 ||
+                    localStorage.getItem("project_role") == 3
+                  }
                   id="projectName"
                   class="input"
                   type="text"
@@ -146,16 +153,33 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Description</label>
               <div class="control">
                 <textarea
+                  disabled={
+                    localStorage.getItem("project_role") == 4 ||
+                    localStorage.getItem("project_role") == 3
+                  }
                   id="description"
                   class="input"
                   rows={5}
-                  cols={5}
+                  style={{ minHeight: 100 }}
                   placeholder="Enter Description"
                   {...formik.getFieldProps("description")}
                 />
               </div>
             </div>
-            <button type="submit" className="button is-primary">
+            <div class="select">
+              <select>
+                <option>Select dropdown</option>
+                <option>With options</option>
+              </select>
+            </div>
+            <button
+              disabled={
+                localStorage.getItem("project_role") == 4 ||
+                localStorage.getItem("project_role") == 3
+              }
+              type="submit"
+              className="button is-primary"
+            >
               Save Changes
             </button>
           </form>
@@ -167,6 +191,10 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
             cancelText="No"
           >
             <button
+              disabled={
+                localStorage.getItem("project_role") == 4 ||
+                localStorage.getItem("project_role") == 3
+              }
               style={{ position: "absolute", left: 130, bottom: 1 }}
               className="button is-danger ml-2"
             >

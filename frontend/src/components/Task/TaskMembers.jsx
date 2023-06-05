@@ -74,10 +74,17 @@ const TaskMembers = ({ taskId }) => {
         {activeTab === "Assignees" && (
           <div>
             <div className="pb-3">
-              <button onClick={() => setSelect(true)} className="button">
+              <button
+                disabled={
+                  localStorage.getItem("project_role") == 4 ||
+                  localStorage.getItem("project_role") == 3
+                }
+                onClick={() => setSelect(true)}
+                className="button"
+              >
                 Assign Task
               </button>
-              <div className="is-flex is-gap-2">
+              <div className="is-flex is-gap-2 mt-3">
                 {taskAssignees &&
                   taskAssignees?.data.map((user, index) => {
                     return (

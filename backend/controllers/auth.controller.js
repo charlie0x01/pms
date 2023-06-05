@@ -87,7 +87,7 @@ exports.login = async (req, res, next) => {
         // const [user, _] = await User.findByEmailId(email);
         sendEmail(
           email,
-          found.first_name,
+          `${found[0].first_name} ${found[0].last_name}`,
           otp,
           "Taskify Email Verification Code"
         );
@@ -164,6 +164,7 @@ exports.newVerificationCode = async (req, res, next) => {
 
     if (updated[0].affectedRows === 1) {
       const [user, _] = await User.findByEmailId(email);
+
       sendEmail(email, user.first_name, otp, "Taskify Email Verification Code");
       res
         .status(202)
@@ -284,6 +285,7 @@ const sendToken = (user, statusCode, res) => {
     lastName: user.last_name,
     email: user.email,
     dob: user.dob,
+    bio: user.bio,
     userType: user.user_type,
     password: user.password,
     verified: user.verified,

@@ -15,8 +15,6 @@ const TabBarSection = ({ orgId }) => {
 
   // get members
   const { isLoading, error, data: members } = useGetMembersQuery(orgId);
-
-  console.log(members);
   // toast message
   const [messageApi, contextHandler] = message.useMessage();
 
@@ -31,7 +29,7 @@ const TabBarSection = ({ orgId }) => {
     <div className="mt-5">
       {contextHandler}
       <TabBar
-        tabs={["Members", "Activies"]}
+        tabs={["Members"]}
         defaultTab={activeTab}
         onTabChange={handleTabChange}
       />
@@ -70,13 +68,6 @@ const TabBarSection = ({ orgId }) => {
                   })}
               </>
             )}
-          </div>
-        )}
-
-        {activeTab === "Activies" && (
-          <div>
-            <h2>Content for Activies</h2>
-            <p>This is the content panel for Activies.</p>
           </div>
         )}
       </ContentPanel>

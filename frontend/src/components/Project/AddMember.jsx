@@ -26,7 +26,6 @@ const AddMember = ({ isOpen, setIsOpen, projectId }) => {
       email: Yup.string().email("Invalid email address").required("Required"),
     }),
     onSubmit: (values) => {
-      alert(JSON.stringify(values));
       addMember({
         email: values.email,
         projectId: projectId,

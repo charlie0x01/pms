@@ -1,9 +1,20 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+// apis
+import { useGetUserQuery } from "../../apis/authApi";
+
 const UserAvatarDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
+  // get user
+  const { data: user } = useGetUserQuery(localStorage.getItem("user_id"));
+
+  const defaultAvatar = "https://bulma.io/images/placeholders/128x128.png";
+  const userAvatar = user?.data.profile_picture
+    ? user?.data.profile_picture
+    : defaultAvatar;
 
   const handleToggleDropdown = (show) => {
     setIsOpen(show);
@@ -24,13 +35,7 @@ const UserAvatarDropdown = () => {
           onMouseLeave={() => handleToggleDropdown(false)}
         >
           <figure class="image is-32x32">
-            <img
-              class="is-rounded"
-              src={
-                localStorage.getItem("profile_picture") ||
-                "https://bulma.io/images/placeholders/128x128.png"
-              }
-            />
+            <img class="is-rounded" src={userAvatar} />
           </figure>
         </div>
       </div>

@@ -3,8 +3,7 @@ const User = require("../models/user.model");
 exports.updateUserProfile = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const { email, firstName, lastName, dob } = req.body;
-    console.log(email, firstName, lastName, userId);
+    const { email, firstName, lastName, dob, bio } = req.body;
 
     // get user
     const [user, _] = await User.findByUserId(userId);
@@ -16,7 +15,7 @@ exports.updateUserProfile = async (req, res, next) => {
     }
 
     // udpate user info
-    await User.updateUserInfo(userId, email, firstName, lastName, dob);
+    await User.updateUserInfo(userId, email, firstName, lastName, dob, bio);
     return res.status(200).json({
       success: true,
       message: "User profile updated successfully",

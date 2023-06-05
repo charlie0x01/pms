@@ -14,12 +14,6 @@ import {
   useUpdateUserMutation,
   useGetUserQuery,
 } from "../../apis/authApi";
-import { copyWithStructuralSharing } from "@reduxjs/toolkit/dist/query";
-
-function Base64ToImage(base64img) {
-  var img = new Image();
-  return (img.src = base64img);
-}
 
 function generateRandomString() {
   const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -123,7 +117,8 @@ const UserProfileSettings = () => {
       lastName: user?.data.last_name,
       email: user?.data.email,
       dob: user?.data.dob,
-      avatar: user?.data.profile_picture,
+      bio: user?.data.bio,
+      avatar: user?.data.profile_picture || defaultImage,
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -211,7 +206,7 @@ const UserProfileSettings = () => {
       {contextHandler}
       <section class="section">
         <div class="container">
-          <h1 class="title">User Profile</h1>
+          <h1 class="title">User Profile Settings</h1>
           <div className="is-flex">
             <div class="field is-flex is-flex-direction-column is-align-items-center is-gap-3 mr-3">
               <figure class="image is-128x128">
@@ -317,6 +312,28 @@ const UserProfileSettings = () => {
                     </div>
                   </div>
                 </div>
+                <div class="field is-horizontal">
+                  <div class="field-label is-normal">
+                    <label class="label">Bio</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <div class="control">
+                        <textarea
+                          class="input"
+                          type="text"
+                          placeholder="Description or Bio"
+                          {...formik.getFieldProps("bio")}
+                          rows={5}
+                          style={{ minHeight: 100 }}
+                        />
+                      </div>
+                      {formik.touched.bio && formik.errors.bio ? (
+                        <p className="help is-danger">{formik.errors.bio}</p>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
                 <button
                   type="submit"
                   className="button is-primary is-pulled-right"
@@ -397,15 +414,13 @@ const UserProfileSettings = () => {
         captcha={generateRandomString()}
       />
       <Modal show={uploadPP}>
-        <div>
-          <Avatar
-            width={390}
-            height={295}
-            onCrop={onCrop}
-            onBeforeFileLoad={(e) => onBeforeFileLoad(e)}
-            src={image}
-          />
-        </div>
+        <Avatar
+          width={350}
+          height={295}
+          onCrop={onCrop}
+          onBeforeFileLoad={(e) => onBeforeFileLoad(e)}
+          src={image}
+        />
         <button
           className="button mt-3"
           onClick={() => {

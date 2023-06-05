@@ -27,7 +27,7 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
     validationSchema: Yup.object({
       taskTitle: Yup.string()
         .min(3, "Task Title can contain minimum 3 characters")
-        .max(60, "Task Title can contain maximum 60 characters")
+        .max(150, "Task Title can contain maximum 150 characters")
         .required("Required"),
       priority: Yup.string()
         .required("Please select priority level of the task")
@@ -48,6 +48,10 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
             else false;
           }
         ),
+      description: Yup.string().max(
+        200,
+        "description can only contain 200 characters"
+      ),
     }),
     onSubmit: (values) => {
       addTask({
@@ -101,10 +105,15 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
               <div class="field-body">
                 <div class="field">
                   <div class="control">
-                    <input
+                    <textarea
+                      style={{ minHeight: 70, maxWidth: 450 }}
                       class="input"
                       id="taskTitle"
                       type="text"
+                      disabled={
+                        localStorage.getItem("project_role") == 4 ||
+                        localStorage.getItem("project_role") == 3
+                      }
                       placeholder="Enter Task Title"
                       {...formik.getFieldProps("taskTitle")}
                     />
@@ -127,7 +136,13 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
                 <div class="field is-narrow">
                   <div class="control">
                     <div class="select is-fullwidth">
-                      <select {...formik.getFieldProps("priority")}>
+                      <select
+                        disabled={
+                          localStorage.getItem("project_role") == 4 ||
+                          localStorage.getItem("project_role") == 3
+                        }
+                        {...formik.getFieldProps("priority")}
+                      >
                         <option>--Select Priority--</option>
                         <option value="Critical">Critical</option>
                         <option value="High">High</option>
@@ -151,6 +166,10 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
                 <div class="field is-narrow">
                   <div class="control">
                     <input
+                      disabled={
+                        localStorage.getItem("project_role") == 4 ||
+                        localStorage.getItem("project_role") == 3
+                      }
                       class="input"
                       type="date"
                       placeholder="Enter Task Title"
@@ -163,24 +182,6 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
                 </div>
               </div>
             </div>
-            {/* <div class="field is-horizontal">
-            <div class="field-label is-normal">
-            <label class="label">Description</label>
-            </div>
-            <div class="field-body">
-            <div class="field">
-            <div class="control">
-            <textarea
-            class="input"
-            type="date"
-            placeholder="Enter Task Title"
-            rows={5}
-            />
-            </div>
-            {/* <p class="help is-danger">This field is required</p> }
-            </div>
-            </div>
-          </div> */}
             <div class="field">
               <label class="label">Description</label>
               <div class="control">
@@ -188,12 +189,23 @@ const TaskForm = ({ isOpen, setIsOpen, columnId }) => {
                   id="description"
                   class="input"
                   rows={5}
-                  cols={5}
+                  disabled={
+                    localStorage.getItem("project_role") == 4 ||
+                    localStorage.getItem("project_role") == 3
+                  }
+                  style={{ minHeight: 70, maxWidth: 580 }}
                   placeholder="Enter Description"
                 />
               </div>
             </div>
-            <button type="submit" className="button is-primary">
+            <button
+              disabled={
+                localStorage.getItem("project_role") == 4 ||
+                localStorage.getItem("project_role") == 3
+              }
+              type="submit"
+              className="button is-primary"
+            >
               Create
             </button>
           </form>

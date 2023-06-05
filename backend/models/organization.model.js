@@ -70,7 +70,9 @@ class organization {
   }
 
   static findByOrgIdAndMemberId(orgId, memberId) {
-    let getOrg = `select distinct o.*, om.om_role_id from organizations o left join organization_members om on o.org_id = om.org_id where o.org_id = ? and (om.org_member_id = ? or o.org_owner = ?);`;
+    let getOrg = `select distinct o.*, om.om_role_id from organizations o 
+    left join organization_members om on o.org_id = om.org_id 
+    where o.org_id = ? and (om.org_member_id = ? or o.org_owner = ?);`;
     return pool.execute(getOrg, [orgId, memberId, memberId]);
   }
 
