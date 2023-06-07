@@ -236,3 +236,67 @@ exports.getActiveTasks = async (req, res) => {
     return res.status(500).json({ success: false, message: error?.message });
   }
 };
+
+exports.postComment = async (req, res) => {
+  try {
+    console.log(req.params);
+    console.log(req.body);
+
+    await Task.postComment(
+      req.params.taskId,
+      req.body.comment,
+      req.params.userId
+    );
+    return res.status(200).json({ success: true, message: "posted" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+exports.postReply = async (req, res) => {
+  try {
+    console.log(req.params);
+    console.log(req.body);
+
+    await Task.postReply(
+      req.params.taskId,
+      req.body.comment,
+      req.params.userId,
+      req.params.parentId
+    );
+
+    return res.status(200).json({ success: true, message: "posted" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+exports.deleteComment = async (req, res) => {
+  try {
+    console.log(req.params);
+
+    await Task.deleteComment(req.params.commentId);
+    return res.status(200).json({ success: true, message: "Comment Deleted" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+exports.updateComment = async (req, res) => {
+  try {
+    console.log(req.params);
+    console.log(req.body);
+
+    await Task.updateComment(req.params.commentId, req.body.comment);
+    return res.status(200).json({ success: true, message: "updated" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+exports.getComments = async (req, res) => {
+  try {
+    console.log(req.params);
+    const [comments, _] = await Task.getComments(req.params.taskId);
+
+    return res.status(200).json({ success: true, data: comments });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};

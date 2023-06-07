@@ -4,15 +4,15 @@ import ContentPanel from "../TabBar/ContentPanel";
 import SelectMembers from "./SelectMembers";
 import { delay } from "../../../utils";
 import { message } from "antd";
+import CommentBox from "./CommentBox";
+import MediaTag from "../common/MediaTag";
+import Attachments from "./Attachments";
 
 // apis
 import {
   useSetAssigneesMutation,
   useGetAssigneesQuery,
 } from "../../apis/taskApi";
-import MediaTag from "../common/MediaTag";
-import Attachments from "./Attachments";
-// import CommentBox from "./CommentBox";
 
 const TaskMembers = ({ taskId }) => {
   const [activeTab, setActiveTab] = useState("Comments");
@@ -110,7 +110,7 @@ const TaskMembers = ({ taskId }) => {
           </>
         )}
 
-        {/* {activeTab === "Comments" && <CommentBox />} */}
+        {activeTab === "Comments" && <CommentBox taskId={taskId} />}
       </ContentPanel>
       <SelectMembers
         isOpen={select}

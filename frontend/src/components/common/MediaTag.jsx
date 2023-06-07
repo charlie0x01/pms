@@ -3,7 +3,10 @@ import Avatar from "react-avatar";
 
 const MediaTag = ({ name, email, profilePicture }) => {
   return (
-    <div className="is-flex is-align-items-center p-2 is-gap-1 box">
+    <div
+      className="is-flex is-align-items-center p-2 is-gap-1 box"
+      style={{ maxHeight: 40 }}
+    >
       <div className="">
         <Avatar
           maxInitials={1}

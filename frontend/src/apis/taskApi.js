@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const taskApi = createApi({
   reducerPath: "task",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/task" }), // Replace with your API base URL
-  tagTypes: ["tasks", "assignees", "attachments"],
+  tagTypes: ["tasks", "assignees", "attachments", "comments"],
   endpoints: (builder) => ({
     addTask: builder.mutation({
       query: (data) => ({
@@ -105,6 +105,51 @@ const taskApi = createApi({
       providesTags: ["attachments"],
       invalidatesTags: ["attachments"],
     }),
+    postComment: builder.mutation({
+      query: ({ taskId, comment }) => ({
+        url: `/post-comment/${taskId}/${localStorage.getItem("user_id")}`,
+        method: "POST",
+        body: { comment: comment },
+      }),
+      providesTags: ["comments"],
+      invalidatesTags: ["comments"],
+    }),
+    postReply: builder.mutation({
+      query: ({ taskId, comment, commentId }) => ({
+        url: `/post-reply/${taskId}/${commentId}/${localStorage.getItem(
+          "user_id"
+        )}`,
+        method: "POST",
+        body: { comment: comment },
+      }),
+      providesTags: ["comments"],
+      invalidatesTags: ["comments"],
+    }),
+    getComments: builder.query({
+      query: (taskId) => ({
+        url: `/get-comments/${taskId}`,
+        method: "GET",
+      }),
+      providesTags: ["comments"],
+      invalidatesTags: ["comments"],
+    }),
+    updateComment: builder.mutation({
+      query: ({ commentId, comment }) => ({
+        url: `/update-comment/${commentId}`,
+        method: "PATCH",
+        body: { comment: comment },
+      }),
+      providesTags: ["comments"],
+      invalidatesTags: ["comments"],
+    }),
+    deleteComment: builder.mutation({
+      query: (commentId) => ({
+        url: `/delete-comment/${commentId}`,
+        method: "DELETE",
+      }),
+      providesTags: ["comments"],
+      invalidatesTags: ["comments"],
+    }),
   }),
 });
 
@@ -122,4 +167,9 @@ export const {
   useUpdateTaskMutation,
   useGetAttachmentsQuery,
   useDeleteAttachmentMutation,
+  usePostCommentMutation,
+  useGetCommentsQuery,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+  usePostReplyMutation,
 } = taskApi;

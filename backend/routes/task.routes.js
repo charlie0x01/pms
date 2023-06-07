@@ -12,6 +12,11 @@ const {
   getTaskAttachments,
   deleteTaskAttachment,
   getActiveTasks,
+  postComment,
+  postReply,
+  deleteComment,
+  updateComment,
+  getComments,
 } = require("../controllers/task.controller.js");
 
 const router = express.Router();
@@ -30,5 +35,11 @@ router.get("/get-task-attachments/:taskId", getTaskAttachments);
 router.delete("/delete-task-attachment/:taskId", deleteTaskAttachment);
 
 router.get("/get-active-tasks/:userId", getActiveTasks);
+
+router.post("/post-comment/:taskId/:userId", postComment);
+router.post("/post-reply/:taskId/:parentId/:userId", postReply);
+router.get("/get-comments/:taskId", getComments);
+router.delete("/delete-comment/:commentId", deleteComment);
+router.patch("/update-comment/:commentId", updateComment);
 
 module.exports = router;

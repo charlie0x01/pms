@@ -54,7 +54,7 @@ const DeleteUser = ({ isOpen, setIsOpen, captcha }) => {
       <div className="is-relative">
         <form onSubmit={formik.handleSubmit}>
           <div class="field">
-            <label className="label">Type the above Captcha</label>
+            <label className="label">Type the below Captcha</label>
             <div class="control">
               <input
                 class="input"
@@ -67,21 +67,23 @@ const DeleteUser = ({ isOpen, setIsOpen, captcha }) => {
               <p className="help is-danger">{formik.errors.captcha}</p>
             ) : null}
           </div>
-          <div
-            className="p-3 m-2"
-            style={{
-              border: "1px solid hsl(0, 0%, 48%)",
-              display: "inline-block",
-            }}
-          >
-            <p className="subtitle captcha is-unselectable">{captcha}</p>
+          <div className="mb-3 mt-1">
+            <div
+              className="p-3 m-2"
+              style={{
+                border: "1px solid hsl(0, 0%, 48%)",
+                display: "inline-block",
+              }}
+            >
+              <p className="subtitle captcha is-unselectable">{captcha}</p>
+            </div>
+            <p className="subtitle is-unselectable is-size-7 has-text-danger">
+              Note: Deleting your profile will permanently remove all your data
+              and cannot be undone.
+              <br />
+              We're sorry to see you go and appreciate your time with us.
+            </p>
           </div>
-          <p className="subtitle is-unselectable is-size-7">
-            Note: Deleting your profile will permanently remove all your data
-            and cannot be undone.
-            <br />
-            We're sorry to see you go and appreciate your time with us.
-          </p>
           <button type="submit" className="button is-danger mr-3">
             Delete
           </button>

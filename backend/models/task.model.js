@@ -95,14 +95,17 @@ class Task {
     let getTaskAtt = `select * from task_attachments where attachment_task_id = ?;`;
     return pool.execute(getTaskAtt, [taskId]);
   }
+
   static deleteTaskAttachments(taskId, attachments, res) {
     let deleteAll = "delete from task_attachments";
     return pool.execute(deleteAll);
   }
+
   static addTaskAttachment(taskId, attachment) {
     let addTaskAtt = `insert into task_attachments(attachment_task_id, attachment_path) value(?, ?);`;
     return pool.execute(addTaskAtt, [taskId, attachment]);
   }
+
   static deleteTaskAttachment(taskId, attachment) {
     let deleteTaskAtt = `delete from task_attachments where attachment_task_id = ? and attachment_path = ?;`;
     return pool.execute(deleteTaskAtt, [taskId, attachment]);
@@ -115,6 +118,33 @@ class Task {
     where ta.assigned_user_id = ? and bc.column_title != "Completed";
    `;
     return pool.execute(getActiveTasks, [userId]);
+  }
+
+  static postComment(taskId, comment, userId) {
+    let postComment = `insert into comments(posted_on, content, created_at, posted_by) values(?, ?, current_timestamp(), ?);`;
+    return pool.execute(postComment, [taskId, comment, userId]);
+  }
+
+  static postReply(taskId, comment, userId, parentId) {
+    let postReply = `insert into comments(posted_on, content, created_at, posted_by, parent_id) values(?, ?, current_timestamp(), ?, ?);`;
+    return pool.execute(postReply, [taskId, comment, userId, parentId]);
+  }
+
+  static deleteComment(commentId) {
+    let deleteComment = `delete from comments where comment_id = ? or parent_id = ?;`;
+    return pool.execute(deleteComment, [commentId, commentId]);
+  }
+
+  static updateComment(commentId, comment) {
+    let updateComment = `update comments set content = ?, edited = true where comment_id = ?;`;
+    return pool.execute(updateComment, [comment, commentId]);
+  }
+
+  static getComments(taskId) {
+    let getComments = `select c.*, u.profile_picture, u.first_name, u.last_name from comments c
+    left join users u on u.user_id = c.posted_by 
+    where posted_on = ?;`;
+    return pool.execute(getComments, [taskId]);
   }
 }
 

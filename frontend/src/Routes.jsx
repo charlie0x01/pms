@@ -16,13 +16,54 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<App />}>
-        <Route path="/" element={<Navigate to="/user-profile" replace />} />
-        <Route path="user-profile" element={<UserProfile />} />
-        <Route path="user-profile-settings" element={<UserProfileSettings />} />
-        <Route path="project-profile" element={<ProjectProfile />} />
-        <Route path="organization/:orgId" element={<ProjectView />} />
-        <Route path="kanban/:projectId" element={<Board />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <App />
+          </ProtectedRoute>
+        }
+      >
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/user-profile" replace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="user-profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="user-profile-settings"
+          element={
+            <ProtectedRoute>
+              <UserProfileSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="organization/:orgId"
+          element={
+            <ProtectedRoute>
+              <ProjectView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="kanban/:projectId"
+          element={
+            <ProtectedRoute>
+              <Board />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="/signin" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />

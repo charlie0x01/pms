@@ -21,6 +21,9 @@ hr {
   font-size: 28px;
 }
 
+.is-gap-0 {
+gap: 4px;
+}
 .is-gap-1 {
   gap: 8px;
 }
@@ -148,6 +151,10 @@ hr {
   white-space: nowrap;
   width: 80%;
   overflow: hidden; 
+}
+
+.edit-comment {
+  border: "1px solid hsl(0, 0%, 71%)" !important;
 }
 
 /* :root {

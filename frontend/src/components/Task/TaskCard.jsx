@@ -114,6 +114,7 @@ const TaskCard = ({
                 taskAssignees?.data.map((user, index) => {
                   return (
                     <Avatar
+                      key={index}
                       className="avatar"
                       name={`${user.first_name} ${user.last_name}`}
                       src={user.profile_picture}
