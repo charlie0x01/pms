@@ -9,6 +9,9 @@ const {
   getAssignees,
   setAssignees,
   changeTaskColumn,
+  getTaskAttachments,
+  deleteTaskAttachment,
+  getActiveTasks,
 } = require("../controllers/task.controller.js");
 
 const router = express.Router();
@@ -23,5 +26,9 @@ router.post("/set-assignees/:taskId", setAssignees);
 
 // change task column
 router.patch("/change-task-column/:taskId/:columnId", changeTaskColumn);
+router.get("/get-task-attachments/:taskId", getTaskAttachments);
+router.delete("/delete-task-attachment/:taskId", deleteTaskAttachment);
+
+router.get("/get-active-tasks/:userId", getActiveTasks);
 
 module.exports = router;

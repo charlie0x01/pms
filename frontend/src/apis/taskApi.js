@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const taskApi = createApi({
   reducerPath: "task",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/task" }), // Replace with your API base URL
-  tagTypes: ["tasks", "assignees"],
+  tagTypes: ["tasks", "assignees", "attachments"],
   endpoints: (builder) => ({
     addTask: builder.mutation({
       query: (data) => ({
@@ -72,12 +72,47 @@ const taskApi = createApi({
       providesTags: ["tasks"],
       invalidatesTags: ["tasks"],
     }),
+    getAttachments: builder.query({
+      query: (taskId) => ({
+        url: `/get-task-attachments/${taskId}`,
+        method: "GET",
+      }),
+      providesTags: ["attachments"],
+    }),
+    deleteAttachment: builder.mutation({
+      query: ({ taskId, attachment }) => ({
+        url: `/delete-task-attachment/${taskId}`,
+        method: "DELETE",
+        body: { attachment },
+      }),
+      providesTags: ["attachments"],
+      invalidatesTags: ["attachments"],
+    }),
+    getActiveTasks: builder.query({
+      query: () => ({
+        url: `/get-active-tasks/${localStorage.getItem("user_id")}`,
+        method: "GET",
+      }),
+      providesTags: ["tasks", "assignees"],
+      invalidatesTags: ["tasks", "assignees"],
+    }),
+    uploadAttchment: builder.mutation({
+      query: (formData) => ({
+        url: "http://localhost:5000/upload/attachments",
+        method: "POST",
+        body: formData,
+      }),
+      providesTags: ["attachments"],
+      invalidatesTags: ["attachments"],
+    }),
   }),
 });
 
 export { taskApi };
 export const {
   useAddTaskMutation,
+  useGetActiveTasksQuery,
+  useUploadAttchmentMutation,
   useChangeTaskColumnMutation,
   useSetAssigneesMutation,
   useGetAssigneesQuery,
@@ -85,4 +120,6 @@ export const {
   useDeleteTaskMutation,
   useGetSingleTaskQuery,
   useUpdateTaskMutation,
+  useGetAttachmentsQuery,
+  useDeleteAttachmentMutation,
 } = taskApi;

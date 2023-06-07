@@ -76,7 +76,6 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
       columnId,
       columnTitle
     );
-
     changeTaskColumn({
       taskId: e.dataTransfer.getData("application/taskId"),
       columnId: columnId,
@@ -147,7 +146,8 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
             contentEditable={
               !(
                 localStorage.getItem("project_role") == 4 ||
-                localStorage.getItem("project_role") == 3
+                localStorage.getItem("project_role") == 3 ||
+                columnTitle == "Completed"
               )
             }
             onBlur={(e) =>
@@ -156,7 +156,9 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
             onKeyDown={(e) => {
               e.key === "Enter" && e.target.blur();
             }}
-            className="subtitle no-margin"
+            className={`subtitle no-margin ${
+              columnTitle != "Completed" ? "is-unselectable" : ""
+            }`}
           >
             {columnTitle || "untitled"}
           </p>
@@ -164,25 +166,29 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
           localStorage.getItem("project_role") == 3 ? (
             <></>
           ) : (
-            <div>
-              <span
-                onClick={() => setIsOpen(true)}
-                className="icon icon-button cursor-hand is-clickable"
-              >
-                <BiPlus />
-              </span>
-              <Popconfirm
-                onConfirm={() => handleColumnDelete(columnId)} // first confirm then delete columns
-                okText="Yes"
-                cancelText="No"
-                title="Are you sure to deletet this column?"
-                description="All the tasks will delete with column"
-              >
-                <span className="icon icon-button cursor-hand is-clickable">
-                  <BiTrash />
-                </span>
-              </Popconfirm>
-            </div>
+            <>
+              {columnTitle != "Completed" && (
+                <div>
+                  <span
+                    onClick={() => setIsOpen(true)}
+                    className="icon icon-button cursor-hand is-clickable"
+                  >
+                    <BiPlus />
+                  </span>
+                  <Popconfirm
+                    onConfirm={() => handleColumnDelete(columnId)} // first confirm then delete columns
+                    okText="Yes"
+                    cancelText="No"
+                    title="Are you sure to deletet this column?"
+                    description="All the tasks will delete with column"
+                  >
+                    <span className="icon icon-button cursor-hand is-clickable">
+                      <BiTrash />
+                    </span>
+                  </Popconfirm>
+                </div>
+              )}
+            </>
           )}
         </div>
         <div

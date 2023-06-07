@@ -3,6 +3,7 @@ const User = require("../models/user.model");
 const Project = require("../models/project.model");
 const Kanban = require("../models/kanban.model");
 const Task = require("../models/task.model");
+const fs = require("fs");
 
 exports.addTask = async (req, res, next) => {
   try {
@@ -22,15 +23,6 @@ exports.addTask = async (req, res, next) => {
         success: false,
         message: "Task name must contains 3 characters",
       });
-
-    // check if user is authorized to do this action or not
-    const [user, _] = await Kanban.checkMemberRole(userId);
-    if (user.length > 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Unauthorized Request",
-      });
-    }
 
     // check if column exist
     const [column, ___] = await Kanban.findByColumnId(columnId);
@@ -201,6 +193,45 @@ exports.changeTaskColumn = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: "Task status changed" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getTaskAttachments = async (req, res) => {
+  try {
+    const [attachments, _] = await Task.getTaskAttachments(req.params.taskId);
+    return res.status(200).json({ success: false, data: attachments });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.deleteTaskAttachment = async (req, res) => {
+  try {
+    const { attachment } = req.body;
+    console.log("." + attachment.slice(28));
+    if (fs.existsSync("./assets/" + attachment.slice(28))) {
+      fs.unlinkSync("./assets/" + attachment.slice(28));
+      await Task.deleteTaskAttachment(req.params.taskId, attachment);
+
+      return res.status(200).json({
+        success: false,
+        message: `Deleted ${attachment.slice(41)}`,
+      });
+    }
+    return res.status(500).json({ success: false, message: "File not found" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getActiveTasks = async (req, res) => {
+  try {
+    console.log(req.params.userId);
+    const [tasks, _] = await Task.getActiveTask(req.params.userId);
+    console.log(tasks);
+    return res.status(200).json({ success: true, data: tasks });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }

@@ -11,7 +11,6 @@ const Profile = ({ avatar, fullname, email, description, dob }) => {
       <div class="media-content">
         <p class="title is-4">{fullname}</p>
         <p class="subtitle is-size-6">{email}</p>
-        <p class="subtitle is-size-6">{dob}</p>
         <p>{description}</p>
       </div>
     </div>

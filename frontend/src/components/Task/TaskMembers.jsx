@@ -11,9 +11,11 @@ import {
   useGetAssigneesQuery,
 } from "../../apis/taskApi";
 import MediaTag from "../common/MediaTag";
+import Attachments from "./Attachments";
+// import CommentBox from "./CommentBox";
 
 const TaskMembers = ({ taskId }) => {
-  const [activeTab, setActiveTab] = useState("Assignees");
+  const [activeTab, setActiveTab] = useState("Comments");
   const [select, setSelect] = useState(false);
   const [messageApi, contextHandler] = message.useMessage();
   const [_assignees, _setAssignees] = useState([]);
@@ -65,7 +67,7 @@ const TaskMembers = ({ taskId }) => {
     <div className="mt-5">
       {contextHandler}
       <TabBar
-        tabs={["Assignees"]}
+        tabs={["Assignees", "Attachments", "Comments"]}
         defaultTab={activeTab}
         onTabChange={handleTabChange}
       />
@@ -100,6 +102,15 @@ const TaskMembers = ({ taskId }) => {
             </div>
           </div>
         )}
+
+        {/* Attachments} */}
+        {activeTab === "Attachments" && (
+          <>
+            <Attachments taskId={taskId} />
+          </>
+        )}
+
+        {/* {activeTab === "Comments" && <CommentBox />} */}
       </ContentPanel>
       <SelectMembers
         isOpen={select}

@@ -84,7 +84,7 @@ const EditTask = ({ isOpen, setIsOpen, task }) => {
   return (
     <>
       {contextHandler}
-      <Modal show={isOpen}>
+      <Modal style={{ height: 500 }} show={isOpen}>
         <button
           onClick={() => {
             setIsOpen(false);

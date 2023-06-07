@@ -90,6 +90,32 @@ class Task {
     let changeTaskColumn = `update tasks set task_column_id = ? where task_id = ? ;`;
     return pool.execute(changeTaskColumn, [columnId, taskId]);
   }
+
+  static getTaskAttachments(taskId) {
+    let getTaskAtt = `select * from task_attachments where attachment_task_id = ?;`;
+    return pool.execute(getTaskAtt, [taskId]);
+  }
+  static deleteTaskAttachments(taskId, attachments, res) {
+    let deleteAll = "delete from task_attachments";
+    return pool.execute(deleteAll);
+  }
+  static addTaskAttachment(taskId, attachment) {
+    let addTaskAtt = `insert into task_attachments(attachment_task_id, attachment_path) value(?, ?);`;
+    return pool.execute(addTaskAtt, [taskId, attachment]);
+  }
+  static deleteTaskAttachment(taskId, attachment) {
+    let deleteTaskAtt = `delete from task_attachments where attachment_task_id = ? and attachment_path = ?;`;
+    return pool.execute(deleteTaskAtt, [taskId, attachment]);
+  }
+
+  static getActiveTask(userId) {
+    let getActiveTasks = ` select distinct t.* from board_columns bc
+    left join tasks t on t.task_column_id = bc.column_id
+    left join task_assigned ta on t.task_id = ta.assigned_task_id
+    where ta.assigned_user_id = ? and bc.column_title != "Completed";
+   `;
+    return pool.execute(getActiveTasks, [userId]);
+  }
 }
 
 module.exports = Task;

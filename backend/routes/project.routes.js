@@ -11,6 +11,7 @@ const {
   getMembers,
   removeMember,
   changeUserRole,
+  getActiveProjects,
 } = require("../controllers/project.controller");
 
 const router = express.Router();
@@ -29,5 +30,7 @@ router.patch(
   "/change-member-role/:projectId/:memberId/:roleId",
   changeUserRole
 );
+
+router.get("/get-active-projects/:userId", getActiveProjects);
 
 module.exports = router;

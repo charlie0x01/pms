@@ -14,8 +14,9 @@ class Project {
   save() {
     // generate joining code
     const joiningCode = uuid().slice(0, 8);
-    let addProject = `insert into projects(project_org_id, project_owner, description, project_title, created_date, joining_code) values(?, ?, "", ?, STR_TO_DATE(?, "%m/%d/%Y"), ?); `;
+    let addProject = `insert into projects(project_org_id, project_owner, description, project_title, created_date, joining_code, status) values(?, ?, "", ?, STR_TO_DATE(?, "%m/%d/%Y"), ?, "Active"); `;
     let addBoard = `insert into boards(board_project_id) values(?);`;
+    let addColumn = `insert into board_columns(column_board_id, column_title) values(?, "Completed");`;
     try {
       transaction(pool, async (connection) => {
         const result = await connection.execute(addProject, [
@@ -27,7 +28,10 @@ class Project {
         ]);
 
         // add board for the project
-        const _ = await connection.execute(addBoard, [result[0].insertId]);
+        const board = await connection.execute(addBoard, [result[0].insertId]);
+
+        // add default column
+        const _ = await connection.execute(addColumn, [board[0].insertId]);
       });
     } catch (error) {
       throw error;
@@ -168,6 +172,13 @@ class Project {
   static changeMemberRole(projectId, memberId, roleId) {
     let changeMemberRole = `update project_members set pm_role_id = ? where project_id = ? and project_member_id = ?;`;
     return pool.execute(changeMemberRole, [roleId, projectId, memberId]);
+  }
+
+  static getActiveProjects(userId) {
+    let getActiveProjects = `select p.* from projects p
+    left join project_members pm on p.project_id = pm.project_id
+     where p.status = "Active" and (p.project_owner = ? or pm.project_member_id = ?);`;
+    return pool.execute(getActiveProjects, [userId, userId]);
   }
 }
 

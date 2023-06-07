@@ -39,12 +39,12 @@ exports.addProject = async (req, res, next) => {
         .json({ success: false, message: "Organization not found" });
     }
 
-    if (org[0].org_owner != user[0].user_id) {
-      return res.status(404).json({
-        success: false,
-        message: "You're not authorized to add new project",
-      });
-    }
+    // if (org[0].org_owner != user[0].user_id) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "You're not authorized to add new project",
+    //   });
+    // }
 
     // check if project exist with same name
     const [exist, none] = await Project.findByName(projectTitle);
@@ -118,7 +118,7 @@ exports.updateProject = async (req, res, next) => {
         success: false,
         message: "required data not provided",
       });
-
+    console.log(status);
     const [user, __] = await User.findByUserId(ownerId);
     // check, if we have any user with this email
     if (user.length <= 0) {
@@ -133,13 +133,6 @@ exports.updateProject = async (req, res, next) => {
       return res
         .status(404)
         .json({ success: false, message: "Project not found!" });
-    }
-
-    if (project[0].project_owner != ownerId) {
-      return res.status(401).json({
-        success: false,
-        message: "You're not authorized to update project details",
-      });
     }
 
     await Project.updateProject(description, projectTitle, projectId, status);
@@ -169,13 +162,6 @@ exports.deleteProject = async (req, res, next) => {
       return res
         .status(404)
         .json({ success: false, message: "Project not found!" });
-    }
-
-    if (project[0].project_owner != user[0].user_id) {
-      return res.status(404).json({
-        success: false,
-        message: "You're not authorized to delete the project",
-      });
     }
 
     // if delete operairon is performed by onwer or some other user
@@ -211,12 +197,12 @@ exports.addMember = async (req, res, next) => {
         .json({ success: false, message: "Project not found" });
     }
     // only owner can add member
-    if (project[0].project_owner != invitedby[0].user_id) {
-      return res.status(404).json({
-        success: false,
-        message: "You're not authorized to add new member",
-      });
-    }
+    // if (project[0].project_owner != invitedby[0].user_id) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "You're not authorized to add new member",
+    //   });
+    // }
     // check if any user exist with the given email
     const [user, _] = await User.findByEmailId(email);
     const [projectOrg, _fields] = await Organization.findByOrganizationID(
@@ -235,6 +221,7 @@ exports.addMember = async (req, res, next) => {
         3. Now you can join ${project[0].project_title} by using this project join code ${project[0].joining_code}
         `
       );
+      console.log("user is not registered");
       return res.json({
         success: true,
         message: `Invitation email is sent to ${email}`,
@@ -250,6 +237,7 @@ exports.addMember = async (req, res, next) => {
     }
 
     // check if user already member
+    console.log("user is registered but not owner");
     const [member, ___] = await Project.isAlreadyMember(
       projectId,
       user[0].user_id
@@ -271,6 +259,8 @@ exports.addMember = async (req, res, next) => {
       2. Now you can join ${project[0].project_title} by using this project join code ${project[0].joining_code}
       `
     );
+
+    console.log("user was registered but member");
 
     return res
       .status(201)
@@ -410,12 +400,12 @@ exports.removeMember = async (req, res, next) => {
     }
 
     // only org owner can add or remove members
-    if (project[0].project_owner != userId) {
-      return res.status(404).json({
-        success: false,
-        message: "only owner can remove members",
-      });
-    }
+    // if (project[0].project_owner != userId) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "only owner can remove members",
+    //   });
+    // }
 
     // check member exist or not
     const [found, __] = await Project.findByMemberAndProjectId(
@@ -449,6 +439,16 @@ exports.changeUserRole = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: "Member role changed" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getActiveProjects = async (req, res) => {
+  try {
+    console.log(req.params);
+    const [projects, _] = await Project.getActiveProjects(req.params.userId);
+    return res.status(200).json({ success: true, data: projects });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }

@@ -80,20 +80,41 @@ const ProjectView = () => {
               </button>
             </div>
           </div>
+          <h1 className="subtitle ">Active Projects</h1>
           <div className="is-flex is-flex-wrap-wrap p-3 is-gap-2">
             {!projectLoading &&
               projects?.data &&
               projects?.data.map((project, index) => {
-                return (
-                  <ProjectCard
-                    key={index}
-                    title={project.project_title}
-                    description={project.description}
-                    date={project.created_date.slice(0, 10)}
-                    id={project.project_id}
-                    link={`/kanban/${project.project_id}`}
-                  />
-                );
+                if (project.status !== "Archived")
+                  return (
+                    <ProjectCard
+                      key={index}
+                      title={project.project_title}
+                      description={project.description}
+                      date={project.created_date.slice(0, 10)}
+                      id={project.project_id}
+                      link={`/kanban/${project.project_id}`}
+                    />
+                  );
+              })}
+          </div>
+          <h1 className="subtitle mt-4">Archived Projects</h1>
+          <hr className="has-background-grey-light" />
+          <div className="is-flex is-flex-wrap-wrap p-3 is-gap-2">
+            {!projectLoading &&
+              projects?.data &&
+              projects?.data.map((project, index) => {
+                if (project.status === "Archived")
+                  return (
+                    <ProjectCard
+                      key={index}
+                      title={project.project_title}
+                      description={project.description}
+                      date={project.created_date.slice(0, 10)}
+                      id={project.project_id}
+                      link={`/kanban/${project.project_id}`}
+                    />
+                  );
               })}
           </div>
         </div>

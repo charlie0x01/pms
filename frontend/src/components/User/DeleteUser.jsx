@@ -52,7 +52,6 @@ const DeleteUser = ({ isOpen, setIsOpen, captcha }) => {
     <Modal show={isOpen}>
       {contextHandler}
       <div className="is-relative">
-        <p className="subtitle is-unselectable">{captcha}</p>
         <form onSubmit={formik.handleSubmit}>
           <div class="field">
             <label className="label">Type the above Captcha</label>
@@ -67,6 +66,15 @@ const DeleteUser = ({ isOpen, setIsOpen, captcha }) => {
             {formik.touched.captcha && formik.errors.captcha ? (
               <p className="help is-danger">{formik.errors.captcha}</p>
             ) : null}
+          </div>
+          <div
+            className="p-3 m-2"
+            style={{
+              border: "1px solid hsl(0, 0%, 48%)",
+              display: "inline-block",
+            }}
+          >
+            <p className="subtitle captcha is-unselectable">{captcha}</p>
           </div>
           <p className="subtitle is-unselectable is-size-7">
             Note: Deleting your profile will permanently remove all your data

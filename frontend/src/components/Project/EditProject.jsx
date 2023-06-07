@@ -16,6 +16,9 @@ import {
 const EditProject = ({ isOpen, setIsOpen, data }) => {
   const navigate = useNavigate();
 
+  // project status
+  const projectStatus = ["Active", "Archived"];
+
   // udpate project
   const [
     updateProject,
@@ -53,7 +56,9 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
       projectName: Yup.string()
         .min(3, "project title can contain minimum 3 characters")
         .required("Required"),
-      status: Yup.string().required("Please Select Status"),
+      status: Yup.string()
+        .required("Please select project status")
+        .notOneOf(["--Select Status--"], "Please select project status"),
     }),
     onSubmit: (values) => {
       updateProject({
@@ -103,8 +108,8 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
       if (isDeleteSuccess) {
         messageApi.success(deleteResponse?.message);
         formik.resetForm();
-        setIsOpen(false);
         navigate(-1);
+        setIsOpen(false);
       }
     }
 
@@ -143,11 +148,8 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
                 />
               </div>
             </div>
-            {formik.touched.organizationName &&
-            formik.errors.organizationName ? (
-              <div className="has-text-danger">
-                {formik.errors.organizationName}
-              </div>
+            {formik.touched.projectName && formik.errors.projectName ? (
+              <div className="help is-danger">{formik.errors.projectName}</div>
             ) : null}
             <div class="field">
               <label class="label">Description</label>
@@ -166,11 +168,29 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
                 />
               </div>
             </div>
-            <div class="select">
-              <select>
-                <option>Select dropdown</option>
-                <option>With options</option>
-              </select>
+            <div className="field">
+              <label className="label">Project Status</label>
+              <div>
+                <div class="select">
+                  <select {...formik.getFieldProps("status")}>
+                    <option>--Select Status--</option>
+                    {projectStatus.map((ps, index) => {
+                      return (
+                        <option
+                          selected={ps === data?.data.status}
+                          key={index}
+                          value={ps}
+                        >
+                          {ps}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                {formik.touched.status && formik.errors.status ? (
+                  <p className="help is-danger">{formik.errors.status}</p>
+                ) : null}
+              </div>
             </div>
             <button
               disabled={
