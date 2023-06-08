@@ -1,10 +1,19 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserAvatarDropdown from "./AvatarDropdown";
 import JoinButton from "./JoinButton";
+import Broadcast from "./Broadcast/Broadcast";
+import { FaRegBell } from "react-icons/fa";
+import { BiFontSize } from "react-icons/bi";
+
+import { useGetNotificationsQuery } from "../../apis/notificationsApi";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // load notifications
+  const { data: notifications } = useGetNotificationsQuery();
+  const navigate = useNavigate();
   // toggle sidebar
   const toggelSidebar = () => {
     const sidebar = document.getElementById("sidebar");
@@ -35,8 +44,31 @@ const Navbar = () => {
           </a>
         </div>
         <div style={{ gap: "8px" }} className="is-flex is-align-items-center">
-          <UserAvatarDropdown />
           <JoinButton />
+          <Broadcast />
+          <span
+            className="is-clickable icon is-large is-relative"
+            onClick={() => navigate("/user-profile")}
+          >
+            <FaRegBell />
+            {notifications?.data.length > 0 && (
+              <span
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  borderRadius: "50%",
+                  padding: ".5px 5px .5px 5px",
+                  fontSize: 12,
+                  position: "absolute",
+                  top: 1.5,
+                  right: 8,
+                }}
+              >
+                {notifications?.data.length}
+              </span>
+            )}
+          </span>
+          <UserAvatarDropdown />
         </div>
       </nav>
     </>

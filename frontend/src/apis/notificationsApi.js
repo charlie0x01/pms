@@ -31,6 +31,15 @@ const notificationApi = createApi({
       providesTags: ["notifications"],
       invalidatesTags: ["notifications"],
     }),
+    broadcast: builder.mutation({
+      query: ({ message, members }) => ({
+        url: `/broadcast/${localStorage.getItem("user_id")}`,
+        method: "POST",
+        body: { message, members },
+      }),
+      providesTags: ["notifications"],
+      invalidatesTags: ["notifications"],
+    }),
   }),
 });
 
@@ -39,4 +48,5 @@ export const {
   useGetNotificationsQuery,
   useDeleteNotificationMutation,
   useDeleteNotificationsMutation,
+  useBroadcastMutation,
 } = notificationApi;

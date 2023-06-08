@@ -6,7 +6,7 @@ const Modal = ({ show, children }) => {
   return createPortal(
     <div class="modal is-active">
       <div class="modal-background"></div>
-      <div class="modal-content box" style={{ maxHeigth: 600 }}>
+      <div class="modal-content box" style={{ heigth: 600 }}>
         {children}
       </div>
     </div>,

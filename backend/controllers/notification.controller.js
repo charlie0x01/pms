@@ -1,4 +1,5 @@
 const Notification = require("../models/notification.model");
+const User = require("../models/user.model");
 
 exports.sendNotification = async (req, res) => {
   try {
@@ -57,6 +58,36 @@ exports.deleteNotifications = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.broadcast = async (req, res) => {
+  try {
+    console.log(req.params);
+    console.log(req.body);
+
+    const [sendBy, _a] = await User.findByUserId(req.params.who);
+    console.log(sendBy);
+
+    await Promise.all(
+      req.body.members.map(async (member, index) => {
+        console.log(member);
+        await Notification.saveNotification(
+          member,
+          `Broadcast Message by ${sendBy[0].first_name} ${sendBy[0].last_name}\n '${req.body.message}'`
+        );
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Broadcast Message Sent",
     });
   } catch (error) {
     return res.status(500).json({

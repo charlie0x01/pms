@@ -7,6 +7,32 @@ const fs = require("fs");
 
 const Notification = require("../models/notification.model");
 
+function getNumberOfDays(start, end) {
+  const date1 = new Date(start);
+  const date2 = new Date(end);
+
+  // One day in milliseconds
+  const oneDay = 1000 * 60 * 60 * 24;
+
+  // Calculating the time difference between two dates
+  const diffInTime = date2.getTime() - date1.getTime();
+
+  // Calculating the no. of days between two dates
+  const diffInDays = Math.round(diffInTime / oneDay);
+
+  if (diffInDays == 0) {
+    return "due today";
+  } else if (diffInDays == 1) {
+    return "due tomorrow";
+  } else if (diffInDays > 1 && diffInDays < 3) {
+    return `due in ${diffInDays} days`;
+  } else if (diffInDays < 0) {
+    return "due yesterday";
+  } else {
+    return `due ${end}`;
+  }
+}
+
 exports.addTask = async (req, res, next) => {
   try {
     const { userId, columnId } = req.params;
@@ -81,6 +107,27 @@ exports.getTasks = async (req, res, next) => {
     const { columnId } = req.params;
     const [tasks, _] = await Task.findByColumnId(columnId);
     if (tasks.length <= 0) return res.json({ success: true, data: [] });
+
+    let assignees;
+
+    await Promise.all(
+      tasks.map(async (task, index) => {
+        assignees = await Task.getAssigneesByTaskId(task.task_id);
+        await Promise.all(
+          assignees[0].map(async (assignee, index) => {
+            console.log(assignee);
+            console.log(getNumberOfDays(Date.now(), task.due_date));
+            await Notification.saveNotification(
+              assignee.user_id,
+              `'${task.task_title}' ${getNumberOfDays(
+                Date.now(),
+                task.due_date
+              )} `
+            );
+          })
+        );
+      })
+    );
 
     return res.status(200).json({
       success: true,
@@ -237,6 +284,7 @@ exports.changeTaskColumn = async (req, res) => {
     let user;
     // notify
     if (columnChanged.affectedRows == 1) {
+      console.log();
       await Promise.all(
         assignees.map(async (assignee, index) => {
           user = await User.findByUserId(assignee.user_id);

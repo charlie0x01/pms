@@ -32,11 +32,11 @@ const TaskCard = ({
 
   // delete task
   const handleDeleteTaskk = (id, boardId) => {
-    if (visible) deleteTask({ boardId: boardId, taskId: id });
+    deleteTask({ boardId: boardId, taskId: id });
   };
 
   const handleDrapStart = (e) => {
-    if (visible) e.dataTransfer.setData("application/taskId", e.target.id);
+    e.dataTransfer.setData("application/taskId", e.target.id);
   };
 
   useEffect(() => {
