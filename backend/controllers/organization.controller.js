@@ -131,14 +131,6 @@ exports.addMember = async (req, res, next) => {
         .status(404)
         .json({ success: false, message: "Organization doesn't exist" });
     }
-
-    // check owner
-    if (org[0].org_owner != userId) {
-      return res.status(404).json({
-        success: false,
-        message: "only owner can add members to the organization",
-      });
-    }
     // check if any user exist with the given email
     const [user, _] = await User.findByEmailId(email);
 

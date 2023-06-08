@@ -3,7 +3,13 @@ import React from "react";
 // apis
 import { useGetUserRolesQuery } from "../../apis/authApi";
 
-const UserRoles = ({ callback, selected, memberId }) => {
+const UserRoles = ({ callback, selected, isOwnerOrAdmin }) => {
+  // const isOwnerOrAdmin =
+  //   localStorage.getItem("org_role") == 2 ||
+  //   localStorage.getItem("org_role") == null;
+  // const isProjectOwnerOrAdmin =
+  //   localStorage.getItem("project_role") == 2 ||
+  //   localStorage.getItem("project_role") == null;
   // get user roles
   const { data: userRoles } = useGetUserRolesQuery();
 
@@ -11,12 +17,7 @@ const UserRoles = ({ callback, selected, memberId }) => {
     <div class="field" style={{ margin: 0 }}>
       <div class="select is-small">
         <select
-          disabled={
-            localStorage.getItem("org_role") == 4 ||
-            localStorage.getItem("org_role") == 3 ||
-            localStorage.getItem("project_role") == 4 ||
-            localStorage.getItem("project_role") == 3
-          }
+          disabled={!isOwnerOrAdmin}
           onChange={({ target: { value } }) => callback(value)}
         >
           <option>Select User Role</option>

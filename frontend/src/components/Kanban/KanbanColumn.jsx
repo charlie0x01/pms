@@ -17,6 +17,10 @@ import {
 import EditTask from "../Task/EditTask";
 
 const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
+  const isOwnerOrAdmin =
+    localStorage.getItem("project_role") == 2 ||
+    localStorage.getItem("project_role") == null;
+  const isTeamLead = localStorage.getItem("project_role") == 3;
   const [editTaskData, setEditTaskData] = useState(null);
   const [editTask, setEditTask] = useState(false);
   // open and close state for task from
@@ -70,12 +74,6 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
   };
 
   const handleOnDrop = (e) => {
-    console.log(
-      "from column \n",
-      e.dataTransfer.getData("application/taskId"),
-      columnId,
-      columnTitle
-    );
     changeTaskColumn({
       taskId: e.dataTransfer.getData("application/taskId"),
       columnId: columnId,
@@ -144,11 +142,7 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
           <p
             style={{ display: "inline" }}
             contentEditable={
-              !(
-                localStorage.getItem("project_role") == 4 ||
-                localStorage.getItem("project_role") == 3 ||
-                columnTitle == "Completed"
-              )
+              (isOwnerOrAdmin || isTeamLead) && !(columnTitle == "Completed")
             }
             onBlur={(e) =>
               handleUpdateColumnTitle(columnId, e.target.textContent)
@@ -157,15 +151,12 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
               e.key === "Enter" && e.target.blur();
             }}
             className={`subtitle no-margin ${
-              columnTitle != "Completed" ? "is-unselectable" : ""
+              columnTitle == "Completed" ? "is-unselectable" : ""
             }`}
           >
             {columnTitle || "untitled"}
           </p>
-          {localStorage.getItem("project_role") == 4 ||
-          localStorage.getItem("project_role") == 3 ? (
-            <></>
-          ) : (
+          {(isOwnerOrAdmin || isTeamLead) && (
             <>
               {columnTitle != "Completed" && (
                 <div>
@@ -211,6 +202,7 @@ const KanbanColumn = ({ columnTitle, columnId, boardId }) => {
                   description={task.description}
                   boardId={boardId}
                   onTaskClick={handleOnTaskClick}
+                  visible={isOwnerOrAdmin || isTeamLead}
                 />
               );
             })}

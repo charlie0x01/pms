@@ -15,7 +15,8 @@ const Comments = ({ taskId }) => {
         <>
           <h1 className="subtitle">Comments</h1>
           {comments?.data.map((comment, index) => {
-            return <Comment taskId={taskId} comment={comment} key={index} />;
+            if (comment.parent_id == null)
+              return <Comment taskId={taskId} comment={comment} key={index} />;
           })}
         </>
       ) : (

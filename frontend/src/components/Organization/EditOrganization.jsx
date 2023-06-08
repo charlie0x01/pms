@@ -14,6 +14,9 @@ import TabBarSection from "./TabBarSection";
 import { delay } from "../../../utils";
 
 const EditOrganization = ({ isOpen, setIsOpen, data }) => {
+  const isOwnerOrAdmin =
+    localStorage.getItem("org_role") == 2 ||
+    localStorage.getItem("org_role") == null;
   const navigate = useNavigate();
   // udpate org
   const [
@@ -122,10 +125,7 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Organization Name</label>
               <div class="control">
                 <input
-                  disabled={
-                    localStorage.getItem("org_role") == 4 ||
-                    localStorage.getItem("org_role") == 3
-                  }
+                  disabled={!isOwnerOrAdmin}
                   id="organizationName"
                   class="input"
                   type="text"
@@ -144,10 +144,7 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Description</label>
               <div class="control">
                 <textarea
-                  disabled={
-                    localStorage.getItem("org_role") == 4 ||
-                    localStorage.getItem("org_role") == 3
-                  }
+                  disabled={!isOwnerOrAdmin}
                   id="description"
                   class="input"
                   rows={5}
@@ -157,8 +154,7 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
                 />
               </div>
             </div>
-            {localStorage.getItem("org_role") == 4 ||
-            localStorage.getItem("org_role") == 3 ? (
+            {!isOwnerOrAdmin ? (
               <></>
             ) : (
               <button type="submit" className="button is-primary">
@@ -166,8 +162,7 @@ const EditOrganization = ({ isOpen, setIsOpen, data }) => {
               </button>
             )}
           </form>
-          {localStorage.getItem("org_role") == 4 ||
-          localStorage.getItem("org_role") == 3 ? (
+          {!isOwnerOrAdmin ? (
             <></>
           ) : (
             <Popconfirm

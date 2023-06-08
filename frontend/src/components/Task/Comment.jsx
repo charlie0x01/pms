@@ -9,6 +9,7 @@ import {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   usePostReplyMutation,
+  useGetRepliesQuery,
 } from "../../apis/taskApi";
 
 const Comment = ({ comment, children, taskId, comments }) => {
@@ -21,6 +22,12 @@ const Comment = ({ comment, children, taskId, comments }) => {
     localStorage.getItem("project_role") == 2 ||
     localStorage.getItem("project_role") == null;
   const isSender = localStorage.getItem("user_id") == comment.posted_by;
+
+  // get replies
+  const { data: replies } = useGetRepliesQuery({
+    taskId: taskId,
+    commentId: comment.comment_id,
+  });
 
   const pressedEnter = (e) => {
     if (e.which === 13) setInputHeight(inputHeight + 15);
@@ -178,6 +185,10 @@ const Comment = ({ comment, children, taskId, comments }) => {
         </div>
         <div>
           <p
+            className=""
+            style={{ fontWeight: 500, fontSize: 14 }}
+          >{`${comment.first_name} ${comment.last_name}`}</p>
+          <p
             onBlur={(e) =>
               handleUpdateComment(comment.comment_id, e.target.textContent)
             }
@@ -185,9 +196,10 @@ const Comment = ({ comment, children, taskId, comments }) => {
               e.key === "Enter" && e.target.blur();
             }}
             contentEditable={editable}
-            className={`subtitle is-size-6 m-0 edit-comment ${
+            className={`m-0 edit-comment ${
               !editable ? "is-unselectable" : "edit-comment"
             }`}
+            style={{ fontSize: 15 }}
           >
             {comment.content}
           </p>
@@ -208,7 +220,15 @@ const Comment = ({ comment, children, taskId, comments }) => {
           </div>
         </div>
       </div>
-      <div className="ml-5">{children}</div>
+      <div className="ml-5">
+        {replies && (
+          <>
+            {replies?.data.map((reply, index) => (
+              <Comment key={index} comment={reply} taskId={taskId} />
+            ))}
+          </>
+        )}
+      </div>
       {reply && (
         <div className="box">
           <label className="label is-size-7 mb-2">Write a reply</label>

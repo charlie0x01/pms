@@ -18,6 +18,9 @@ const MemberCard = ({
   memberRoleId,
   profilePicture,
 }) => {
+  const isOwnerOrAdmin =
+    localStorage.getItem("org_role") == 2 ||
+    localStorage.getItem("org_role") == null;
   const [promotedTo, setPromotedTo] = useState("");
   const [messageApi, contextHandler] = message.useMessage();
 
@@ -98,35 +101,46 @@ const MemberCard = ({
         </div>
         <div className="media-right">
           <div className="is-flex is-align-items-center is-gap-2">
-            {status === 0 ? (
-              <span class="tag is-danger is-light">Response Pending</span>
+            {memberId != localStorage.getItem("user_id") ? (
+              <>
+                {status === 0 ? (
+                  <span class="tag is-danger is-light">Response Pending</span>
+                ) : (
+                  <UserRoles
+                    callback={handleUserRoleChange}
+                    selected={memberRoleId}
+                    isOwnerOrAdmin={isOwnerOrAdmin}
+                  />
+                )}
+              </>
             ) : (
-              <UserRoles
-                callback={handleUserRoleChange}
-                selected={memberRoleId}
-                memberId={memberId}
-              />
+              <span class="tag is-success is-light">
+                {memberRoleId == 4 && "Member"}
+                {memberRoleId == 3 && "Team Lead"}
+                {memberRoleId == 2 && "Admin"}
+              </span>
             )}
 
-            {localStorage.getItem("org_role") == 4 ||
-            localStorage.getItem("org_role") == 3 ? (
-              <></>
-            ) : (
-              <Popconfirm
-                title={`Remove ${name}`}
-                description="Are you sure to remove this member?"
-                onConfirm={() =>
-                  deleteUser(
-                    memberId,
-                    orgId,
-                    parseInt(localStorage.getItem("user_id"))
-                  )
-                }
-                okText="Yes"
-                cancelText="No"
-              >
-                <button className="delete"></button>
-              </Popconfirm>
+            {memberId != localStorage.getItem("user_id") && (
+              <>
+                {isOwnerOrAdmin && (
+                  <Popconfirm
+                    title={`Remove ${name}`}
+                    description="Are you sure to remove this member?"
+                    onConfirm={() =>
+                      deleteUser(
+                        memberId,
+                        orgId,
+                        parseInt(localStorage.getItem("user_id"))
+                      )
+                    }
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <button className="delete"></button>
+                  </Popconfirm>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -10,6 +10,9 @@ import LoadingSpinner from "../common/LoadingSpinner";
 import AddMember from "./AddMember";
 
 const TabBarSection = ({ orgId }) => {
+  const isOwnerOrAdmin =
+    localStorage.getItem("org_role") == 2 ||
+    localStorage.getItem("org_role") == null;
   const [activeTab, setActiveTab] = useState("Members");
   const [addMember, setAddMember] = useState(false);
 
@@ -38,10 +41,7 @@ const TabBarSection = ({ orgId }) => {
         {activeTab === "Members" && (
           <div>
             <div className="pb-3">
-              {localStorage.getItem("org_role") == 4 ||
-              localStorage.getItem("org_role") == 3 ? (
-                <></>
-              ) : (
+              {isOwnerOrAdmin && (
                 <button onClick={() => setAddMember(true)} className="button">
                   Invite Member
                 </button>

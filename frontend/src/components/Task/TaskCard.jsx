@@ -19,7 +19,7 @@ const TaskCard = ({
   onTaskClick,
   boardId,
   description,
-  readOnly,
+  visible,
 }) => {
   const [messageApi, contextHandler] = message.useMessage();
   // delete api
@@ -32,12 +32,11 @@ const TaskCard = ({
 
   // delete task
   const handleDeleteTaskk = (id, boardId) => {
-    if (!readOnly) deleteTask({ boardId: boardId, taskId: id });
+    if (visible) deleteTask({ boardId: boardId, taskId: id });
   };
 
   const handleDrapStart = (e) => {
-    if (!readOnly) e.dataTransfer.setData("application/taskId", e.target.id);
-    console.log("from task \n", e.dataTransfer.getData("application/taskId"));
+    if (visible) e.dataTransfer.setData("application/taskId", e.target.id);
   };
 
   useEffect(() => {
@@ -79,7 +78,7 @@ const TaskCard = ({
                 <span class="tag is-info is-light">{priority}</span>
               )}
             </div>
-            {!readOnly && (
+            {visible && (
               <Popconfirm
                 onConfirm={() => handleDeleteTaskk(taskId, boardId)} // first confirm then delete columns
                 okText="Yes"

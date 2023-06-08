@@ -16,6 +16,10 @@ const Board = () => {
   const [boardId, setBoardId] = useState(null);
   const [messageApi, contextHandler] = message.useMessage();
   const navigate = useNavigate();
+  const isOwnerOrAdmin =
+    localStorage.getItem("project_role") == 2 ||
+    localStorage.getItem("project_role") == null;
+  const isTeamLead = localStorage.getItem("project_role") == 3;
 
   const [
     addColumn,
@@ -40,7 +44,7 @@ const Board = () => {
     }
   );
 
-  // set user role for org
+  // set user role for project
   if (
     localStorage.getItem("user_id") != project?.data.project_owner &&
     project?.data.pm_role_id != null
@@ -97,15 +101,8 @@ const Board = () => {
                 <p className="ml-2">Kanban Board</p>
               </div>
               <div className="is-flex is-gap-1 is-align-items-center">
-                {localStorage.getItem("org_role") == 4 ||
-                localStorage.getItem("org_role") == 3 ? (
-                  <></>
-                ) : (
+                {(isOwnerOrAdmin || isTeamLead) && (
                   <button
-                    disabled={
-                      localStorage.getItem("project_role") == 4 ||
-                      localStorage.getItem("project_role") == 3
-                    }
                     onClick={() => handleAddColumn(project?.data.board_id)}
                     className="button is-primary is-clickable"
                   >

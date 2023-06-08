@@ -79,13 +79,18 @@ const TabBarSection = () => {
       {contextHandler}
       <div className="mt-5">
         <TabBar
-          tabs={["Active Projects", "Active Tasks", "Notifications"]}
+          tabs={[
+            `Active Projects ${projects ? projects?.data.length : 0}`,
+            `Active Tasks ${activeTasks ? activeTasks?.data.length : 0}`,
+            `Notifications ${notifications ? notifications?.data.length : 0}`,
+          ]}
           defaultTab={activeTab}
           onTabChange={handleTabChange}
         />
 
         <ContentPanel tab={activeTab}>
-          {activeTab === "Active Projects" && (
+          {activeTab ===
+            `Active Projects ${projects ? projects?.data.length : 0}` && (
             <div className="is-flex is-flex-wrap-wrap p-3 is-gap-2">
               {projects && (
                 <>
@@ -105,7 +110,8 @@ const TabBarSection = () => {
               )}
             </div>
           )}
-          {activeTab === "Active Tasks" && (
+          {activeTab ===
+            `Active Tasks ${activeTasks ? activeTasks?.data.length : 0}` && (
             <table class="table is-fullwidth">
               <thead>
                 <tr>
@@ -134,11 +140,14 @@ const TabBarSection = () => {
               </tbody>
             </table>
           )}
-          {activeTab === "Notifications" && (
+          {activeTab ===
+            `Notifications ${
+              notifications ? notifications?.data.length : 0
+            }` && (
             <div>
               <button
                 onClick={() => deleteNotifications()}
-                className="button is-small is-pulled-right"
+                className="button is-small mb-3"
               >
                 Clear All
               </button>

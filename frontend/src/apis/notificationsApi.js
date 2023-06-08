@@ -25,7 +25,7 @@ const notificationApi = createApi({
     }),
     deleteNotifications: builder.mutation({
       query: () => ({
-        url: `/delete-notification/${localStorage.getItem("user_id")}`,
+        url: `/delete-notifications/${localStorage.getItem("user_id")}`,
         method: "DELETE",
       }),
       providesTags: ["notifications"],

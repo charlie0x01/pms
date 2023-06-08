@@ -11,6 +11,10 @@ import AddMember from "./AddMember";
 import { useGetMembersQuery } from "../../apis/projectApi";
 
 const TabSection = ({ projectId }) => {
+  const isOwnerOrAdmin =
+    localStorage.getItem("project_role") == 2 ||
+    localStorage.getItem("project_role") == null;
+  const isTeamLead = localStorage.getItem("project_role") == 3;
   const [activeTab, setActiveTab] = useState("Members");
   const [addMember, setAddMember] = useState(false);
   // get members
@@ -41,11 +45,13 @@ const TabSection = ({ projectId }) => {
       <ContentPanel tab={activeTab}>
         {activeTab === "Members" && (
           <div>
-            <div className="pb-3">
-              <button onClick={() => setAddMember(true)} className="button">
-                Invite Member
-              </button>
-            </div>
+            {(isOwnerOrAdmin || isTeamLead) && (
+              <div className="pb-3">
+                <button onClick={() => setAddMember(true)} className="button">
+                  Invite Member
+                </button>
+              </div>
+            )}
             {isLoading === true ? (
               <LoadingSpinner />
             ) : (

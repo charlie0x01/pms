@@ -229,7 +229,24 @@ exports.setAssignees = async (req, res) => {
 exports.changeTaskColumn = async (req, res) => {
   try {
     const { taskId, columnId } = req.params;
-    await Task.changeTaskColumn(taskId, columnId);
+    const [columnChanged, _d] = await Task.changeTaskColumn(taskId, columnId);
+
+    const [assignees, _a] = await Task.getAssigneesByTaskId(taskId);
+    const [column, _b] = await Kanban.findByColumnId(columnId);
+    const [task, _c] = await Task.findByTaskId(taskId);
+    let user;
+    // notify
+    if (columnChanged.affectedRows == 1) {
+      await Promise.all(
+        assignees.map(async (assignee, index) => {
+          user = await User.findByUserId(assignee.user_id);
+          await Notification.saveNotification(
+            user[0][0].user_id,
+            `${task[0].task_title} Task's status changed to ${column[0].column_title}`
+          );
+        })
+      );
+    }
     return res
       .status(200)
       .json({ success: true, message: "Task status changed" });
@@ -309,26 +326,34 @@ exports.postComment = async (req, res) => {
 };
 exports.postReply = async (req, res) => {
   try {
-    console.log(req.params);
-    console.log(req.body);
-
-    const [commented, _a] = await Task.postReply(
-      req.params.taskId,
-      req.body.comment,
-      req.params.userId,
-      req.params.parentId
-    );
+    //
+    let commented;
+    const [comment, _d] = await Task.getComment(req.params.parentId);
+    if (comment[0].parent_id !== null) {
+      commented = await Task.postReply(
+        req.params.taskId,
+        req.body.comment,
+        req.params.userId,
+        comment[0].parent_id
+      );
+    } else {
+      commented = await Task.postReply(
+        req.params.taskId,
+        req.body.comment,
+        req.params.userId,
+        req.params.parentId
+      );
+    }
 
     // notify
     const [commentBy, _b] = await User.findByUserId(req.params.userId);
     const [assignees, _c] = await Task.getAssigneesByTaskId(req.params.taskId);
-    const [comment, _d] = await Task.getComment(req.params.parentId);
 
-    if (commented.affectedRows == 1) {
+    if (commented[0].affectedRows == 1) {
       assignees.map((user, index) =>
         Notification.saveNotification(
           user.user_id,
-          `${commentBy[0].first_name} ${commentBy[0].last_name} replied on '${comment[0].content}'`
+          `${commentBy[0].first_name} ${commentBy[0].last_name} replied on your comment '${comment[0].content}'`
         )
       );
     }

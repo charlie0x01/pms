@@ -133,6 +133,13 @@ const taskApi = createApi({
       providesTags: ["comments"],
       invalidatesTags: ["comments"],
     }),
+    getReplies: builder.query({
+      query: ({ taskId, commentId }) => ({
+        url: `/get-replies/${taskId}/${commentId}`,
+        method: "GET",
+      }),
+      providesTags: ["comments"],
+    }),
     updateComment: builder.mutation({
       query: ({ commentId, comment }) => ({
         url: `/update-comment/${commentId}`,
@@ -162,6 +169,7 @@ export const {
   useSetAssigneesMutation,
   useGetAssigneesQuery,
   useGetTasksQuery,
+  useGetRepliesQuery,
   useDeleteTaskMutation,
   useGetSingleTaskQuery,
   useUpdateTaskMutation,

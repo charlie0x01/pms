@@ -14,6 +14,9 @@ import {
 } from "../../apis/projectApi";
 
 const EditProject = ({ isOpen, setIsOpen, data }) => {
+  const isOwnerOrAdmin =
+    localStorage.getItem("project_role") == 2 ||
+    localStorage.getItem("project_role") == null;
   const navigate = useNavigate();
 
   // project status
@@ -136,10 +139,7 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Project Name</label>
               <div class="control">
                 <input
-                  disabled={
-                    localStorage.getItem("project_role") == 4 ||
-                    localStorage.getItem("project_role") == 3
-                  }
+                  disabled={!isOwnerOrAdmin}
                   id="projectName"
                   class="input"
                   type="text"
@@ -155,10 +155,7 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
               <label class="label">Description</label>
               <div class="control">
                 <textarea
-                  disabled={
-                    localStorage.getItem("project_role") == 4 ||
-                    localStorage.getItem("project_role") == 3
-                  }
+                  disabled={!isOwnerOrAdmin}
                   id="description"
                   class="input"
                   rows={5}
@@ -172,7 +169,10 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
               <label className="label">Project Status</label>
               <div>
                 <div class="select">
-                  <select {...formik.getFieldProps("status")}>
+                  <select
+                    disabled={!isOwnerOrAdmin}
+                    {...formik.getFieldProps("status")}
+                  >
                     <option>--Select Status--</option>
                     {projectStatus.map((ps, index) => {
                       return (
@@ -192,35 +192,28 @@ const EditProject = ({ isOpen, setIsOpen, data }) => {
                 ) : null}
               </div>
             </div>
-            <button
-              disabled={
-                localStorage.getItem("project_role") == 4 ||
-                localStorage.getItem("project_role") == 3
-              }
-              type="submit"
-              className="button is-primary"
-            >
-              Save Changes
-            </button>
+            {isOwnerOrAdmin && (
+              <button type="submit" className="button is-primary">
+                Save Changes
+              </button>
+            )}
           </form>
-          <Popconfirm
-            title={`Delete the ${data?.data.project_title}`}
-            description="Are you sure to delete this organization?"
-            onConfirm={() => confirmDelete(data?.data.project_id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <button
-              disabled={
-                localStorage.getItem("project_role") == 4 ||
-                localStorage.getItem("project_role") == 3
-              }
-              style={{ position: "absolute", left: 130, bottom: 1 }}
-              className="button is-danger ml-2"
+          {isOwnerOrAdmin && (
+            <Popconfirm
+              title={`Delete the ${data?.data.project_title}`}
+              description="Are you sure to delete this organization?"
+              onConfirm={() => confirmDelete(data?.data.project_id)}
+              okText="Yes"
+              cancelText="No"
             >
-              Delete
-            </button>
-          </Popconfirm>
+              <button
+                style={{ position: "absolute", left: 130, bottom: 1 }}
+                className="button is-danger ml-2"
+              >
+                Delete
+              </button>
+            </Popconfirm>
+          )}
         </div>
         <TabSection projectId={data?.data.project_id} />
       </Modal>

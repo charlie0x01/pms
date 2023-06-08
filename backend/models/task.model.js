@@ -141,7 +141,9 @@ class Task {
   }
 
   static getReplies(taskId, commentId) {
-    let getReplies = `select * from comments where posted_on = ? and parent_id = ?;`;
+    let getReplies = `select c.*, u.profile_picture,u.first_name, u.last_name from comments c
+    left join users u on u.user_id = c.posted_by
+    where posted_on = ? and parent_id = ?;`;
     return pool.execute(getReplies, [taskId, commentId]);
   }
 
