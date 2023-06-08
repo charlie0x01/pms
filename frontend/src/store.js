@@ -8,6 +8,7 @@ import { orgApi } from "./apis/orgApi";
 import { projectApi } from "./apis/projectApi";
 import { kanbanApi } from "./apis/kanbanApi";
 import { taskApi } from "./apis/taskApi";
+import { notificationApi } from "./apis/notificationsApi";
 
 // features
 import orgReducer from "./features/orgSlice";
@@ -22,6 +23,7 @@ const store = configureStore({
     [projectApi.reducerPath]: projectApi.reducer,
     [kanbanApi.reducerPath]: kanbanApi.reducer,
     [taskApi.reducerPath]: taskApi.reducer,
+    [notificationApi.reducerPath]: notificationApi.reducer,
     org: orgReducer,
     kanbanBoard: kanbanBoardReducer,
     globalState: globaStateReducer,
@@ -33,6 +35,7 @@ const store = configureStore({
       projectApi.middleware,
       kanbanApi.middleware,
       taskApi.middleware,
+      notificationApi.middleware,
     ]),
 });
 

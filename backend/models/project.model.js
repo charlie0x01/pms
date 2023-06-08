@@ -175,7 +175,7 @@ class Project {
   }
 
   static getActiveProjects(userId) {
-    let getActiveProjects = `select p.* from projects p
+    let getActiveProjects = `select distinct p.* from projects p
     left join project_members pm on p.project_id = pm.project_id
      where p.status = "Active" and (p.project_owner = ? or pm.project_member_id = ?);`;
     return pool.execute(getActiveProjects, [userId, userId]);

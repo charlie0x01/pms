@@ -5,6 +5,8 @@ const Kanban = require("../models/kanban.model");
 const Task = require("../models/task.model");
 const fs = require("fs");
 
+const Notification = require("../models/notification.model");
+
 exports.addTask = async (req, res, next) => {
   try {
     const { userId, columnId } = req.params;
@@ -106,6 +108,18 @@ exports.updateTask = async (req, res, next) => {
       }
 
       await Task.updateTask(taskTitle, dueDate, description, priority, taskId);
+
+      // notify assignees
+      const [updatedBy, ___] = await User.findByUserId(userId);
+      console.log("from task update", updatedBy);
+      const [assignees, _] = await Task.getAssigneesByTaskId(taskId);
+      assignees.map((user, index) =>
+        Notification.saveNotification(
+          user.user_id,
+          `Task '${taskTitle}' updated by ${updatedBy[0].first_name} ${updatedBy[0].last_name}`
+        )
+      );
+
       return res.status(201).json({
         success: true,
         message: "Task updated successfully",
@@ -134,8 +148,22 @@ exports.deleteTask = async (req, res, next) => {
           .json({ success: false, message: "Task does not exist" });
       }
 
-      await Task.deleteTask(taskId);
-      return res.status(201).json({
+      // notify assignees
+      const [updatedBy, ___] = await User.findByUserId(userId);
+      const [assignees, _] = await Task.getAssigneesByTaskId(taskId);
+      const [dTask, ____] = await Task.findByTaskId(taskId);
+
+      const [deleted, fields] = await Task.deleteTask(taskId);
+      if (deleted.affectedRows == 1) {
+        assignees.map((user, index) =>
+          Notification.saveNotification(
+            user.user_id,
+            `Task '${dTask[0].task_title}' deleted by ${updatedBy[0].first_name} ${updatedBy[0].last_name}`
+          )
+        );
+      }
+
+      return res.status(200).json({
         success: true,
         message: "Task deleted successfully",
       });
@@ -176,6 +204,18 @@ exports.setAssignees = async (req, res) => {
     const { taskId } = req.params;
     const { assignees } = req.body;
     await Task.addAssignees(assignees, taskId);
+    let user;
+    const [task, _] = await Task.findByTaskId(taskId);
+    // notify
+    await Promise.all(
+      assignees.map(async (user, index) => {
+        user = await User.findByUserId(user);
+        await Notification.saveNotification(
+          user[0][0].user_id,
+          `New Task for you '${task[0].task_title}'`
+        );
+      })
+    );
 
     return res.status(200).json({
       success: true,
@@ -242,11 +282,26 @@ exports.postComment = async (req, res) => {
     console.log(req.params);
     console.log(req.body);
 
-    await Task.postComment(
+    const [commented, __] = await Task.postComment(
       req.params.taskId,
       req.body.comment,
       req.params.userId
     );
+
+    // notify
+    const [commentBy, ___] = await User.findByUserId(req.params.userId);
+    const [assignees, _] = await Task.getAssigneesByTaskId(req.params.taskId);
+    const [task, ____] = await Task.findByTaskId(req.params.taskId);
+
+    if (commented.affectedRows == 1) {
+      assignees.map((user, index) =>
+        Notification.saveNotification(
+          user.user_id,
+          `${commentBy[0].first_name} ${commentBy[0].last_name} commented on '${task[0].task_title}'`
+        )
+      );
+    }
+
     return res.status(200).json({ success: true, message: "posted" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
@@ -257,14 +312,42 @@ exports.postReply = async (req, res) => {
     console.log(req.params);
     console.log(req.body);
 
-    await Task.postReply(
+    const [commented, _a] = await Task.postReply(
       req.params.taskId,
       req.body.comment,
       req.params.userId,
       req.params.parentId
     );
 
+    // notify
+    const [commentBy, _b] = await User.findByUserId(req.params.userId);
+    const [assignees, _c] = await Task.getAssigneesByTaskId(req.params.taskId);
+    const [comment, _d] = await Task.getComment(req.params.parentId);
+
+    if (commented.affectedRows == 1) {
+      assignees.map((user, index) =>
+        Notification.saveNotification(
+          user.user_id,
+          `${commentBy[0].first_name} ${commentBy[0].last_name} replied on '${comment[0].content}'`
+        )
+      );
+    }
+
     return res.status(200).json({ success: true, message: "posted" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.getReplies = async (req, res) => {
+  try {
+    console.log(req.params);
+
+    const [replies, _] = await Task.getReplies(
+      req.params.taskId,
+      req.params.commentId
+    );
+    return res.status(200).json({ success: true, data: replies });
   } catch (error) {
     return res.status(500).json({ success: false, message: error?.message });
   }

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import Avatar from "react-avatar";
 
 // apis
 import { useGetCommentsQuery } from "../../apis/taskApi";
 import Comment from "./Comment";
 
 const Comments = ({ taskId }) => {
+  const [previous, setPrevious] = useState(null);
   // get comments
   const { data: comments } = useGetCommentsQuery(taskId);
 
@@ -17,19 +15,7 @@ const Comments = ({ taskId }) => {
         <>
           <h1 className="subtitle">Comments</h1>
           {comments?.data.map((comment, index) => {
-            if (comment.parent_id == null) {
-              return (
-                <Comment taskId={taskId} comment={comment} key={index}>
-                  {comments?.data.map((reply, index) => {
-                    if (reply.parent_id == comment.comment_id) {
-                      return (
-                        <Comment taskId={taskId} key={index} comment={reply} />
-                      );
-                    }
-                  })}
-                </Comment>
-              );
-            }
+            return <Comment taskId={taskId} comment={comment} key={index} />;
           })}
         </>
       ) : (

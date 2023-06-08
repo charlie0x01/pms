@@ -19,6 +19,7 @@ const projectRoutes = require("./routes/project.routes");
 const kanbanRoutes = require("./routes/kanban.routes");
 const taskRoutes = require("./routes/task.routes");
 const userRoutes = require("./routes/user.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 app.use("/static", express.static("assets"));
 
@@ -166,6 +167,7 @@ app.use("/api/project", projectRoutes);
 app.use("/api/kanban", kanbanRoutes);
 app.use("/api/task", taskRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/notification", notificationRoutes);
 
 // if route not exit
 app.use(function (req, res, next) {

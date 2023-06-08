@@ -11,7 +11,7 @@ import {
   usePostReplyMutation,
 } from "../../apis/taskApi";
 
-const Comment = ({ comment, children, taskId }) => {
+const Comment = ({ comment, children, taskId, comments }) => {
   const [inputHeight, setInputHeight] = useState(32);
   const [editable, setEditable] = useState(false);
   const [messageApi, contextHandler] = message.useMessage();
@@ -202,7 +202,9 @@ const Comment = ({ comment, children, taskId }) => {
                 Reply
               </p>
             )}
-            <p className="is-pulled-right is-size-7">{comment.created_at.slice()}</p>
+            <p className="is-pulled-right is-size-7">
+              {comment.created_at.slice()}
+            </p>
           </div>
         </div>
       </div>

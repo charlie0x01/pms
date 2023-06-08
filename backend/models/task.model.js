@@ -140,11 +140,21 @@ class Task {
     return pool.execute(updateComment, [comment, commentId]);
   }
 
+  static getReplies(taskId, commentId) {
+    let getReplies = `select * from comments where posted_on = ? and parent_id = ?;`;
+    return pool.execute(getReplies, [taskId, commentId]);
+  }
+
   static getComments(taskId) {
     let getComments = `select c.*, u.profile_picture, u.first_name, u.last_name from comments c
     left join users u on u.user_id = c.posted_by 
     where posted_on = ?;`;
     return pool.execute(getComments, [taskId]);
+  }
+
+  static getComment(commentId) {
+    let getComments = `select * from comments where comment_id = ?;`;
+    return pool.execute(getComments, [commentId]);
   }
 }
 

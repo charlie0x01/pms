@@ -17,6 +17,7 @@ const {
   deleteComment,
   updateComment,
   getComments,
+  getReplies,
 } = require("../controllers/task.controller.js");
 
 const router = express.Router();
@@ -41,5 +42,6 @@ router.post("/post-reply/:taskId/:parentId/:userId", postReply);
 router.get("/get-comments/:taskId", getComments);
 router.delete("/delete-comment/:commentId", deleteComment);
 router.patch("/update-comment/:commentId", updateComment);
+router.get("/get-replies/:taskId/:commentId", getReplies);
 
 module.exports = router;

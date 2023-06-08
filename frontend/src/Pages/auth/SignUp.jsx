@@ -37,7 +37,10 @@ const SignUp = () => {
       password: Yup.string()
         .required("No password provided.")
         .min(8, "Password is too short - should be 8 chars minimum.")
-        .matches(/[a-zA-Z0-9]/, "Password can only contain letters and numbers."),
+        .matches(
+          /[a-zA-Z0-9]/,
+          "Password can only contain letters and numbers."
+        ),
     }),
     onSubmit: (values) => {
       // alert(JSON.stringify(values, null, 2));
@@ -83,7 +86,7 @@ const SignUp = () => {
                   id="firstName"
                   className="input"
                   type="text"
-                  placeholder="Enter your last name"
+                  placeholder="Enter your first name"
                   {...formik.getFieldProps("firstName")}
                 />
               </div>

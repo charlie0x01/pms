@@ -50,6 +50,24 @@ const Board = () => {
 
   console.log("from board ", project);
 
+  const completedColumn = () => {
+    return (
+      <>
+        {columns?.data.map((column, index) => {
+          if (column.column_title == "Completed") {
+            return (
+              <KanbanColumn
+                columnTitle={column.column_title}
+                columnId={column.column_id}
+                boardId={project && project.data.board_id}
+              />
+            );
+          }
+        })}
+      </>
+    );
+  };
+
   useEffect(() => {
     if (isError) {
       if (Array.isArray(error?.data.error)) {
@@ -113,14 +131,17 @@ const Board = () => {
             >
               {columns &&
                 columns?.data.map((column, index) => {
-                  return (
-                    <KanbanColumn
-                      columnTitle={column.column_title}
-                      columnId={column.column_id}
-                      boardId={project && project.data.board_id}
-                    />
-                  );
+                  if (column.column_title !== "Completed") {
+                    return (
+                      <KanbanColumn
+                        columnTitle={column.column_title}
+                        columnId={column.column_id}
+                        boardId={project && project.data.board_id}
+                      />
+                    );
+                  }
                 })}
+              {completedColumn()}
             </div>
           </div>
           <div></div>
