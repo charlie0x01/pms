@@ -1,10 +1,22 @@
 // organization apis
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Header } from "antd/es/layout/layout";
 
 const orgApi = createApi({
   reducerPath: "organization",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/org" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/api/org",
+    prepareHeaders: (headers) => {
+      const accessToken = localStorage.getItem("access_token");
+      if (accessToken) {
+        headers.set("Authorization", `Bearer ${accessToken}`);
+      }
+      headers.set("Content-Type", "application/json");
+
+      return headers;
+    },
+  }),
   tagTypes: ["org", "members"],
   endpoints: (builder) => ({
     addOrganization: builder.mutation({

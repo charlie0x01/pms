@@ -29,7 +29,7 @@ function getNumberOfDays(start, end) {
   } else if (diffInDays < 0) {
     return "due yesterday";
   } else {
-    return `due ${end}`;
+    return `due in ${diffInDays} days`;
   }
 }
 
@@ -119,7 +119,7 @@ exports.getTasks = async (req, res, next) => {
             console.log(getNumberOfDays(Date.now(), task.due_date));
             await Notification.saveNotification(
               assignee.user_id,
-              `'${task.task_title}' ${getNumberOfDays(
+              `'${task.task_title}' task ${getNumberOfDays(
                 Date.now(),
                 task.due_date
               )} `
@@ -290,7 +290,7 @@ exports.changeTaskColumn = async (req, res) => {
           user = await User.findByUserId(assignee.user_id);
           await Notification.saveNotification(
             user[0][0].user_id,
-            `${task[0].task_title} Task's status changed to ${column[0].column_title}`
+            `'${task[0].task_title}' Task's status changed to ${column[0].column_title}`
           );
         })
       );

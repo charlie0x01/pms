@@ -1,10 +1,20 @@
-
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const kanbanApi = createApi({
   reducerPath: "kanban",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/kanban" }), // Replace with your API base URL
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/api/kanban",
+    prepareHeaders: (headers) => {
+      const accessToken = localStorage.getItem("access_token");
+
+      if (accessToken) {
+        headers.set("Authorization", `Bearer ${accessToken}`);
+      }
+      headers.set("Content-Type", "application/json");
+
+      return headers;
+    },
+  }), // Replace with your API base URL
   tagTypes: ["columns"],
   endpoints: (builder) => ({
     addColumn: builder.mutation({

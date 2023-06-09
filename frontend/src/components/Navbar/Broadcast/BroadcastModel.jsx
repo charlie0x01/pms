@@ -5,6 +5,7 @@ import { IoMdSend } from "react-icons/io";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { message } from "antd";
+import { delay } from "../../../../utils";
 
 // apis
 import { useBroadcastMutation } from "../../../apis/notificationsApi";
@@ -31,9 +32,7 @@ const BroadcastModel = ({ isOpen, setIsOpen }) => {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      alert(JSON.stringify(values));
       broadcast({ message: values.message, members: values.members });
-      formik.resetForm();
     },
   });
 
@@ -42,16 +41,24 @@ const BroadcastModel = ({ isOpen, setIsOpen }) => {
   };
 
   useEffect(() => {
-    if (isError) {
-      if (Array.isArray(error.data.error)) {
-        error.data.error.forEach((el) => messageApi.error(el.message));
-      } else {
-        messageApi.error(error.data.message);
+    async function handleError() {
+      if (isError) {
+        if (Array.isArray(error.data.error)) {
+          error.data.error.forEach((el) => messageApi.error(el.message));
+        } else {
+          messageApi.error(error.data.message);
+        }
+      }
+      if (isSuccess) {
+        messageApi.success(broadcastReponse?.message);
+        formik.resetForm();
+        formik.setFieldValue("members", []);
+        await delay(1000);
+        setIsOpen(false);
       }
     }
-    if (isSuccess) {
-      messageApi.success(broadcastReponse?.message);
-    }
+
+    handleError();
   }, [isLoading]);
 
   return (

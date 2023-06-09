@@ -189,7 +189,7 @@ const Attachments = ({ taskId }) => {
                       />
                     </figure>
                   </div>
-                  <a href={file.attachment_path} className="ellipsis-single">
+                  <a href={file.attachment_path} target="_blanks" className="ellipsis-single">
                     {file.attachment_path.split("/").pop()}
                   </a>
                   <button

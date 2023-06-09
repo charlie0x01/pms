@@ -7,6 +7,7 @@ const app = express();
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const authMiddleware = require("./middlewares/authMiddlewares");
 
 // models
 const User = require("./models/user.model");
@@ -162,12 +163,12 @@ app.get("/files/:filename", (req, res) => {
 
 //
 app.use("/api/auth", authRoutes);
-app.use("/api/org", orgRoutes);
-app.use("/api/project", projectRoutes);
-app.use("/api/kanban", kanbanRoutes);
-app.use("/api/task", taskRoutes);
+app.use("/api/org", authMiddleware, orgRoutes);
+app.use("/api/project", authMiddleware, projectRoutes);
+app.use("/api/kanban", authMiddleware, kanbanRoutes);
+app.use("/api/task", authMiddleware, taskRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/notification", notificationRoutes);
+app.use("/api/notification", authMiddleware, notificationRoutes);
 
 // if route not exit
 app.use(function (req, res, next) {

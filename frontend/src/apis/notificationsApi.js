@@ -4,6 +4,16 @@ const notificationApi = createApi({
   reducerPath: "notification",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5000/api/notification",
+    prepareHeaders: (headers) => {
+      const accessToken = localStorage.getItem("access_token");
+
+      if (accessToken) {
+        headers.set("Authorization", `Bearer ${accessToken}`);
+      }
+      headers.set("Content-Type", "application/json");
+
+      return headers;
+    },
   }), // Replace with your API base URL
   tagTypes: ["notifications"],
   endpoints: (builder) => ({

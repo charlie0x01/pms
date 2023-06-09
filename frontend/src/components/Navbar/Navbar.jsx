@@ -4,7 +4,8 @@ import UserAvatarDropdown from "./AvatarDropdown";
 import JoinButton from "./JoinButton";
 import Broadcast from "./Broadcast/Broadcast";
 import { FaRegBell } from "react-icons/fa";
-import { BiFontSize } from "react-icons/bi";
+// image
+import logo from "../../assets/logo/logo.png";
 
 import { useGetNotificationsQuery } from "../../apis/notificationsApi";
 
@@ -37,13 +38,14 @@ const Navbar = () => {
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
           </a>
-          <a className="navbar-item" href="/">
+          <a className="navbar-item is-flex" href="/">
+            <img className="mr-2" src={logo} width="28" height="28" />
             <p className="subtitle" style={{ fontWeight: "600" }}>
               Taskify
             </p>
           </a>
         </div>
-        <div style={{ gap: "8px" }} className="is-flex is-align-items-center">
+        <div className="is-flex is-align-items-center is-gap-0">
           <JoinButton />
           <Broadcast />
           <span

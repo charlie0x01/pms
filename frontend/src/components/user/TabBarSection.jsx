@@ -15,9 +15,6 @@ import {
 import TaskRow from "./TaskRow";
 
 const TabBarSection = () => {
-  const [activeTab, setActiveTab] = useState("Active Projects");
-  const [messageApi, contextHandler] = message.useMessage();
-
   // load projects
   const { data: projects } = useGetActiveProjectsQuery();
 
@@ -26,6 +23,12 @@ const TabBarSection = () => {
 
   // load notifications
   const { data: notifications } = useGetNotificationsQuery();
+
+  const defaultTab = `Notifications ${
+    notifications ? notifications?.data.length : 0
+  }`;
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [messageApi, contextHandler] = message.useMessage();
 
   const [
     deleteNotification,
@@ -155,7 +158,7 @@ const TabBarSection = () => {
                 {notifications?.data.length > 0 && (
                   <>
                     {notifications?.data.map((notification, index) => (
-                      <article key={index} class="message">
+                      <article key={index} class="message is-dark">
                         <button
                           onClick={() =>
                             handleDeleteNotification(
@@ -165,7 +168,16 @@ const TabBarSection = () => {
                           className="delete is-pulled-right"
                           style={{ marginRight: 5, marginTop: 5 }}
                         ></button>
-                        <div class="message-body">{notification.message}</div>
+                        <div class="message-body">
+                          {notification.message}
+                          <br />
+                          <span
+                            className="tag is-light"
+                            style={{ fontWeight: 600 }}
+                          >
+                            {notification.created_at}
+                          </span>
+                        </div>
                       </article>
                     ))}
                   </>

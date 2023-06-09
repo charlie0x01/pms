@@ -2,7 +2,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const taskApi = createApi({
   reducerPath: "task",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/task" }), // Replace with your API base URL
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5000/api/task",
+    prepareHeaders: (headers) => {
+      const accessToken = localStorage.getItem("access_token");
+
+      if (accessToken) {
+        headers.set("Authorization", `Bearer ${accessToken}`);
+      }
+      headers.set("Content-Type", "application/json");
+
+      return headers;
+    },
+  }), // Replace with your API base URL
   tagTypes: ["tasks", "assignees", "attachments", "comments"],
   endpoints: (builder) => ({
     addTask: builder.mutation({
