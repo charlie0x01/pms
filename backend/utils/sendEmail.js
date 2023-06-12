@@ -28,8 +28,8 @@ function sendEmail(email, name, otp, message) {
     port: 465,
     secure: true,
     auth: {
-      user: "taskify90@gmail.com", // Your email id ( sender's email )
-      pass: "gpwiskifkdcddrin", // Your password
+      user: "", // Your email id ( sender's email )
+      pass: "", // Your password
     },
   });
 
